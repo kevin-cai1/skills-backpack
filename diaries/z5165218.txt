@@ -1,0 +1,10 @@
+Week 1
+We formed our group and established our project (SkillsBackpack). I set up Confluence pages for collboration and documentation. 
+I worked with Alex on writing the problem statement and project background.
+I also researched some existing APIs and software frameworks we could use for our project.
+We had another meeting halfway through the week to catch up and assigned more work for the coming week.
+
+Week 2
+I primarily worked on the ER diagram this week, establishing the data layers of our system and how our backend systems would interact.
+I also did more research into the frameworks we would use for our project and set up the team GitHub repository with all the 
+base files and skeletons for our application. 
