@@ -1,0 +1,10 @@
+Week 1
+- Decided as a group to do the Skills Backpack project
+- Wrote all the candidate user stories and added them to the project proposal page on the team confluence
+- Attended a meeting on Friday night to further discuss uncertainties with user stories and system architecture
+- Adjusted candidate user stories based on feedback from meeting
+
+Week 2
+- Attended the second tutorial where we further fleshed out the system architecture and deliverables
+- Created a use case diagram which visualised how users could interact with our system
+- Added another candidate user story (so they can view employer profiles)
