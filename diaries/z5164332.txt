@@ -1,0 +1,10 @@
+Week 1
+- Formed a team and decided as a group to do the skills backpack project
+- Wrote all the employer user stories and acceptance criteria and added it to the confluence page
+- Attended a team meeting on Friday night to discuss the quality of the user stories and problem statement.
+- Made edits to the user stories I wrote based on discussions and feedback.
+
+Week 2
+- Attended our weekly tutorial, discussing system architecture and future plans with the project.
+- Drew up the system architecture diagram and a description of how the system is going to work. Added to confluence page.
+- Created wireframes on figma to illustrate the employer user interfaces.
