@@ -1,6 +1,7 @@
 from flask_restplus import Api
 
 from .test import api as ns1
+from .login import api as ns2
 
 
 api = Api(
@@ -10,3 +11,4 @@ api = Api(
         )
 
 api.add_namespace(ns1, path='/test')
+api.add_namespace(ns2, path='/login')

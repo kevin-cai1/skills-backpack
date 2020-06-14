@@ -7,4 +7,6 @@ We had another meeting halfway through the week to catch up and assigned more wo
 Week 2
 I primarily worked on the ER diagram this week, establishing the data layers of our system and how our backend systems would interact.
 I also did more research into the frameworks we would use for our project and set up the team GitHub repository with all the 
-base files and skeletons for our application. 
+base files and skeletons for our application.
+Worked together in our second meeting to establish our sprint plan and agree upon story sizes and priorities.
+Also set up some of the database middlewares in preparation for the official start of the first sprint. 
