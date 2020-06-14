@@ -22,7 +22,7 @@ CREATE TABLE Employer (
 	password TEXT NOT NULL
 );
 
--- Create Course Admin table
+-- Create CourseAdmin table
 CREATE TABLE CourseAdmin (
 	email TEXT PRIMARY KEY,
 	university TEXT NOT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE Course (
 );
 
 -- Create ePortfolio table
-CREATE TABLE ePortfolio(
+CREATE TABLE ePortfolio (
 	name TEXT PRIMARY KEY,
 	employabilitySkills TEXT, 
 	jobSkills TEXT,
@@ -84,8 +84,8 @@ CREATE TABLE Employment_ePortfolio (
 	PRIMARY KEY (employmentId, portfolioName)
 );
 
--- Create ePortfolio_Course table
-CREATE TABLE ePortfolio_Course (
+-- Create ePortfolio_Courses table
+CREATE TABLE ePortfolio_Courses (
 	name TEXT NOT NULL,
 	code TEXT NOT NULL,
 	university TEXT NOT NULL,
@@ -115,3 +115,17 @@ CREATE TABLE Candidate_Links (
 	PRIMARY KEY (link, email)
 );
 
+-- Create Course_CourseAdmin table
+CREATE TABLE Course_CourseAdmin (
+	email TEXT NOT NULL,
+	code TEXT NOT NULL,
+	university TEXT NOT NULL,
+	FOREIGN KEY (email)
+		REFERENCES CourseAdmin (email)
+			ON DELETE CASCADE
+			ON UPDATE CASCADE,
+	FOREIGN KEY (code, university)
+		REFERENCES Course (code, university)
+			ON DELETE CASCADE
+			ON UPDATE CASCADE
+);
