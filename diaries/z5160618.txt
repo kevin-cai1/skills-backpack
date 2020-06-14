@@ -8,3 +8,10 @@ Week 2
 - Attended the second tutorial where we further fleshed out the system architecture and deliverables
 - Created a use case diagram which visualised how users could interact with our system
 - Added another candidate user story (so they can view employer profiles)
+
+12/06/20 Meeting
+- Helped organise stories into sprint 
+- Helped assign story points
+- Volunteered to set up the backend database using SQLite3
+
+
