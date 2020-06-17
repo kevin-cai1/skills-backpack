@@ -14,65 +14,48 @@ account_package = api.model('create', {
     'email' : fields.String(description='university email for account identification', required=True),
     'password'  : fields.String(description='password for account access', required=True),
     'name' : fields.String(description='name of user', required=True),
-    'user_type' : fields.String(description='access type of the user', required=True)
+    'user_type' : fields.String(description='access type of the user', required=True),
+    'university' : fields.String(description='university of candidate/course admin'),
+    'degree' : fields.String(description='degree of candidate'),
+    'gradYear' : fields.Integer(description='graduation year'),
+    'company' : fields.String(description='employers comapany')
 })
-
-@api.route('/all')
-class accounts(Resouce):
-    def get(self):
-
-
-@api.route('/<string:account>')
-class accountInfo(Resource):
-    def get(self, account):
-    
-    @api.doc(description="Delete specified account")
-    def delete(self, account):
-        conn = db.get_conn()
-        c = conn.cursor()
-
-        c.execute("SELECT EXISTS(SELECT email FROM Candidate WHERE email = ?)", (account,))
-        account_check = c.fetchone()[0]
-        
-        if (account_check == 0):
-            api.abort(404, "Account '{}' doesn't exist".format(account), ok=False)
-
-        c.execute("DELETE FROM Candidate WHERE email = ?)", (account,))
-        
-        conn.commit()
-        conn.close()
-        return_val = {
-            'ok': True
-        }
-        return return_val
 
 @api.route('/login')
 class login(Resource):
     @api.expect(login_package)
     def post(self):
         req = request.get_json()
-        print(req['email'])
-        print(req['password'])
 
+        conn= db.get_conn()
+        c = conn.cursor()
 
         # check for matching username listing in db
+        c.execute('''SELECT * FROM (
+                        SELECT email, password FROM Candidate UNION ALL 
+                        SELECT email, password FROM Employer UNION ALL 
+                        SELECT email, password FROM SkillsBackpackAdmin UNION ALL 
+                        SELECT email, password FROM CourseAdmin) WHERE email = ?''', (req['email'],))
+
+        account = c.fetchone() # returns 1 if exists
         # if not in database
-            # api.abort(404, "User '{}' doesn't exist".format(req['username']), ok=False)
+        if (account == []):
+            api.abort(400, "User '{}' not found".format(req['email']), ok=False)
         
+        password = account[1]
         # check password match
-        
+        if (req['password'] == password):         # if password matches
+            return_val = {
+                'logged_in' : True,
+                'user' : req['email']
+            }
+        else:
         # if password doesn't match username
             return_val = {
                 'logged_in' : False,
                 'user' : req['email']
             }
-            # give bad 
-        # if password matches
-            return_val = {
-                'logged_in' : True,
-                'user' : req['email']
-            }
-            # give OK response
+
         return return_val
 
 @api.route('/create')
@@ -80,19 +63,43 @@ class createAccount(Resource):
     @api.expect(account_package)
     def post(self):
         req = request.get_json()
-        # if user already exists
-            # api.abort(400, "User '{}' already exists".format(req['username']))
+        conn = db.get_conn()
+        c = conn.cursor()
 
-        # check validity of fields? (strings, integer, etc)
+        # check type of account
+        accountType = req['user_type']
+        if (accountType == "candidate"):           
+            c.execute("SELECT EXISTS(SELECT email FROM Candidate WHERE email = ?)", (req['email'],))
+            account_check = c.fetchone()[0] # returns 1 if exists
+            
+            if (account_check == 1):    # user already exists
+                api.abort(400, "User '{}' already exists".format(req['email']), ok=False)
 
-        # create new account in db
+            c.execute("INSERT INTO Candidate values (?,?,?,?,?,?)",(req['email'], req['name'], req['university'], req['password'], req['degree'], req['gradYear'],),)
+            conn.commit()
+            conn.close()
+            account = {
+                'name' : req['name'],
+                'email' : req['email'],
+                'password' : req['password'],
+                'user_type' : accountType,
+                'university' : req['university'],
+                'degree' : req['degree'],
+                'gradYear' : req['gradYear']
+            }
+        elif (accountType == "employer"):
+            pass
+        elif (accountType == "courseAdmin"):
+            pass
+        elif (accountType == "skillsAdmin"):
+            pass
+        else:
+            api.abort(400, "User type not valid")
 
         # return OK
-        account = {
-            'name' : req['name']
-        }
-
         return_val = {
             'ok' : True,
             'account' : account
         }
+
+        return return_val
