@@ -1,0 +1,12 @@
+.Register-page {
+  text-align: center;
+}
+
+.Register-body {
+  display: flex;
+  margin: auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 20vw;
+}
