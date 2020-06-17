@@ -41,6 +41,7 @@ CREATE TABLE SkillsBackpackAdmin (
 );
 
 -- Create Course table
+-- Contains info about each registered course
 CREATE TABLE Course (
 	code TEXT NOT NULL,
 	learningOutcomes TEXT,
@@ -53,6 +54,7 @@ CREATE TABLE Course (
 );
 
 -- Create ePortfolio table
+-- Contains info regarding each EP, mapping the name to the name of the candidate who created it
 CREATE TABLE ePortfolio (
 	name TEXT PRIMARY KEY,
 	employabilitySkills TEXT, 
