@@ -1,6 +1,8 @@
 from flask_restplus import Namespace, Resource, fields
 from flask import request, jsonify
 
+import db
+
 api = Namespace('Login', description='Login validation operations')
 
 login_package = api.model('login', {
@@ -29,10 +31,18 @@ class login(Resource):
         # check password match
         
         # if password doesn't match username
-            
+            return_val = {
+                'logged_in' : False,
+                'user' : req['email']
+            }
+            # give bad 
         # if password matches
+            return_val = {
+                'logged_in' : True,
+                'user' : req['email']
+            }
             # give OK response
-        return 0
+        return return_val
 
 @api.route('/create')
 class createAccount(Resource):
@@ -44,4 +54,14 @@ class createAccount(Resource):
 
         # check validity of fields? (strings, integer, etc)
 
-        # 
+        # create new account in db
+
+        # return OK
+        account = {
+            'name' : req['name']
+        }
+
+        return_val = {
+            'ok' : True,
+            'account' : account
+        }
