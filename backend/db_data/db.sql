@@ -1,6 +1,7 @@
 -- sql file for database schema
 
 -- Create candidate table
+DROP TABLE IF EXISTS Candidate;
 CREATE TABLE Candidate (
 	name TEXT NOT NULL,
 	email TEXT PRIMARY KEY,
@@ -9,11 +10,13 @@ CREATE TABLE Candidate (
 );
 
 -- Create ePortfolioLink table
+DROP TABLE IF EXISTS ePortfolioLink;
 CREATE TABLE ePortfolioLink (
 	link TEXT PRIMARY KEY
 );
 
 -- Create Employer table
+DROP TABLE IF EXISTS Employer;
 CREATE TABLE Employer (
 	name TEXT NOT NULL,
 	email TEXT PRIMARY KEY,
@@ -23,6 +26,7 @@ CREATE TABLE Employer (
 );
 
 -- Create CourseAdmin table
+DROP TABLE IF EXISTS CourseAdmin;
 CREATE TABLE CourseAdmin (
 	email TEXT PRIMARY KEY,
 	university TEXT NOT NULL,
@@ -30,12 +34,14 @@ CREATE TABLE CourseAdmin (
 );
 
 -- Create SkillsBackpackAdmin table
+DROP TABLE IF EXISTS SkillsBackpackAdmin;
 CREATE TABLE SkillsBackpackAdmin (
 	email TEXT PRIMARY KEY,
 	password TEXT
 );
 
 -- Create Course table
+DROP TABLE IF EXISTS Course;
 CREATE TABLE Course (
 	code TEXT NOT NULL,
 	learningOutcomes TEXT,
@@ -48,11 +54,11 @@ CREATE TABLE Course (
 );
 
 -- Create ePortfolio table
+DROP TABLE IF EXISTS 
 CREATE TABLE ePortfolio (
 	name TEXT PRIMARY KEY,
 	employabilitySkills TEXT, 
 	jobSkills TEXT,
-	PRIMARY KEY (name),
 	FOREIGN KEY (name)
 		REFERENCES Candidate (name)
 			ON DELETE CASCADE
@@ -69,10 +75,9 @@ CREATE TABLE Employment (
 );
 
 -- Create Employment_ePortfolio table
-CREATE TABLE Employment_ePortfolio (
+CREATE TABLE EmploymentToePortfolio (
 	employmentId INTEGER NOT NULL,
 	portfolioName TEXT NOT NULL,
-	PRIMARY KEY (employmentId, portfolioName),
 	FOREIGN KEY (employmentId)
 		REFERENCES Employment (id)
 			ON DELETE CASCADE
@@ -84,8 +89,8 @@ CREATE TABLE Employment_ePortfolio (
 	PRIMARY KEY (employmentId, portfolioName)
 );
 
--- Create ePortfolio_Courses table
-CREATE TABLE ePortfolio_Courses (
+-- Create ePortfolioToCourses table
+CREATE TABLE ePortfolioToCourses (
 	name TEXT NOT NULL,
 	code TEXT NOT NULL,
 	university TEXT NOT NULL,
@@ -100,8 +105,8 @@ CREATE TABLE ePortfolio_Courses (
 	PRIMARY KEY (name, code, university)
 );
 
--- Create Candidate_Links table
-CREATE TABLE Candidate_Links (
+-- Create CandidateToLinks table
+CREATE TABLE CandidateToLinks (
 	link TEXT NOT NULL,
 	email TEXT NOT NULL,
 	FOREIGN KEY (link)
@@ -116,7 +121,7 @@ CREATE TABLE Candidate_Links (
 );
 
 -- Create Course_CourseAdmin table
-CREATE TABLE Course_CourseAdmin (
+CREATE TABLE CourseToCourseAdmin (
 	email TEXT NOT NULL,
 	code TEXT NOT NULL,
 	university TEXT NOT NULL,

@@ -17,13 +17,44 @@ account_package = api.model('create', {
     'user_type' : fields.String(description='access type of the user', required=True)
 })
 
-@api.route('/validate')
+@api.route('/all')
+class accounts(Resouce):
+    def get(self):
+
+
+@api.route('/<string:account>')
+class accountInfo(Resource):
+    def get(self, account):
+    
+    @api.doc(description="Delete specified account")
+    def delete(self, account):
+        conn = db.get_conn()
+        c = conn.cursor()
+
+        c.execute("SELECT EXISTS(SELECT email FROM Candidate WHERE email = ?)", (account,))
+        account_check = c.fetchone()[0]
+        
+        if (account_check == 0):
+            api.abort(404, "Account '{}' doesn't exist".format(account), ok=False)
+
+        c.execute("DELETE FROM Candidate WHERE email = ?)", (account,))
+        
+        conn.commit()
+        conn.close()
+        return_val = {
+            'ok': True
+        }
+        return return_val
+
+@api.route('/login')
 class login(Resource):
     @api.expect(login_package)
     def post(self):
         req = request.get_json()
         print(req['email'])
         print(req['password'])
+
+
         # check for matching username listing in db
         # if not in database
             # api.abort(404, "User '{}' doesn't exist".format(req['username']), ok=False)

@@ -11,4 +11,4 @@ api = Api(
         )
 
 api.add_namespace(ns1, path='/test')
-api.add_namespace(ns2, path='/login')
+api.add_namespace(ns2, path='/account')
