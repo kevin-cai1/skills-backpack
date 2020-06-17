@@ -1,28 +1,32 @@
 -- sql file for database schema
 
 -- Create candidate table
+-- Stores candidate login information and their university (which should be derived from their email)
 CREATE TABLE Candidate (
-	name TEXT NOT NULL,
 	email TEXT PRIMARY KEY,
+	name TEXT NOT NULL,
 	university TEXT,
 	password TEXT NOT NULL
 );
 
 -- Create ePortfolioLink table
+-- Stores every EP link as a string 
 CREATE TABLE ePortfolioLink (
 	link TEXT PRIMARY KEY
 );
 
 -- Create Employer table
+-- Stores Employer login info and their graduate and skills criteria
 CREATE TABLE Employer (
-	name TEXT NOT NULL,
 	email TEXT PRIMARY KEY,
+	name TEXT NOT NULL,
 	graduateCriteria TEXT,
 	skillsCriteria TEXT,
 	password TEXT NOT NULL
 );
 
 -- Create CourseAdmin table
+-- Contains login info for course admins and their associated university (derived from email)
 CREATE TABLE CourseAdmin (
 	email TEXT PRIMARY KEY,
 	university TEXT NOT NULL,
@@ -30,6 +34,7 @@ CREATE TABLE CourseAdmin (
 );
 
 -- Create SkillsBackpackAdmin table
+-- Contains login info for skills backpack admin
 CREATE TABLE SkillsBackpackAdmin (
 	email TEXT PRIMARY KEY,
 	password TEXT
@@ -52,7 +57,6 @@ CREATE TABLE ePortfolio (
 	name TEXT PRIMARY KEY,
 	employabilitySkills TEXT, 
 	jobSkills TEXT,
-	PRIMARY KEY (name),
 	FOREIGN KEY (name)
 		REFERENCES Candidate (name)
 			ON DELETE CASCADE
@@ -60,6 +64,7 @@ CREATE TABLE ePortfolio (
 );
 
 -- Create Employment table
+-- Represents an instance of past employment done by a candidate
 CREATE TABLE Employment (
 	id INTEGER PRIMARY KEY,
 	description TEXT,
@@ -69,6 +74,7 @@ CREATE TABLE Employment (
 );
 
 -- Create Employment_ePortfolio table
+-- Maps each EP to each instance of past employment info
 CREATE TABLE Employment_ePortfolio (
 	employmentId INTEGER NOT NULL,
 	portfolioName TEXT NOT NULL,
@@ -80,11 +86,11 @@ CREATE TABLE Employment_ePortfolio (
 	FOREIGN KEY (portfolioName)
 		REFERENCES ePortfolio (name)
 			ON DELETE CASCADE
-			ON UPDATE CASCADE,
-	PRIMARY KEY (employmentId, portfolioName)
+			ON UPDATE CASCADE
 );
 
 -- Create ePortfolio_Courses table
+-- Maps each EP to each completed course included in it
 CREATE TABLE ePortfolio_Courses (
 	name TEXT NOT NULL,
 	code TEXT NOT NULL,
@@ -101,6 +107,7 @@ CREATE TABLE ePortfolio_Courses (
 );
 
 -- Create Candidate_Links table
+-- Maps each link to the candidate that generated it
 CREATE TABLE Candidate_Links (
 	link TEXT NOT NULL,
 	email TEXT NOT NULL,
@@ -116,6 +123,7 @@ CREATE TABLE Candidate_Links (
 );
 
 -- Create Course_CourseAdmin table
+-- Maps each course to the course admin who submitted it
 CREATE TABLE Course_CourseAdmin (
 	email TEXT NOT NULL,
 	code TEXT NOT NULL,
