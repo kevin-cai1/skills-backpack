@@ -7,7 +7,9 @@ CREATE TABLE Candidate (
 	email TEXT PRIMARY KEY,
 	name TEXT NOT NULL,
 	university TEXT,
-	password TEXT NOT NULL
+	password TEXT NOT NULL,
+	degree TEXT,
+	gradYear INTEGER
 );
 
 -- Create ePortfolioLink table
