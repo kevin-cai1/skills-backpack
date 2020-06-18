@@ -1,6 +1,7 @@
 import React from 'react'
-import { FormControl, TextField, Button, ButtonGroup } from '@material-ui/core';
+import { FormControl, TextField, Button, ButtonGroup, InputLabel, Select, NativeSelect } from '@material-ui/core';
 import './login.css';
+import {Link} from "react-router-dom";
 
 class Login extends React.Component {
 
@@ -9,10 +10,12 @@ class Login extends React.Component {
         this.state = {
             email: '',
             password: '',
+            userType: '',
             emailError: 'Please enter a valid email address.',
             passworError: 'Password cannot be empty.',
             emailValid: true,
             passwordValid: true,
+            userTypeValid: true,
             formValid: false,
             passwordInit: false
         };
@@ -29,6 +32,7 @@ class Login extends React.Component {
     }
 
     validateField(field, value) {
+        console.log('field: ' + field + ", value: " + value);
         if (field === 'email') {
             this.state.emailValid = value.match(/^.*@.*$/i);
         }
@@ -36,11 +40,14 @@ class Login extends React.Component {
             this.state.passwordInit = true;
             this.state.passwordValid = value.length > 0;
         }
+        else if (field === 'userType') {
+            this.state.userTypeValid = value.match(/^(Skills\sBackpack\sAdmin)|(Course\sAdmin)|(Student)|(Employer)$/i);
+        }
         this.validateForm();
     }
 
     validateForm() {
-        this.setState({formValid: this.state.emailValid && this.state.passwordValid});
+        this.setState({formValid: this.state.emailValid && this.state.passwordValid && this.state.userTypeValid});
     }
 
     render() {
@@ -50,6 +57,28 @@ class Login extends React.Component {
                     <h1>Skills Backpack</h1>
                 </header>
                 <body className="Login-body">
+                    <div className="Form-container" style={{marginBottom:"50px"}}>
+                        <FormControl variant="outlined" classType="Login-text-field">
+                            <InputLabel className="Login-label" htmlFor="outlined-age-native-simple">I'm a ...</InputLabel>
+                            <Select
+                                className="Login-select"
+                                native
+                                value={this.state.userType}
+                                onChange={this.handleChange}
+                                label="Age"
+                                inputProps={{
+                                    name: 'userType',
+                                    id: 'outlined-userType-native-simple',
+                                }}
+                            >
+                                <option aria-label="None" value="" />
+                                <option value="Skills Backpack Admin">Skills Backpack Admin</option>
+                                <option value="Course Admin">Course Admin</option>
+                                <option value="Student">Student</option>
+                                <option value="Employer">Employer</option>
+                            </Select>
+                        </FormControl>
+                    </div>
                     <div className="Form-container">
                         <FormControl>
                             <div className="Login-text-field">
@@ -82,6 +111,11 @@ class Login extends React.Component {
                                 type="submit" disabled={!(this.state.formValid && this.state.passwordInit)}>Login</Button>
                         </ButtonGroup>
                     </div>
+                    <br></br>
+                    <br></br>
+                    {/*<div>*/}
+                    {/*    <p><a href='./register'>Don't have an account?</a></p>*/}
+                    {/*</div>*/}
                 </body>
                 <footer className="Home-footer">
                     <p>Yuppies 2020 </p>

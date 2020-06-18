@@ -28,4 +28,12 @@
     margin-bottom: 5px;
 }
 
+.Login-label {
+    color: #282c34;
+}
+
+.Login-select {
+    max-height: 50px;
+    min-width: 222px;
+}
 
