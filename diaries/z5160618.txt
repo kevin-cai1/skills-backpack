@@ -20,5 +20,6 @@ Week 3
 - Started creating the database using sqlite3
     - wrote and created the schema/tables
     - filled the db with sample data
+    - updated jira sprint board to reflect completed work
 - Started looking into creating APIs to handle adding courses
 
