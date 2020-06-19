@@ -68,11 +68,12 @@ CREATE TABLE Course (
 -- Contains info regarding each EP, mapping the name to the name of the candidate who created it
 DROP TABLE IF EXISTS ePortfolio;
 CREATE TABLE ePortfolio (
-	name TEXT PRIMARY KEY,
+	id INTEGER PRIMARY KEY,
+	email TEXT,
 	employabilitySkills TEXT, 
 	jobSkills TEXT,
-	FOREIGN KEY (name)
-		REFERENCES Candidate (name)
+	FOREIGN KEY (email)
+		REFERENCES Candidate (email)
 			ON DELETE CASCADE
 			ON UPDATE CASCADE
 );
