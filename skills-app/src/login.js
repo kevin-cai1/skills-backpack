@@ -1,7 +1,28 @@
 import React from 'react'
-import { FormControl, TextField, Button, ButtonGroup, InputLabel, Select, NativeSelect } from '@material-ui/core';
+import {
+    FormControl,
+    TextField,
+    Button,
+    ButtonGroup,
+    InputLabel,
+    Select,
+    NativeSelect,
+    createMuiTheme, MuiThemeProvider
+} from '@material-ui/core';
 import './login.css';
-import {Link} from "react-router-dom";
+
+const theme = createMuiTheme({
+    palette: {
+        primary: {
+            main: '#2D9CDB',
+            contrastText: '#fff',
+        },
+        secondary: {
+            main: '#fff',
+            contrastText: '#2D9CDB',
+        },
+    },
+});
 
 class Login extends React.Component {
 
@@ -21,7 +42,7 @@ class Login extends React.Component {
         };
 
         this.handleChange = this.handleChange.bind(this);
-        // this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleChange(event) {
@@ -32,9 +53,8 @@ class Login extends React.Component {
     }
 
     validateField(field, value) {
-        console.log('field: ' + field + ", value: " + value);
         if (field === 'email') {
-            this.state.emailValid = value.match(/^.*@.*$/i);
+            this.state.emailValid = value.match(/^.+@.+$/i);
         }
         else if (field === 'password') {
             this.state.passwordInit = true;
@@ -44,6 +64,24 @@ class Login extends React.Component {
             this.state.userTypeValid = value.match(/^(Skills\sBackpack\sAdmin)|(Course\sAdmin)|(Student)|(Employer)$/i);
         }
         this.validateForm();
+    }
+
+    handleSubmit(event) {
+        let data = JSON.stringify({
+            username: this.state.email,
+            password: this.state.password
+        });
+        let url = 'https://localhost:5000/account/login';
+        console.log('Sending to ' + url + ': ' + data);
+        var xhr = new XMLHttpRequest();
+
+        xhr.addEventListener('load', () => {
+            // update the state of the component with the result here
+            console.log(xhr.responseText)
+        });
+
+        xhr.open('POST', url);
+        xhr.send(data);
     }
 
     validateForm() {
@@ -57,7 +95,8 @@ class Login extends React.Component {
                     <h1>Skills Backpack</h1>
                 </header>
                 <body className="Login-body">
-                    <div className="Form-container" style={{marginBottom:"50px"}}>
+                    <div className="Form-container" style={{marginBottom:"30px"}}>
+                        <h3 className="Login-title">Sign In</h3>
                         <FormControl variant="outlined" classType="Login-text-field">
                             <InputLabel className="Login-label" htmlFor="outlined-age-native-simple">I'm a ...</InputLabel>
                             <Select
@@ -81,17 +120,21 @@ class Login extends React.Component {
                     </div>
                     <div className="Form-container">
                         <FormControl>
+                            <h5 className="Login-field-title">Email Address</h5>
                             <div className="Login-text-field">
                                 <TextField
                                     id="email-input"
                                     name="email"
-                                    label="Email"
+                                    label="Email Address"
                                     type="text"
                                     variant="outlined"
+                                    size="small"
+                                    className="Login-input-field"
                                     onChange={this.handleChange}
                                     helperText={this.state.emailValid ? '' : this.state.emailError}
                                 />
                             </div>
+                            <h5 className="Login-field-title">Password</h5>
                             <div className="Login-text-field">
                                 <TextField
                                     id="password-input"
@@ -99,6 +142,8 @@ class Login extends React.Component {
                                     label="Password"
                                     type="password"
                                     variant="outlined"
+                                    size="small"
+                                    className="Login-input-field"
                                     onChange={this.handleChange}
                                     helperText={this.state.passwordValid ? '' : this.state.passworError}
                                 />
@@ -106,16 +151,19 @@ class Login extends React.Component {
                         </FormControl>
                     </div>
                     <div className="Login-button-container">
-                        <ButtonGroup variant="contained" color="primary" aria-label="contained primary button group">
-                            <Button
-                                type="submit" disabled={!(this.state.formValid && this.state.passwordInit)}>Login</Button>
-                        </ButtonGroup>
+                        <MuiThemeProvider theme={theme}>
+                            <ButtonGroup variant="contained" color="primary" aria-label="contained primary button group">
+                                <Button
+                                    type="submit"
+                                    disabled={!(this.state.formValid && this.state.passwordInit)}
+                                    onClick={this.handleSubmit}
+                                >Sign In</Button>
+                            </ButtonGroup>
+                        </MuiThemeProvider>
                     </div>
-                    <br></br>
-                    <br></br>
-                    {/*<div>*/}
-                    {/*    <p><a href='./register'>Don't have an account?</a></p>*/}
-                    {/*</div>*/}
+                    <div className="Register-redirect-container">
+                        <p className="Register-redirect-text" style={{alignSelf:"centre"}}>Don't have an account yet? <a href='./register'>Sign up!</a></p>
+                    </div>
                 </body>
                 <footer className="Home-footer">
                     <p>Yuppies 2020 </p>

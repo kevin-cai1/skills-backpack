@@ -37,3 +37,31 @@
     min-width: 222px;
 }
 
+.Login-title {
+    color: #2D9CDB;
+}
+
+.Login-field-title {
+    color: black;
+    margin: 0;
+    font-size: small;
+    text-align: left;
+    margin-top: 7px;
+    margin-bottom: 7px;
+}
+
+.Login-input-field {
+    min-width: 250px;
+}
+
+.Register-redirect-container {
+    flex-basis: 100%;
+}
+
+.Register-redirect-text {
+    color: black;
+    margin: 0;
+    font-size: small;
+    margin-top: 10px;
+    margin-bottom: 7px;
+}
