@@ -14,7 +14,7 @@ def get_conn():
 def init_db():
     db = sqlite3.connect('skills.db')
     load_schema(db)
-    #insert_data(db)
+    insert_data(db)
 
     db.commit()
     db.close()

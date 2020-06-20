@@ -8,3 +8,10 @@ Week 2
 - Attended our weekly tutorial, discussing system architecture and future plans with the project.
 - Drew up the system architecture diagram and a description of how the system is going to work. Added to confluence page.
 - Created wireframes on figma to illustrate the employer user interfaces.
+- Attended a team meeting on friday to estimate points for each user story and allocate stories to each sprint.
+
+Week 3
+- outlined JSON format of data being sent to API for account creation and login
+- Updated system architecture diagram based on feedback from the tutorial.
+- added frontend routing file
+- added login page

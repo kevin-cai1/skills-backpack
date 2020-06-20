@@ -14,4 +14,12 @@ Week 2
 - Helped assign story points
 - Volunteered to set up the backend database using SQLite3
 
+Week 3
+- Clarified project proposal requirements during lab
+- Created a branch for setting up the db
+- Started creating the database using sqlite3
+    - wrote and created the schema/tables
+    - filled the db with sample data
+    - updated jira sprint board to reflect completed work
+- Started looking into creating APIs to handle adding courses
 
