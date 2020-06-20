@@ -7,4 +7,12 @@ We had another meeting halfway through the week to catch up and assigned more wo
 Week 2
 I primarily worked on the ER diagram this week, establishing the data layers of our system and how our backend systems would interact.
 I also did more research into the frameworks we would use for our project and set up the team GitHub repository with all the 
-base files and skeletons for our application. 
+base files and skeletons for our application.
+Worked together in our second meeting to establish our sprint plan and agree upon story sizes and priorities.
+Also set up some of the database middlewares in preparation for the official start of the first sprint.
+
+Week 3
+Started our first sprint. Outlined some of the specific features and behaviours of the API with Miran and Charmaine.
+Worked on database middlewares to connect our API to the SQL schema Gordon created.
+Also wrote some of the first API endpoints for login and createAccount. Most of the time was spent troubleshooting
+database queries and fine tuning tables and attributes.

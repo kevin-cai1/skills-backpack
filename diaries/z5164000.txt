@@ -1,0 +1,13 @@
+Week 1
+Group formed. Discussed project options with group and decided on Skills Backpack.
+I created Jira and added all members to project. Kevin linked a Confluence page for our proposal.
+Discussed roles with group and designated Alex as scrum master.
+Discussed then came up with week 1 deliverables with group and divided tasks up to be completed by our Friday meeting.
+Together with Charmaine and Gordon, wrote up User Stories and prioritised them.
+Briefly discussed available software tools and libraries to use for the project.
+Interface and flow diagrams as well as system architecture is planned for next week.
+
+Week 2
+Completed all required storyboards with Charmaine and made changes to corresponding user stories where required. I am currently re-formatting our Project Proposal on Confluence for PDF export.
+With the entire team, planned all sprints (decided on 6 weekly sprints, ~8 story points each). Divided roles for backend, frontend, data and API development.
+Started looking into JSON formatting required to end data from frontend forms to database with Charmaine.
