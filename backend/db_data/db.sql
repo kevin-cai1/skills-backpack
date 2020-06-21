@@ -27,13 +27,15 @@ CREATE TABLE Employer (
 	name TEXT NOT NULL,
 	graduateCriteria TEXT,
 	skillsCriteria TEXT,
-	password TEXT NOT NULL
+	password TEXT NOT NULL,
+	company TEXT NOT NULL
 );
 
 -- Create CourseAdmin table
 -- Contains login info for course admins and their associated university (derived from email)
 DROP TABLE IF EXISTS CourseAdmin;
 CREATE TABLE CourseAdmin (
+	name TEXT NOT NULL,
 	email TEXT PRIMARY KEY,
 	university TEXT NOT NULL,
 	password TEXT NOT NULL
@@ -43,6 +45,7 @@ CREATE TABLE CourseAdmin (
 -- Contains login info for skills backpack admin
 DROP TABLE IF EXISTS SkillsBackpackAdmin;
 CREATE TABLE SkillsBackpackAdmin (
+	name TEXT,
 	email TEXT PRIMARY KEY,
 	password TEXT
 );
@@ -65,11 +68,12 @@ CREATE TABLE Course (
 -- Contains info regarding each EP, mapping the name to the name of the candidate who created it
 DROP TABLE IF EXISTS ePortfolio;
 CREATE TABLE ePortfolio (
-	name TEXT PRIMARY KEY,
+	id INTEGER PRIMARY KEY,
+	email TEXT,
 	employabilitySkills TEXT, 
 	jobSkills TEXT,
-	FOREIGN KEY (name)
-		REFERENCES Candidate (name)
+	FOREIGN KEY (email)
+		REFERENCES Candidate (email)
 			ON DELETE CASCADE
 			ON UPDATE CASCADE
 );

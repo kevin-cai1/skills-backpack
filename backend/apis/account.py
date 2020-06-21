@@ -88,11 +88,52 @@ class createAccount(Resource):
                 'gradYear' : req['gradYear']
             }
         elif (accountType == "employer"):
-            pass
+            c.execute("SELECT EXISTS (SELECT email FROM Employer WHERE email = ?)", (req['email'],))
+            account_check = c.fetchone()[0] # return 1 if exists
+
+            if (account_check == 1):    # user already exists
+                api.abort(400, "User '{}' already exists".format(req['email']), ok=False)
+            
+            c.execute("INSERT INTO Employer(email, name, password, company) values (?,?,?,?)", (req['email'], req['name'],req['password'], req['company'],),)
+            conn.commit()
+            conn.close()
+            account = {
+                'name' : req['name'],
+                'email' : req['email'],
+                'password' : req['password'],
+                'company' : req['company']
+            }
         elif (accountType == "courseAdmin"):
-            pass
+            c.execute("SELECT EXISTS (SELECT email FROM CourseAdmin WHERE email = ?)", (req['email'],))
+            account_check = c.fetchone()[0] # return 1 if exists
+
+            if (account_check == 1):    # user already exists
+                api.abort(400, "User '{}' already exists".format(req['email']), ok=False)
+            
+            c.execute("INSERT INTO CourseAdmin(name, email, university, password) values (?,?,?,?)", (req['name'], req['email'],req['university'], req['password'],),)
+            conn.commit()
+            conn.close()
+            account = {
+                'name' : req['name'],
+                'email' : req['email'],
+                'university' : req['university'],
+                'password' : req['password']
+            }
         elif (accountType == "skillsAdmin"):
-            pass
+            c.execute("SELECT EXISTS (SELECT email FROM SkillsBackpackAdmin WHERE email = ?)", (req['email'],))
+            account_check = c.fetchone()[0] # return 1 if exists
+
+            if (account_check == 1):    # user already exists
+                api.abort(400, "User '{}' already exists".format(req['email']), ok=False)
+            
+            c.execute("INSERT INTO SkillsBackpackAdmin(name, email, password) values (?,?,?)", (req['name'], req['email'],req['password'],),)
+            conn.commit()
+            conn.close()
+            account = {
+                'name' : req['name'],
+                'email' : req['email'],
+                'password' : req['password']
+            }
         else:
             api.abort(400, "User type not valid")
 
