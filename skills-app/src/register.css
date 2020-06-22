@@ -10,3 +10,12 @@
   justify-content: center;
   width: 20vw;
 }
+
+.Page-body {
+  display: flex;
+  margin: auto;
+  align-items: center;
+  justify-content: center;
+  width: 44vw;
+  font-size: 9px;
+}
