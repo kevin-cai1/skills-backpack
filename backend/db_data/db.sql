@@ -61,6 +61,7 @@ CREATE TABLE Course (
 	gradOutcomes TEXT,
 	description TEXT,
 	name TEXT NOT NULL,
+	link TEXT,
 	PRIMARY KEY (code, university)
 );
 
@@ -140,6 +141,23 @@ CREATE TABLE Candidate_Links (
 			ON DELETE CASCADE
 			ON UPDATE CASCADE,
 	PRIMARY KEY (link, email)
+);
+
+-- Create Candidate_ePortfolio table
+-- Maps each candidate to their corresponding ePortfolio
+DROP TABLE IF EXISTS Candidate_ePortfolio;
+CREATE TABLE Candidate_ePortfolio (
+	id INTEGER NOT NULL,
+	email TEXT NOT NULL,
+	FOREIGN KEY (id)
+		REFERENCES ePortfolio (id)
+			ON DELETE CASCADE
+			ON UPDATE CASCADE,
+	FOREIGN KEY (email)
+		REFERENCES Candidate (email)
+			ON DELETE CASCADE
+			ON UPDATE CASCADE,
+	PRIMARY KEY (id, email)
 );
 
 -- Create Course_CourseAdmin table
