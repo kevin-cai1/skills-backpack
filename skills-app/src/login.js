@@ -6,10 +6,12 @@ import {
     ButtonGroup,
     InputLabel,
     Select,
-    NativeSelect,
     createMuiTheme, MuiThemeProvider
 } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import './login.css';
+import { Redirect } from 'react-router-dom';
+import SessionDetails from './SessionDetails';
 
 const theme = createMuiTheme({
     palette: {
@@ -38,7 +40,9 @@ class Login extends React.Component {
             passwordValid: true,
             userTypeValid: true,
             formValid: false,
-            passwordInit: false
+            passwordInit: false,
+            formError: false,
+            formSuccess: false
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -67,21 +71,33 @@ class Login extends React.Component {
     }
 
     handleSubmit(event) {
-        let data = JSON.stringify({
-            username: this.state.email,
-            password: this.state.password
-        });
-        let url = 'https://localhost:5000/account/login';
-        console.log('Sending to ' + url + ': ' + data);
-        var xhr = new XMLHttpRequest();
-
-        xhr.addEventListener('load', () => {
-            // update the state of the component with the result here
-            console.log(xhr.responseText)
-        });
-
-        xhr.open('POST', url);
-        xhr.send(data);
+        // let data = JSON.stringify({
+        //     username: this.state.email,
+        //     password: this.state.password
+        // });
+        // let url = 'https://localhost:5000/account/login';
+        // console.log('Sending to ' + url + ': ' + data);
+        // var xhr = new XMLHttpRequest();
+        //
+        // xhr.addEventListener('load', () => {
+        //     get the data from the json response
+        //     let response = xhr.responseText;
+        //     console.log(response);
+        //     let status = response["logged_in"];
+        //     let username = response["user"];
+        //     if (status == "failed") {
+        //         this.state.formError = true;
+        //     }
+        // });
+        //
+        // xhr.open('POST', url);
+        // xhr.send(data);
+        // ADD below 2 lines for form error case
+        // this.state.formError = true;
+        // this.forceUpdate();
+        SessionDetails.setEmail("gordon.xie@atlassian.com");
+        this.state.formSuccess = true;
+        this.forceUpdate();
     }
 
     validateForm() {
@@ -89,16 +105,27 @@ class Login extends React.Component {
     }
 
     render() {
-        return (
-            <div className="App">
-                <header className="App-header">
-                    <h1>Skills Backpack</h1>
-                </header>
-                <body className="Login-body">
-                    <div className="Form-container" style={{marginBottom:"30px"}}>
+        if ((this.state.formSuccess) || (SessionDetails.getEmail() != "")) {
+            return <Redirect to='./home' />
+        } else {
+            return (
+                <div className="App">
+                    <header className="App-header">
+                        <h1>Skills Backpack</h1>
+                    </header>
+                    <body className="Login-body">
+                    <div className="Form-container" style={{marginBottom: "30px"}}>
                         <h3 className="Login-title">Sign In</h3>
+                        {this.state.formError === true &&
+                        <div className=".Login-alert-row">
+                            <div className="Login-alert-container">
+                                <Alert className="Login-alert" severity="error">Incorrect email or password.</Alert>
+                            </div>
+                        </div>
+                        }
                         <FormControl variant="outlined" classType="Login-text-field">
-                            <InputLabel className="Login-label" htmlFor="outlined-age-native-simple">I'm a ...</InputLabel>
+                            <InputLabel className="Login-label" htmlFor="outlined-age-native-simple">I'm a
+                                ...</InputLabel>
                             <Select
                                 className="Login-select"
                                 native
@@ -110,7 +137,7 @@ class Login extends React.Component {
                                     id: 'outlined-userType-native-simple',
                                 }}
                             >
-                                <option aria-label="None" value="" />
+                                <option aria-label="None" value=""/>
                                 <option value="Skills Backpack Admin">Skills Backpack Admin</option>
                                 <option value="Course Admin">Course Admin</option>
                                 <option value="Student">Student</option>
@@ -120,7 +147,7 @@ class Login extends React.Component {
                     </div>
                     <div className="Form-container">
                         <FormControl>
-                            <h5 className="Login-field-title">Email Address</h5>
+                            {/*<h5 className="Login-field-title">Email Address</h5>*/}
                             <div className="Login-text-field">
                                 <TextField
                                     id="email-input"
@@ -134,7 +161,7 @@ class Login extends React.Component {
                                     helperText={this.state.emailValid ? '' : this.state.emailError}
                                 />
                             </div>
-                            <h5 className="Login-field-title">Password</h5>
+                            {/*<h5 className="Login-field-title">Password</h5>*/}
                             <div className="Login-text-field">
                                 <TextField
                                     id="password-input"
@@ -152,7 +179,8 @@ class Login extends React.Component {
                     </div>
                     <div className="Login-button-container">
                         <MuiThemeProvider theme={theme}>
-                            <ButtonGroup variant="contained" color="primary" aria-label="contained primary button group">
+                            <ButtonGroup variant="contained" color="primary"
+                                         aria-label="contained primary button group">
                                 <Button
                                     type="submit"
                                     disabled={!(this.state.formValid && this.state.passwordInit)}
@@ -162,14 +190,16 @@ class Login extends React.Component {
                         </MuiThemeProvider>
                     </div>
                     <div className="Register-redirect-container">
-                        <p className="Register-redirect-text" style={{alignSelf:"centre"}}>Don't have an account yet? <a href='./register'>Sign up!</a></p>
+                        <p className="Register-redirect-text" style={{alignSelf: "centre"}}>Don't have an account
+                            yet? <a href='./register'>Sign up!</a></p>
                     </div>
-                </body>
-                <footer className="Home-footer">
-                    <p>Yuppies 2020 </p>
-                </footer>
-            </div>
-        )
+                    </body>
+                    <footer className="Home-footer">
+                        <p>Yuppies 2020 </p>
+                    </footer>
+                </div>
+            )
+        }
     }
 }
 export default Login
