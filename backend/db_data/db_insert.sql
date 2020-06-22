@@ -15,17 +15,17 @@ VALUES
 	--('link3');
 
 -- Inserting data into Employer table
-INSERT INTO Employer (email, name, graduateCriteria, skillsCriteria, password)
+INSERT INTO Employer (email, name, graduateCriteria, skillsCriteria, password, company)
 VALUES
-	('macquariegroup@gmail.com', 'Macquarie Group', 'smart', 'python', 'macquariegroup'),
-	('google@gmail.com', 'Google', 'teamwork', 'C', 'google');
+	('macquariegroup@gmail.com', 'Macquarie HR Rep', 'smart', 'python', 'password', 'Macquarie Group'),
+	('google@gmail.com', 'Google', 'Google HR Rep', 'C', 'password', 'Google');
 	--('atlassian@gmail.com', 'Atlassian', 'leadership', 'C++', 'atlassian')
 
 -- Inserting data into CourseAdmin table
-INSERT INTO CourseAdmin (email, university, password)
+INSERT INTO CourseAdmin (name, email, university, password)
 VALUES
-	('courseadmin1@unsw.edu.au', 'UNSW', 'courseadmin1'),
-	('courseadmin2@usyd.edu.au', 'USYD', 'courseadmin2');
+	('courseadmin1', 'courseadmin1@unsw.edu.au', 'UNSW', 'password'),
+	('courseadmin2', 'courseadmin2@usyd.edu.au', 'USYD', 'password');
 
 -- Inserting data into SkillsBackpackAdmin table
 INSERT INTO SkillsBackpackAdmin (email, password)
@@ -40,10 +40,10 @@ VALUES
 	('COMP1000', 'hacking', 'USYD', 'Computer Science', 'teamwork', 'hack the system', 'Hackerman 101', 'COMP1000.com');
 
 -- Inserting data into ePortfolio table
-INSERT INTO ePortfolio(name, employabilitySkills, jobSkills)
+INSERT INTO ePortfolio(id, employabilitySkills, jobSkills)
 VALUES
-	('Charmaine Leung', 'yuppy', 'yuppy'),
-	('Miran Nakamura', 'guppy', 'guppy');
+	(1, 'yuppy', 'yuppy'),
+	(2, 'guppy', 'guppy');
 
 -- Inserting data into Employment table
 INSERT INTO Employment(id, description, startDate, endDate, employer)
@@ -74,3 +74,9 @@ INSERT INTO Course_CourseAdmin (email, code, university)
 VALUES
 	('courseadmin1@unsw.edu.au', 'COMP3900', 'UNSW'),
 	('courseadmin2@usyd.edu.au', 'COMP1000', 'USYD');
+
+-- Inserting data into Candidate_ePortfolio table
+INSERT INTO Candidate_ePortfolio (id, email)
+VALUES
+	(1, 'charmaineleung@unsw.edu.au'),
+	(2, 'mirannakamura@usyd.edu.au');
