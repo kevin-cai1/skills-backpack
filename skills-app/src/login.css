@@ -1,0 +1,83 @@
+.Login-body {
+    background-color: #FFFFFF;
+    min-height: 80vh;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    font-size: calc(10px + 2vmin);
+    color: white;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+}
+
+.Form-container {
+    flex: 0 0 100%;
+}
+
+.Login-text-field {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    display: inline-block;
+}
+
+
+.Login-button-container {
+    margin-top: 7px;
+    margin-bottom: 5px;
+}
+
+.Login-label {
+    color: #282c34;
+}
+
+.Login-select {
+    max-height: 50px;
+    min-width: 222px;
+}
+
+.Login-title {
+    color: #2D9CDB;
+}
+
+.Login-field-title {
+    color: black;
+    margin: 0;
+    font-size: small;
+    text-align: left;
+    margin-top: 7px;
+    margin-bottom: 7px;
+}
+
+.Login-input-field {
+    min-width: 250px;
+}
+
+.Register-redirect-container {
+    flex-basis: 100%;
+}
+
+.Register-redirect-text {
+    color: black;
+    margin: 0;
+    font-size: small;
+    margin-top: 10px;
+    margin-bottom: 7px;
+}
+
+.Login-alert {
+    max-width: 320px;
+    display: inline-block;
+}
+
+.Login-alert-row {
+    align-content: center;
+}
+
+.Login-alert-container {
+    max-width: 400px;
+    display: inline-block;
+    margin-bottom: 15px;
+}
