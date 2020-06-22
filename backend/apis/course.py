@@ -3,7 +3,7 @@ from flask import request, jsonify
 
 import db
 
-api = Namespace('course', description = 'APIs related to adding and editing courses as a course admin')
+api = Namespace('Course', description = 'APIs related to adding and editing courses as a course admin')
 
 course_details = api.model('course', {
     'code' : fields.String(required = True, description = 'Course code'),
@@ -12,7 +12,8 @@ course_details = api.model('course', {
     'faculty' : fields.String(required = True, description = 'Faculty that the course belongs to'),
     'gradOutcomes' : fields.String(description = 'Graduate outcomes gained from the course'),
     'description' : fields.String(description = 'Description of the course'),
-    'name' : fields.String(required = True, description = 'Name of the course')
+    'name' : fields.String(required = True, description = 'Name of the course'),
+    'link' : fields.String(description = 'link to course handbook')
     })
 
 @api.route('/course/add')
@@ -22,8 +23,8 @@ class addcourse(Resource):
         req = request.get_json()
         conn = db.get_conn()
         c = conn.cursor()
-        infolist = (req['code'], req['learningOutcomes'], req['university'], req['faculty'], req['gradOutcomes'], req['description'], req['name'])
-        c.execute('INSERT INTO Course(code, learningOutcomes, university, faculty, gradOutcomes, description, name) VALUES(?, ?, ?, ?, ?, ?, ?)', infolist)
+        infolist = (req['code'], req['learningOutcomes'], req['university'], req['faculty'], req['gradOutcomes'], req['description'], req['name'], req['link'])
+        c.execute('INSERT INTO Course(code, learningOutcomes, university, faculty, gradOutcomes, description, name, link) VALUES(?, ?, ?, ?, ?, ?, ?, ?)', infolist)
         conn.commit()
         conn.close()
         course = {
@@ -33,7 +34,8 @@ class addcourse(Resource):
             'faculty' : req['faculty'],
             'gradOutcomes' : req['gradOutcomes'],
             'description' : req['description'],
-            'name' : req['name']
+            'name' : req['name'],
+            'link' : req['name']
         }
         returnVal = {
             'ok' : True,
