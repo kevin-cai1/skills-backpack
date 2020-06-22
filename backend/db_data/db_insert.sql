@@ -34,10 +34,10 @@ VALUES
 	('sbadmin2@gmail.com', 'sbadmin2');
 
 -- Inserting data into Course table
-INSERT INTO Course (code, learningOutcomes, university, faculty, gradOutcomes, description, name)
+INSERT INTO Course (code, learningOutcomes, university, faculty, gradOutcomes, description, name, link)
 VALUES
-	('COMP3900', 'coding', 'UNSW', 'Computer Science and Engineering', 'smart', 'build a project in a team', 'Computer Science Project'),
-	('COMP1000', 'hacking', 'USYD', 'Computer Science', 'teamwork', 'hack the system', 'Hackerman 101');
+	('COMP3900', 'coding', 'UNSW', 'Computer Science and Engineering', 'smart', 'build a project in a team', 'Computer Science Project', 'COMP3900.com'),
+	('COMP1000', 'hacking', 'USYD', 'Computer Science', 'teamwork', 'hack the system', 'Hackerman 101', 'COMP1000.com');
 
 -- Inserting data into ePortfolio table
 INSERT INTO ePortfolio(name, employabilitySkills, jobSkills)

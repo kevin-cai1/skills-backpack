@@ -61,6 +61,7 @@ CREATE TABLE Course (
 	gradOutcomes TEXT,
 	description TEXT,
 	name TEXT NOT NULL,
+	course TEXT,
 	PRIMARY KEY (code, university)
 );
 
