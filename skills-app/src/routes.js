@@ -7,6 +7,7 @@ import Register from './register';
 import App from './App';
 import Home from './home';
 import PrivateRoute from './PrivateRoute';
+import ChangePassword from './changePassword';
 
 const allRoutes = () => (
     <Router>
@@ -14,6 +15,7 @@ const allRoutes = () => (
         <Route exact path="/login" component={Login} />
         <Route exact path="/register" component={Register} />
         <PrivateRoute path="/home" component={Home} />
+        <PrivateRoute path="/changePassword" component={ChangePassword} />
     </Router>
 );
 

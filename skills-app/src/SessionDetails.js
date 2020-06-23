@@ -6,7 +6,6 @@ var SessionDetails = (function() {
 
     var getEmail = function() {
         full_email = ls.get('email') || [];
-        console.log('full email: ' + full_email);
         return full_email;
     };
 
