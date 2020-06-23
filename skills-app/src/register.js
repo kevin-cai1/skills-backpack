@@ -17,14 +17,21 @@ class Register extends React.Component {
        super(props);
 
        this.state = {
-           fields: {},
+           fields: {
+             email: '',
+             password: '',
+             emailValid: false,
+             passwordValid: false,
+             formValid: false
+           },
            errors: {},
        }
-       this.handleFormChange = this.handleFormChange.bind(this)
+       this.handleFormChange = this.handleFormChange.bind(this);
+       this.handleFormSubmit = this.handleFormSubmit.bind(this);
     }
 
     state = {
-      value: 0,
+      value: 1,
     };
 
     handleChange = (event, value) => {
@@ -35,77 +42,39 @@ class Register extends React.Component {
       this.setState({ value: index });
     };
 
-    handleValidation(){
-        let fields = this.state.fields;
-        let errors = {};
-        let formIsValid = true;
-
-        if(!fields["email"].match(/^.+@.+$/i)){
-              formIsValid = false;
-              errors["email"] = "Invalid email";
-        }
-        if(!fields["password"].match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/)){
-              formIsValid = false;
-              errors["password"] = "Invalid password";
-        }
-        if(!(fields["confirm"] == fields["password"])){
-              formIsValid = false;
-              errors["confirm"] = "Passwords do not match";
-        }
-        this.setState({errors: errors});
-        return formIsValid;
+    handleValidation(field, value) {
+      if(field === "email"){
+          this.state.emailValid = value.match(/^.+@.+$/i);
+      }
+      else if(field === "password"){
+          this.state.passwordValid = value.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/);
+      }
+      this.validateForm();
     }
 
-    handleFormChange(field, e){
-        let fields = this.state.fields;
-        fields[field] = e.target.value;
-        this.setState({fields});
+    handleFormChange(event) {
+        const fieldName = event.target.name;
+        const fieldValue = event.target.value;
+        this.setState({ [fieldName]: fieldValue },
+            () => { this.handleValidation(fieldName, fieldValue) });
     }
 
+    handleFormSubmit(e) {
+        e.preventDefault();
 
-    render() {
-        const { classes } = this.props;
-        return (
-            <div className="Register-page">
-              <header>
-                <p>Menu</p>
-              </header>
-              <body>
-                <h1>Sign Up</h1>
-                <MuiThemeProvider theme={theme}>
-                  <BrowserRouter>
-                    <div className="Page-body">
-                      <AppBar position="static" color="default" width="80%">
-                        <Tabs
-                          value={this.state.value}
-                          onChange={this.handleChange}
-                          indicatorColor="primary"
-                          textColor="primary"
-                          fullWidth
-                        >
-                          <Tab label="Site Admin" component={Link} to="/one" />
-                          <Tab label="Course Admin" component={Link} to="/two" />
-                          <Tab label="Student" component={Link} to="/three" />
-                          <Tab label="Employer" component={Link} to="/four" />
-                        </Tabs>
-                      </AppBar>
-                    </div>
-                    <div className="Register-body">
-                      <Switch>
-                        <Route path="/one" component={PageShell(this.ItemOne)} />
-                        <Route path="/two" component={PageShell(this.ItemTwo)} />
-                        <Route path="/three" component={PageShell(this.ItemThree)} />
-                        <Route path="/four" component={PageShell(this.ItemFour)} />
-                      </Switch>
-                    </div>
-                  </BrowserRouter>
-                </MuiThemeProvider>
-              </body>
-            </div>
-        )
+        if(this.handleValidation()){
+           alert("Form submitted");
+        }else{
+           alert("Form has errors.")
+        }
+
     }
 
-    ItemOne(theme) {
+    validateForm(){
+      this.setState({formValid: this.state.emailValid && this.state.passwordValid});
+    }
+
+    ItemOne = theme => {
       return (
           <div>
             <FormControl fullWidth={true} required={true} margin='normal'>
@@ -114,16 +83,16 @@ class Register extends React.Component {
             </FormControl>
             <FormControl fullWidth={true} required={true} margin='normal'>
               <InputLabel htmlFor="input-email">Email address</InputLabel>
-              <Input type="email" id="input-email" onChange={() => this.handleFormChange.bind(this, "email")} value={() => this.state.fields["email"]}/>
+              <Input type="email" id="input-email" name="email" onChange={this.handleFormChange}/>
             </FormControl>
             <FormControl fullWidth={true} required={true} margin='normal'>
               <InputLabel htmlFor="input-password">Password</InputLabel>
-              <Input id="input-password" type="password" aria-describedby="my-helper-text" onChange={() => this.handleFormChange(this, "password")} value={() => this.state.fields["password"]}/>
+              <Input id="input-password" name="password" type="password" aria-describedby="my-helper-text" onChange={this.handleFormChange}/>
               <FormHelperText id="my-helper-text">min. 8 characters with at least one lower case and upper case letter and number</FormHelperText>
             </FormControl>
             <FormControl fullWidth={true} required={true} margin='normal'>
               <InputLabel htmlFor="input-confirm">Confirm Password</InputLabel>
-              <Input id="input-confirm" type="password" aria-describedby="my-helper-text" onChange={() => this.handleFormChange(this, "confirm")} value={() => this.state.fields["confirm"]}/>
+              <Input id="input-confirm" type="password" aria-describedby="my-helper-text"/>
             </FormControl>
             <MuiThemeProvider theme={theme}>
               <Box m={3}>
@@ -136,7 +105,7 @@ class Register extends React.Component {
       );
     }
 
-    ItemTwo(theme) {
+    ItemTwo = theme => {
       return (
         <div>
           <FormControl style={{minWidth:100}} required={true} margin='normal'>
@@ -186,7 +155,7 @@ class Register extends React.Component {
       );
     }
 
-    ItemThree(theme) {
+    ItemThree = theme => {
       return (
         <div>
           <FormControl fullWidth={true} required={true} margin='normal'>
@@ -236,7 +205,7 @@ class Register extends React.Component {
       );
     }
 
-    ItemFour(theme) {
+    ItemFour = theme => {
       return (
         <div>
           <FormControl fullWidth={true} required={true} margin='normal'>
@@ -270,7 +239,49 @@ class Register extends React.Component {
         </div>
       );
     }
-
+    render() {
+        return (
+            <div className="Register-page">
+              <header>
+                <p>Menu</p>
+              </header>
+              <body>
+                <h1>Sign Up</h1>
+                <div className="Register-redirect-container">
+                    <p className="Register-redirect-text" style={{alignSelf: "centre"}}>Have an account already? <a href='./login'>Login</a></p>
+                </div>
+                <MuiThemeProvider theme={theme}>
+                  <BrowserRouter>
+                    <div className="Page-body">
+                      <AppBar position="static" color="default" width="80%">
+                        <Tabs
+                          value={this.state.value}
+                          onChange={this.handleChange}
+                          indicatorColor="primary"
+                          textColor="primary"
+                          fullWidth
+                        >
+                          <Tab label="Site Admin" component={Link} to="/one" />
+                          <Tab label="Course Admin" component={Link} to="/two" />
+                          <Tab label="Student" component={Link} to="/three" />
+                          <Tab label="Employer" component={Link} to="/four" />
+                        </Tabs>
+                      </AppBar>
+                    </div>
+                    <div className="Register-body">
+                      <Switch>
+                        <Route path="/one" component={PageShell(this.ItemOne)} />
+                        <Route path="/two" component={PageShell(this.ItemTwo)} />
+                        <Route path="/three" component={PageShell(this.ItemThree)} />
+                        <Route path="/four" component={PageShell(this.ItemFour)} />
+                      </Switch>
+                    </div>
+                  </BrowserRouter>
+                </MuiThemeProvider>
+              </body>
+            </div>
+        )
+    }
 }
 
 const PageShell = (Page, previous) => {
