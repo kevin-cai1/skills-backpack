@@ -72,7 +72,7 @@ class Login extends React.Component {
 
     handleSubmit(event) {
         let data = JSON.stringify({
-            username: this.state.email,
+            email: this.state.email,
             password: this.state.password
         });
         let url = 'http://localhost:5000/account/login';
@@ -83,13 +83,13 @@ class Login extends React.Component {
             // get the data from the json response
             let response = xhr.responseText;
             console.log(response);
-            let status = response["ok"];
-            let username = response["user"];
+            let status = response["logged_in"];
+            let email = response["user"];
             if (!status) {
                 this.state.formError = true;
                 this.forceUpdate();
             } else {
-                SessionDetails.setEmail("gordon.xie@atlassian.com");
+                SessionDetails.setEmail(email);
                 this.state.formSuccess = true;
                 this.forceUpdate();
             }
