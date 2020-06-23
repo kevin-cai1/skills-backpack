@@ -2,6 +2,8 @@ from flask_restplus import Namespace, Resource, fields
 from flask import request, jsonify
 
 import db
+import secrets
+import string
 
 api = Namespace('Login', description='Login validation operations')
 
@@ -38,8 +40,10 @@ class login(Resource):
                         SELECT email, password FROM CourseAdmin) WHERE email = ?''', (req['email'],))
 
         account = c.fetchone() # returns 1 if exists
+        print("=====================================")
+        print(account)
         # if not in database
-        if (account == []):
+        if (account == [] or account == None):
             api.abort(400, "User '{}' not found".format(req['email']), ok=False)
         
         password = account[1]
@@ -126,6 +130,9 @@ class createAccount(Resource):
             if (account_check == 1):    # user already exists
                 api.abort(400, "User '{}' already exists".format(req['email']), ok=False)
             
+            new_password = generatePassword(20)
+
+
             c.execute("INSERT INTO SkillsBackpackAdmin(name, email, password) values (?,?,?)", (req['name'], req['email'],req['password'],),)
             conn.commit()
             conn.close()
@@ -144,3 +151,8 @@ class createAccount(Resource):
         }
 
         return return_val
+
+def generatePassword(length):
+    alphabet = string.ascii_letters + string.digits
+    password = ''.join(secrets.choice(alphabet) for i in range(length))
+    return password
