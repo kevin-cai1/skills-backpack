@@ -71,33 +71,32 @@ class Login extends React.Component {
     }
 
     handleSubmit(event) {
-        // let data = JSON.stringify({
-        //     username: this.state.email,
-        //     password: this.state.password
-        // });
-        // let url = 'https://localhost:5000/account/login';
-        // console.log('Sending to ' + url + ': ' + data);
-        // var xhr = new XMLHttpRequest();
-        //
-        // xhr.addEventListener('load', () => {
-        //     get the data from the json response
-        //     let response = xhr.responseText;
-        //     console.log(response);
-        //     let status = response["logged_in"];
-        //     let username = response["user"];
-        //     if (status == "failed") {
-        //         this.state.formError = true;
-        //     }
-        // });
-        //
-        // xhr.open('POST', url);
-        // xhr.send(data);
-        // ADD below 2 lines for form error case
-        // this.state.formError = true;
-        // this.forceUpdate();
-        SessionDetails.setEmail("gordon.xie@atlassian.com");
-        this.state.formSuccess = true;
-        this.forceUpdate();
+        let data = JSON.stringify({
+            username: this.state.email,
+            password: this.state.password
+        });
+        let url = 'http://localhost:5000/account/login';
+        console.log('Sending to ' + url + ': ' + data);
+        var xhr = new XMLHttpRequest();
+
+        xhr.addEventListener('load', () => {
+            // get the data from the json response
+            let response = xhr.responseText;
+            console.log(response);
+            let status = response["ok"];
+            let username = response["user"];
+            if (!status) {
+                this.state.formError = true;
+                this.forceUpdate();
+            } else {
+                SessionDetails.setEmail("gordon.xie@atlassian.com");
+                this.state.formSuccess = true;
+                this.forceUpdate();
+            }
+        });
+
+        xhr.open('POST', url);
+        xhr.send(data);
     }
 
     validateForm() {
