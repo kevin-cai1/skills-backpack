@@ -31,7 +31,7 @@ class login(Resource):
 
         conn= db.get_conn()
         c = conn.cursor()
-
+        print(req)
         # check for matching username listing in db
         c.execute('''SELECT * FROM (
                         SELECT email, password FROM Candidate UNION ALL 
@@ -40,6 +40,8 @@ class login(Resource):
                         SELECT email, password FROM CourseAdmin) WHERE email = ?''', (req['email'],))
 
         account = c.fetchone() # returns 1 if exists
+
+        conn.close()
         print("=====================================")
         print(account)
         # if not in database
@@ -135,7 +137,7 @@ class createAccount(Resource):
             new_password = generatePassword(20)
 
 
-            c.execute("INSERT INTO SkillsBackpackAdmin(name, email, password) values (?,?,?)", (req['name'], req['email'],new_password,),)
+            c.execute("INSERT INTO SkillsBackpackAdmin(name, email, password, newAccount) values (?,?,?)", (req['name'], req['email'],new_password,1,),)
             conn.commit()
             conn.close()
             account = {
