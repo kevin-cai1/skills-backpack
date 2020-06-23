@@ -44,20 +44,22 @@ class login(Resource):
         print(account)
         # if not in database
         if (account == [] or account == None):
-            api.abort(400, "User '{}' not found".format(req['email']), ok=False)
+            api.abort(400, "User '{}' not found".format(req['email']), logged_in=False)
         
         password = account[1]
         # check password match
         if (req['password'] == password):         # if password matches
             return_val = {
                 'logged_in' : True,
-                'user' : req['email']
+                'user' : req['email'],
+                'message' : "Logged in successfully"
             }
         else:
         # if password doesn't match username
             return_val = {
                 'logged_in' : False,
-                'user' : req['email']
+                'user' : req['email'],
+                'message' : "Password incorrect"
             }
 
         return return_val
@@ -133,13 +135,13 @@ class createAccount(Resource):
             new_password = generatePassword(20)
 
 
-            c.execute("INSERT INTO SkillsBackpackAdmin(name, email, password) values (?,?,?)", (req['name'], req['email'],req['password'],),)
+            c.execute("INSERT INTO SkillsBackpackAdmin(name, email, password) values (?,?,?)", (req['name'], req['email'],new_password,),)
             conn.commit()
             conn.close()
             account = {
                 'name' : req['name'],
                 'email' : req['email'],
-                'password' : req['password']
+                'password' : new_password
             }
         else:
             api.abort(400, "User type not valid")
