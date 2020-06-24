@@ -1,8 +1,7 @@
 import React from 'react';
 import SessionDetails from './SessionDetails';
 
-
-class Home extends React.Component {
+export default class Home extends React.Component {
 
     constructor(props) {
         super(props);
@@ -22,5 +21,3 @@ class Home extends React.Component {
         );
     }
 }
-
-export default Home;

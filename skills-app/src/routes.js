@@ -8,9 +8,11 @@ import App from './App';
 import Home from './home';
 import PrivateRoute from './PrivateRoute';
 import ChangePassword from './changePassword';
+import Navbar from './Navbar';
 
 const allRoutes = () => (
     <Router>
+        <Navbar/>
         <Route exact path="/" component={App} />
         <Route exact path="/login" component={Login} />
         <Route exact path="/register" component={Register} />

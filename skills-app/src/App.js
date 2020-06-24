@@ -8,6 +8,7 @@ import Button from '@material-ui/core/Button';
 import { spacing } from '@material-ui/system';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import SessionDetails from './SessionDetails';
+import Background from './images/employer.jpg';
 
 const theme = createMuiTheme({
   palette: {
@@ -27,27 +28,12 @@ function App() {
     return <Redirect to='/home' />
   } else {
     return (
-        <div className="App">
-          <header className="App-header">
-            <h1>Skills Backpack</h1>
-          </header>
-          <body className="Home-body">
-          <MuiThemeProvider theme={theme}>
-            <Box m={3}>
-              <Button variant="contained" color="primary" component={Link} to="./login">
-                Login
-              </Button>
-            </Box>
-            <Box m={3}>
-              <Button variant="contained" color="secondary" component={Link} to="./register">
-                Register
-              </Button>
-            </Box>
-          </MuiThemeProvider>
-          </body>
-          <footer className="Home-footer">
-            <p>Yuppies 2020 </p>
-          </footer>
+        <div>
+            <img src={Background} style={{width:"100%"}}></img>
+            <div className="centered">
+                <h1 className="app-title">Skills Backpack</h1>
+                <h3 className="app-subtitle">Empowering students. Connecting employers with talent.</h3>
+            </div>
         </div>
     );
   }
