@@ -47,7 +47,8 @@ DROP TABLE IF EXISTS SkillsBackpackAdmin;
 CREATE TABLE SkillsBackpackAdmin (
 	name TEXT,
 	email TEXT PRIMARY KEY,
-	password TEXT
+	password TEXT,
+	newAccount INTEGER
 );
 
 -- Create Course table
