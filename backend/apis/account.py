@@ -137,7 +137,7 @@ class createAccount(Resource):
             new_password = generatePassword(20)
 
 
-            c.execute("INSERT INTO SkillsBackpackAdmin(name, email, password, newAccount) values (?,?,?)", (req['name'], req['email'],new_password,1,),)
+            c.execute("INSERT INTO SkillsBackpackAdmin(name, email, password, newAccount) values (?,?,?,?)", (req['name'], req['email'],new_password,1,),)
             conn.commit()
             conn.close()
             account = {
