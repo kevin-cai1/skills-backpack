@@ -69,6 +69,7 @@ class Register extends React.Component {
         }
         else if (type == "employer") {
           console.log("employer!");
+          const company = e.target.company.value;
           this.setState({redirect: 1});
           console.log(name);
           console.log(email);
@@ -293,8 +294,8 @@ class Register extends React.Component {
         }
         return (
             <div className="Register-page">
-              <header>
-                <p>Menu</p>
+              <header className="App-header">
+                  <h1>Skills Backpack</h1>
               </header>
               <body>
                 <h1>Sign Up</h1>
@@ -331,6 +332,9 @@ class Register extends React.Component {
                   </BrowserRouter>
                 </MuiThemeProvider>
               </body>
+              <footer className="Home-footer">
+                  <p>Yuppies 2020 </p>
+              </footer>
             </div>
         )
     }
