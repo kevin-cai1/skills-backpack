@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link, Route, BrowserRouter, Switch } from 'react-router-dom';
+import { Link, Route, BrowserRouter, Switch, Redirect } from 'react-router-dom';
 import allRoutes from './routes';
 import './register.css';
 import Box from '@material-ui/core/Box';
@@ -11,28 +11,19 @@ import { theme } from './App.js'
 import { DatePicker, InlineDatePicker } from "@material-ui/pickers";
 import ReactCSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 
+import debounce from 'lodash.debounce';
+
 
 class Register extends React.Component {
     constructor(props){
        super(props);
 
        this.state = {
-           fields: {
-             email: '',
-             password: '',
-             emailValid: false,
-             passwordValid: false,
-             formValid: false
-           },
-           errors: {},
+           value: 0,
+           redirect: null
        }
-       this.handleFormChange = this.handleFormChange.bind(this);
        this.handleFormSubmit = this.handleFormSubmit.bind(this);
     }
-
-    state = {
-      value: 1,
-    };
 
     handleChange = (event, value) => {
       this.setState({ value });
@@ -42,57 +33,132 @@ class Register extends React.Component {
       this.setState({ value: index });
     };
 
-    handleValidation(field, value) {
-      if(field === "email"){
-          this.state.emailValid = value.match(/^.+@.+$/i);
-      }
-      else if(field === "password"){
-          this.state.passwordValid = value.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/);
-      }
-      this.validateForm();
-    }
-
-    handleFormChange(event) {
-        const fieldName = event.target.name;
-        const fieldValue = event.target.value;
-        this.setState({ [fieldName]: fieldValue },
-            () => { this.handleValidation(fieldName, fieldValue) });
-    }
-
-    handleFormSubmit(e) {
-        e.preventDefault();
-
-        if(this.handleValidation()){
-           alert("Form submitted");
-        }else{
-           alert("Form has errors.")
+    createAccount = (e, type) => {
+        if(type == "site-admin") {
+          console.log("site-admin!");
+          this.setState({redirect: 1});
         }
-
+        else if (type == "course-admin") {
+          console.log("course-admin!");
+          this.setState({redirect: 1});
+        }
+        else if (type == "student") {
+          console.log("student!");
+          this.setState({redirect: 1});
+        }
+        else if (type == "employer") {
+          console.log("employer!");
+          this.setState({redirect: 1});
+        }
+        else {
+          alert("Something went wrong. Try again later.");
+        }
     }
 
-    validateForm(){
-      this.setState({formValid: this.state.emailValid && this.state.passwordValid});
-    }
+    validate = (email, password, confirm) => {
+        const errors = [];
+        if(!email.match(/^.+@.+$/i)){
+            errors.push("Invalid email.")
+        }
+        else if(!password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/)){
+            errors.push("Invalid password: Password must be min. 8 characters with at least one lower case and upper case letter and number.")
+        }
+        else if(confirm != password) {
+            errors.push("Passwords do not match.")
+        }
+        return errors;
+    };
+
+    handleFormSubmit = (e, type) => {
+        e.preventDefault();
+        const email = e.target.email.value;
+        const password = e.target.password.value;
+        const confirm = e.target.confirm.value;
+        const errors = this.validate(email, password, confirm);
+        if (errors.length == 0) {
+            this.createAccount(e, type);
+            alert("Your account has been created.");
+        }
+        else {
+            alert(errors);
+        }
+        console.log(email);
+        console.log(password);
+        console.log(confirm);
+    };
 
     ItemOne = theme => {
       return (
           <div>
+            <form onSubmit={(e) => this.handleFormSubmit(e, "site-admin")}>
+              <FormControl fullWidth={true} required={true} margin='normal'>
+                <InputLabel htmlFor="input-name">Full Name</InputLabel>
+                <Input type="text" id="input-name" name="name"/>
+              </FormControl>
+              <FormControl fullWidth={true} required={true} margin='normal'>
+                <InputLabel htmlFor="input-email">Email address</InputLabel>
+                <Input type="email" id="input-email" name="email"/>
+              </FormControl>
+              <FormControl fullWidth={true} required={true} margin='normal'>
+                <InputLabel htmlFor="input-password">Password</InputLabel>
+                <Input id="input-password" name="password" type="password" aria-describedby="my-helper-text"/>
+                <FormHelperText id="my-helper-text">min. 8 characters with at least one lower case and upper case letter and number</FormHelperText>
+              </FormControl>
+              <FormControl fullWidth={true} required={true} margin='normal'>
+                <InputLabel htmlFor="input-confirm">Confirm Password</InputLabel>
+                <Input id="input-confirm" type="password" aria-describedby="my-helper-text" name="confirm"/>
+              </FormControl>
+              <MuiThemeProvider theme={theme}>
+                <Box m={3}>
+                  <Button type="submit" variant="contained" color="primary">
+                    Sign Up
+                  </Button>
+                </Box>
+              </MuiThemeProvider>
+            </form>
+          </div>
+      );
+    }
+
+    ItemTwo = theme => {
+      return (
+        <div>
+          <form onSubmit={(e) => this.handleFormSubmit(e, "course-admin")}>
+            <FormControl style={{minWidth:100}} required={true} margin='normal'>
+              <InputLabel htmlFor="title-select">Title</InputLabel>
+              <Select labelId="title-select" id="select">
+                <MenuItem value="Dr">Dr</MenuItem>
+                <MenuItem value="Prof">Dr</MenuItem>
+                <MenuItem value="Mr">Mr</MenuItem>
+                <MenuItem value="Mrs">Mrs</MenuItem>
+                <MenuItem value="Ms">Ms</MenuItem>
+              </Select>
+            </FormControl>
             <FormControl fullWidth={true} required={true} margin='normal'>
               <InputLabel htmlFor="input-name">Full Name</InputLabel>
               <Input type="text" id="input-name"/>
             </FormControl>
             <FormControl fullWidth={true} required={true} margin='normal'>
               <InputLabel htmlFor="input-email">Email address</InputLabel>
-              <Input type="email" id="input-email" name="email" onChange={this.handleFormChange}/>
+              <Input type="email" id="input-email" aria-describedby="my-helper-text"/>
+              <FormHelperText id="my-helper-text">University e-mail</FormHelperText>
+            </FormControl>
+            <FormControl fullWidth={true} required={true} margin='normal'>
+              <InputLabel htmlFor="uni-select">University</InputLabel>
+              <Select labelId="uni-select" id="select">
+                <MenuItem value="University of New South Wales">University of New South Wales</MenuItem>
+                <MenuItem value="University of Sydney">University of Sydney</MenuItem>
+                <MenuItem value="University of Technology Sydney">University of Technology Sydney</MenuItem>
+              </Select>
             </FormControl>
             <FormControl fullWidth={true} required={true} margin='normal'>
               <InputLabel htmlFor="input-password">Password</InputLabel>
-              <Input id="input-password" name="password" type="password" aria-describedby="my-helper-text" onChange={this.handleFormChange}/>
+              <Input id="input-password" type="password" aria-describedby="my-helper-text"/>
               <FormHelperText id="my-helper-text">min. 8 characters with at least one lower case and upper case letter and number</FormHelperText>
             </FormControl>
             <FormControl fullWidth={true} required={true} margin='normal'>
               <InputLabel htmlFor="input-confirm">Confirm Password</InputLabel>
-              <Input id="input-confirm" type="password" aria-describedby="my-helper-text"/>
+              <Input id="input-confirm" type="password" aria-describedby="my-helper-text" />
             </FormControl>
             <MuiThemeProvider theme={theme}>
               <Box m={3}>
@@ -101,56 +167,7 @@ class Register extends React.Component {
                 </Button>
               </Box>
             </MuiThemeProvider>
-          </div>
-      );
-    }
-
-    ItemTwo = theme => {
-      return (
-        <div>
-          <FormControl style={{minWidth:100}} required={true} margin='normal'>
-            <InputLabel htmlFor="title-select">Title</InputLabel>
-            <Select labelId="title-select" id="select">
-              <MenuItem value="Dr">Dr</MenuItem>
-              <MenuItem value="Prof">Dr</MenuItem>
-              <MenuItem value="Mr">Mr</MenuItem>
-              <MenuItem value="Mrs">Mrs</MenuItem>
-              <MenuItem value="Ms">Ms</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl fullWidth={true} required={true} margin='normal'>
-            <InputLabel htmlFor="input-name">Full Name</InputLabel>
-            <Input type="text" id="input-name"/>
-          </FormControl>
-          <FormControl fullWidth={true} required={true} margin='normal'>
-            <InputLabel htmlFor="input-email">Email address</InputLabel>
-            <Input type="email" id="input-email" aria-describedby="my-helper-text"/>
-            <FormHelperText id="my-helper-text">University e-mail</FormHelperText>
-          </FormControl>
-          <FormControl fullWidth={true} required={true} margin='normal'>
-            <InputLabel htmlFor="uni-select">University</InputLabel>
-            <Select labelId="uni-select" id="select">
-              <MenuItem value="University of New South Wales">University of New South Wales</MenuItem>
-              <MenuItem value="University of Sydney">University of Sydney</MenuItem>
-              <MenuItem value="University of Technology Sydney">University of Technology Sydney</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl fullWidth={true} required={true} margin='normal'>
-            <InputLabel htmlFor="input-password">Password</InputLabel>
-            <Input id="input-password" type="password" aria-describedby="my-helper-text"/>
-            <FormHelperText id="my-helper-text">min. 8 characters with at least one lower case and upper case letter and number</FormHelperText>
-          </FormControl>
-          <FormControl fullWidth={true} required={true} margin='normal'>
-            <InputLabel htmlFor="input-confirm">Confirm Password</InputLabel>
-            <Input id="input-confirm" type="password" aria-describedby="my-helper-text" />
-          </FormControl>
-          <MuiThemeProvider theme={theme}>
-            <Box m={3}>
-              <Button variant="contained" color="primary" component={Link} to="./login">
-                Sign Up
-              </Button>
-            </Box>
-          </MuiThemeProvider>
+          </form>
         </div>
       );
     }
@@ -158,49 +175,51 @@ class Register extends React.Component {
     ItemThree = theme => {
       return (
         <div>
-          <FormControl fullWidth={true} required={true} margin='normal'>
-            <InputLabel htmlFor="input-name">Full Name</InputLabel>
-            <Input type="text" id="input-name" aria-describedby="my-helper-text"/>
-            <FormHelperText id="my-helper-text">This is how you will appear to employers</FormHelperText>
-          </FormControl>
-          <FormControl fullWidth={true} required={true} margin='normal'>
-            <InputLabel htmlFor="input-email">Email address</InputLabel>
-            <Input type="email" id="input-email" aria-describedby="my-helper-text"/>
-            <FormHelperText id="my-helper-text">University e-mail</FormHelperText>
-          </FormControl>
-          <FormControl fullWidth={true} required={true} margin='normal'>
-            <InputLabel htmlFor="uni-select">University</InputLabel>
-            <Select labelId="uni-select" id="select">
-              <MenuItem value="University of New South Wales">University of New South Wales</MenuItem>
-              <MenuItem value="University of Sydney">University of Sydney</MenuItem>
-              <MenuItem value="University of Technology Sydney">University of Technology Sydney</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl fullWidth={true} margin='normal'>
-            <InputLabel htmlFor="input-degree">Degree</InputLabel>
-            <Input type="text" id="input-degree" aria-describedby="my-helper-text" />
-            <FormHelperText id="my-helper-text">(e.g. Bachelor of Commerce/Adv. Science)</FormHelperText>
-          </FormControl>
-          <FormControl fullWidth={true} margin='normal'>
-            <InputLabel htmlFor="input-graduation" shrink={true}>Expected Graduation</InputLabel>
-            <Input type="date" id="input-graduation" aria-describedby="my-helper-text" />
-          </FormControl>
-          <FormControl fullWidth={true} required={true} margin='normal'>
-            <InputLabel htmlFor="input-password">Password</InputLabel>
-            <Input id="input-password" type="password" aria-describedby="my-helper-text"/>
-            <FormHelperText id="my-helper-text">min. 8 characters with at least one lower case and upper case letter and number</FormHelperText>
-          </FormControl>
-          <FormControl fullWidth={true} required={true} margin='normal'>
-            <InputLabel htmlFor="input-confirm">Confirm Password</InputLabel>
-            <Input id="input-confirm" type="password" aria-describedby="my-helper-text" />
-          </FormControl>
-          <MuiThemeProvider theme={theme}>
-            <Box m={3}>
-              <Button variant="contained" color="primary" component={Link} to="./login">
-                Sign Up
-              </Button>
-            </Box>
-          </MuiThemeProvider>
+          <form onSubmit={(e) => this.handleFormSubmit(e, "student")}>
+            <FormControl fullWidth={true} required={true} margin='normal'>
+              <InputLabel htmlFor="input-name">Full Name</InputLabel>
+              <Input type="text" id="input-name" aria-describedby="my-helper-text"/>
+              <FormHelperText id="my-helper-text">This is how you will appear to employers</FormHelperText>
+            </FormControl>
+            <FormControl fullWidth={true} required={true} margin='normal'>
+              <InputLabel htmlFor="input-email">Email address</InputLabel>
+              <Input type="email" id="input-email" aria-describedby="my-helper-text"/>
+              <FormHelperText id="my-helper-text">University e-mail</FormHelperText>
+            </FormControl>
+            <FormControl fullWidth={true} required={true} margin='normal'>
+              <InputLabel htmlFor="uni-select">University</InputLabel>
+              <Select labelId="uni-select" id="select">
+                <MenuItem value="University of New South Wales">University of New South Wales</MenuItem>
+                <MenuItem value="University of Sydney">University of Sydney</MenuItem>
+                <MenuItem value="University of Technology Sydney">University of Technology Sydney</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl fullWidth={true} margin='normal'>
+              <InputLabel htmlFor="input-degree">Degree</InputLabel>
+              <Input type="text" id="input-degree" aria-describedby="my-helper-text" />
+              <FormHelperText id="my-helper-text">(e.g. Bachelor of Commerce/Adv. Science)</FormHelperText>
+            </FormControl>
+            <FormControl fullWidth={true} margin='normal'>
+              <InputLabel htmlFor="input-graduation" shrink={true}>Expected Graduation</InputLabel>
+              <Input type="date" id="input-graduation" aria-describedby="my-helper-text" />
+            </FormControl>
+            <FormControl fullWidth={true} required={true} margin='normal'>
+              <InputLabel htmlFor="input-password">Password</InputLabel>
+              <Input id="input-password" type="password" aria-describedby="my-helper-text"/>
+              <FormHelperText id="my-helper-text">min. 8 characters with at least one lower case and upper case letter and number</FormHelperText>
+            </FormControl>
+            <FormControl fullWidth={true} required={true} margin='normal'>
+              <InputLabel htmlFor="input-confirm">Confirm Password</InputLabel>
+              <Input id="input-confirm" type="password" aria-describedby="my-helper-text" />
+            </FormControl>
+            <MuiThemeProvider theme={theme}>
+              <Box m={3}>
+                <Button variant="contained" color="primary" component={Link} to="./login">
+                  Sign Up
+                </Button>
+              </Box>
+            </MuiThemeProvider>
+          </form>
         </div>
       );
     }
@@ -208,38 +227,45 @@ class Register extends React.Component {
     ItemFour = theme => {
       return (
         <div>
-          <FormControl fullWidth={true} required={true} margin='normal'>
-            <InputLabel htmlFor="input-name">Full Name</InputLabel>
-            <Input type="text" id="input-name"/>
-          </FormControl>
-          <FormControl fullWidth={true} required={true} margin='normal'>
-            <InputLabel htmlFor="input-email">Email address</InputLabel>
-            <Input type="email" id="input-email"/>
-          </FormControl>
-          <FormControl fullWidth={true} required={true} margin='normal'>
-            <InputLabel htmlFor="input-company">Company</InputLabel>
-            <Input type="text" id="input-company"/>
-          </FormControl>
-          <FormControl fullWidth={true} required={true} margin='normal'>
-            <InputLabel htmlFor="input-password">Password</InputLabel>
-            <Input id="input-password" type="password" aria-describedby="my-helper-text"/>
-            <FormHelperText id="my-helper-text">min. 8 characters with at least one lower case and upper case letter and number</FormHelperText>
-          </FormControl>
-          <FormControl fullWidth={true} required={true} margin='normal'>
-            <InputLabel htmlFor="input-confirm">Confirm Password</InputLabel>
-            <Input id="input-confirm" type="password" aria-describedby="my-helper-text" />
-          </FormControl>
-          <MuiThemeProvider theme={theme}>
-            <Box m={3}>
-              <Button variant="contained" color="primary" component={Link} to="./login">
-                Sign Up
-              </Button>
-            </Box>
-          </MuiThemeProvider>
+          <form onSubmit={(e) => this.handleFormSubmit(e, "employer")}>
+            <FormControl fullWidth={true} required={true} margin='normal'>
+              <InputLabel htmlFor="input-name">Full Name</InputLabel>
+              <Input type="text" id="input-name"/>
+            </FormControl>
+            <FormControl fullWidth={true} required={true} margin='normal'>
+              <InputLabel htmlFor="input-email">Email address</InputLabel>
+              <Input type="email" id="input-email"/>
+            </FormControl>
+            <FormControl fullWidth={true} required={true} margin='normal'>
+              <InputLabel htmlFor="input-company">Company</InputLabel>
+              <Input type="text" id="input-company"/>
+            </FormControl>
+            <FormControl fullWidth={true} required={true} margin='normal'>
+              <InputLabel htmlFor="input-password">Password</InputLabel>
+              <Input id="input-password" type="password" aria-describedby="my-helper-text"/>
+              <FormHelperText id="my-helper-text">min. 8 characters with at least one lower case and upper case letter and number</FormHelperText>
+            </FormControl>
+            <FormControl fullWidth={true} required={true} margin='normal'>
+              <InputLabel htmlFor="input-confirm">Confirm Password</InputLabel>
+              <Input id="input-confirm" type="password" aria-describedby="my-helper-text" />
+            </FormControl>
+            <MuiThemeProvider theme={theme}>
+              <Box m={3}>
+                <Button variant="contained" color="primary" component={Link} to="./login">
+                  Sign Up
+                </Button>
+              </Box>
+            </MuiThemeProvider>
+          </form>
         </div>
       );
     }
     render() {
+        if(this.state.redirect) {
+            return (
+              <Redirect to='./login'/>
+            )
+        }
         return (
             <div className="Register-page">
               <header>
@@ -274,6 +300,7 @@ class Register extends React.Component {
                         <Route path="/two" component={PageShell(this.ItemTwo)} />
                         <Route path="/three" component={PageShell(this.ItemThree)} />
                         <Route path="/four" component={PageShell(this.ItemFour)} />
+                        <Route path="*"><Redirect to="/one"/></Route>
                       </Switch>
                     </div>
                   </BrowserRouter>
