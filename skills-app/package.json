@@ -10,10 +10,16 @@
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "local-storage": "^2.0.0",
+    "@types/react-addons-css-transition-group": "^15.0.5",
+    "lodash.debounce": "^4.0.8",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-material-ui-form-validator": "^2.0.10",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "3.4.1"
+    "react-scripts": "3.4.1",
+    "react-tabs": "^3.1.1",
+    "react-transition-group": "^1.2.1",
+    "use-lodash-debounce": "^1.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
