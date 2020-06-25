@@ -15,3 +15,7 @@ We started our first sprint this week which mainly revolved around setting up th
 role was mainly focused on finalising our proposal which was due on Sunday where I collated all our different parts and added 
 in a few new sections such as the differentiating features of our system. I also began looking into Candidate accounts and how
 to enable them to change their account details, passwords, delete account, etc.
+
+Week 4
+This week I am continuing to look at the account details and specifically the editing of account details across all different
+users as well as the ability for all users to change their password and verify these changes. 
