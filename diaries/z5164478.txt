@@ -9,3 +9,9 @@ This week I mainly worked on finalising the proposal by going over all the detai
 and acceptance criteria into the relevant tasks and sprint plan based on our team discussion earlier in the week. We also 
 established the story points and priority of the stories. I also did some research on APIs to get a better on them in
 preparation for the first sprint.
+
+Week 3
+We started our first sprint this week which mainly revolved around setting up the database and determining API endpoints. My 
+role was mainly focused on finalising our proposal which was due on Sunday where I collated all our different parts and added 
+in a few new sections such as the differentiating features of our system. I also began looking into Candidate accounts and how
+to enable them to change their account details, passwords, delete account, etc.
