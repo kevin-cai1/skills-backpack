@@ -96,17 +96,17 @@ class Login extends React.Component {
     handleSubmit(event) {
         return this.postLogin().then( (response) => {
             console.log(response);
-            // let status = response["logged_in"];
-            // let email = response["user"];
-            // console.log('status' + status);
-            // if (!status) {
-            //     this.state.formError = true;
-            //     this.forceUpdate();
-            // } else {
-            //     SessionDetails.setEmail(email);
-            //     this.state.formSuccess = true;
-            //     this.forceUpdate();
-            // }
+            let status = response["logged_in"];
+            let email = response["user"];
+            console.log('status' + status);
+            if (!status) {
+                this.state.formError = true;
+                this.forceUpdate();
+            } else {
+                SessionDetails.setEmail(email);
+                this.state.formSuccess = true;
+                this.forceUpdate();
+            }
         });
     }
 
