@@ -60,6 +60,7 @@ class login(Resource):
                 'user' : req['email']
             }
 
+        print(return_val)
         return return_val
 
 @api.route('/create')

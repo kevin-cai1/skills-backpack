@@ -80,13 +80,13 @@ class Login extends React.Component {
 
         return fetch(url, {
             method: 'POST',
-            mode: "no-cors",
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
             },
             body: data
         }).then(response => {
+            console.log(response)
             console.log('response ' + response.status)
             return response.ok && response.json();
         })
