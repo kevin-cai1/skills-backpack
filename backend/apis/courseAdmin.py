@@ -29,7 +29,14 @@ class Invite(Resource):
             subject='Join Skills Backpack platform!',
             html_content='<h1>Welcome {}</h1><strong> {} has invited you to join Skills Backpack!</strong><br><br><a href="http://localhost:3000/register">Click here</a> to join'.format(course_email, skills_email)
         )
-
+        message.dynamic_template_data = {
+            'header': "{} has invited you to join Skills Backpack!".format(skills_email),
+            'text': "To create an account, please click the link below",
+            'c2a_link': "http://localhost:3000/register",
+            'c2a_button': "Create account"
+        }
+        message.template_id = 'd-165f1bd189884256a10ee0c090fe3a44'
+        print(os.environ.get('SENDGRID_API_KEY'))
         try:
             sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
             response = sg.send(message)
