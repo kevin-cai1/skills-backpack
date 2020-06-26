@@ -3,7 +3,7 @@ from flask_restplus import Api
 from .test import api as ns1
 from .account import api as ns2
 from .candidate import api as ns3
-
+from .course import api as ns4
 
 api = Api(
         title="Skills Backpack",
@@ -14,3 +14,4 @@ api = Api(
 api.add_namespace(ns1, path='/test')
 api.add_namespace(ns2, path='/account')
 api.add_namespace(ns3, path='/candidate')
+api.add_namespace(ns4, path='/course/add')

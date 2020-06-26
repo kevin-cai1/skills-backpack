@@ -1,0 +1,27 @@
+.Course-form-body {
+    display: flex;
+    margin: auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 20vw;
+}
+
+.Page-body {
+  display: flex;
+  margin: auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 44vw;
+  font-size: 16px;
+  color: #2D9CDB;
+}
+
+.buttons {
+  display: flex;
+  margin: auto;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+}
