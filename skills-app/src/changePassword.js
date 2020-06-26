@@ -118,9 +118,6 @@ class ChangePassword extends React.Component {
     render() {
         return (
             <div className="App">
-                <header className="App-header">
-                    <h1>Skills Backpack</h1>
-                </header>
                 <body className="Login-body">
                 <div className="Form-container" style={{marginBottom: "30px"}}>
                     <h3 className="Login-title">Change Password</h3>
@@ -188,9 +185,6 @@ class ChangePassword extends React.Component {
                     </MuiThemeProvider>
                 </div>
                 </body>
-                <footer className="Home-footer">
-                    <p>Yuppies 2020 </p>
-                </footer>
             </div>
         )
     }

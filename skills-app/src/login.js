@@ -109,9 +109,6 @@ class Login extends React.Component {
         } else {
             return (
                 <div className="App">
-                    <header className="App-header">
-                        <h1>Skills Backpack</h1>
-                    </header>
                     <body className="Login-body">
                     <div className="Form-container" style={{marginBottom: "30px"}}>
                         <h3 className="Login-title">Sign In</h3>
@@ -193,9 +190,6 @@ class Login extends React.Component {
                             yet? <a href='./register'>Sign up!</a></p>
                     </div>
                     </body>
-                    <footer className="Home-footer">
-                        <p>Yuppies 2020 </p>
-                    </footer>
                 </div>
             )
         }
