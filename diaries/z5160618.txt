@@ -23,3 +23,22 @@ Week 3
     - updated jira sprint board to reflect completed work
 - Started looking into creating APIs to handle adding courses
 
+19/06/20 Meeting
+- Updated progress on DB setup, helped sort out some changes to relationships between some tables
+- Started working on Course APIs from the next sprint
+- Finalised project proposal
+- Added use case scenario descriptions to the project proposal
+
+Week 4
+23/06/20 Lab
+- Discussed expectations for demo 1
+- Sorted out remaining tasks before the demo
+
+23/06/20 Meeting
+- Closed sprint 1
+- Assigned stories for sprint 2, volunteered to do backend APIs for course admin functions (adding, editing, deleting courses)
+- Split stories into front and back end
+
+25/06/20
+- Finished writing APIs and endpoints for course related functions (get course info, edit course info, add course, delete course)
+

@@ -35,7 +35,7 @@ class Login extends React.Component {
             password: '',
             userType: '',
             emailError: 'Please enter a valid email address.',
-            passworError: 'Password cannot be empty.',
+            passwordError: 'Password cannot be empty.',
             emailValid: true,
             passwordValid: true,
             userTypeValid: true,
@@ -70,34 +70,44 @@ class Login extends React.Component {
         this.validateForm();
     }
 
+    postLogin() {
+        let data = JSON.stringify({
+            "email": this.state.email,
+            "password": this.state.password
+        });
+        let url = 'http://localhost:5000/account/login';
+        console.log('Sending to ' + url + ': ' + data);
+
+        return fetch(url, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: data
+        }).then(response => {
+            console.log(response)
+            console.log('response ' + response.status)
+            return response.ok && response.json();
+        })
+            .catch(err => console.log('Error:', err));
+    }
+
     handleSubmit(event) {
-        // let data = JSON.stringify({
-        //     username: this.state.email,
-        //     password: this.state.password
-        // });
-        // let url = 'https://localhost:5000/account/login';
-        // console.log('Sending to ' + url + ': ' + data);
-        // var xhr = new XMLHttpRequest();
-        //
-        // xhr.addEventListener('load', () => {
-        //     get the data from the json response
-        //     let response = xhr.responseText;
-        //     console.log(response);
-        //     let status = response["logged_in"];
-        //     let username = response["user"];
-        //     if (status == "failed") {
-        //         this.state.formError = true;
-        //     }
-        // });
-        //
-        // xhr.open('POST', url);
-        // xhr.send(data);
-        // ADD below 2 lines for form error case
-        // this.state.formError = true;
-        // this.forceUpdate();
-        SessionDetails.setEmail("gordon.xie@atlassian.com");
-        this.state.formSuccess = true;
-        this.forceUpdate();
+        return this.postLogin().then( (response) => {
+            console.log(response);
+            let status = response["logged_in"];
+            let email = response["user"];
+            console.log('status' + status);
+            if (!status) {
+                this.state.formError = true;
+                this.forceUpdate();
+            } else {
+                SessionDetails.setEmail(email);
+                this.state.formSuccess = true;
+                this.forceUpdate();
+            }
+        });
     }
 
     validateForm() {
@@ -172,7 +182,7 @@ class Login extends React.Component {
                                     size="small"
                                     className="Login-input-field"
                                     onChange={this.handleChange}
-                                    helperText={this.state.passwordValid ? '' : this.state.passworError}
+                                    helperText={this.state.passwordValid ? '' : this.state.passwordError}
                                 />
                             </div>
                         </FormControl>
