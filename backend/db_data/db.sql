@@ -56,14 +56,28 @@ CREATE TABLE SkillsBackpackAdmin (
 DROP TABLE IF EXISTS Course;
 CREATE TABLE Course (
 	code TEXT NOT NULL,
-	learningOutcomes TEXT,
 	university TEXT NOT NULL,
 	faculty TEXT NOT NULL,
-	gradOutcomes TEXT,
 	description TEXT,
 	name TEXT NOT NULL,
 	link TEXT,
 	PRIMARY KEY (code, university)
+);
+
+-- Create LearningOutcomes table
+-- Contains unique rows of learning outcomes
+DROP TABLE IF EXISTS LearningOutcomes;
+CREATE TABLE LearningOutcomes (
+	l_outcome TEXT PRIMARY KEY NOT NULL,
+	UNIQUE (l_outcome COLLATE NOCASE)
+);
+
+-- Create GraduateOutcomes table
+-- Contains unique rows of graduate outcomes
+DROP TABLE IF EXISTS GraduateOutcomes;
+CREATE TABLE GraduateOutcomes ( 
+	g_outcome TEXT PRIMARY KEY NOT NULL, 
+	UNIQUE (g_outcome COLLATE NOCASE)
 );
 
 -- Create ePortfolio table
@@ -91,6 +105,51 @@ CREATE TABLE Employment (
 	employer TEXT NOT NULL
 );
 
+-- Create Course_LearnOutcomes table
+-- Maps each learning outcome to the courses it belongs in
+DROP TABLE IF EXISTS Course_LearnOutcomes;
+CREATE TABLE Course_LearnOutcomes (
+	l_outcome TEXT NOT NULL, 
+	code TEXT NOT NULL,
+	university TEXT NOT NULL,
+	FOREIGN KEY (l_outcome)
+		REFERENCES LearningOutcomes (l_outcome)
+			ON DELETE CASCADE
+			ON UPDATE CASCADE,
+	FOREIGN KEY (code)
+		REFERENCES Course (code)
+			ON DELETE CASCADE
+			ON UPDATE CASCADE,
+	FOREIGN KEY (university)
+		REFERENCES Course (university)
+			ON DELETE CASCADE
+			ON UPDATE CASCADE,
+	PRIMARY KEY (l_outcome, code, university)
+);
+
+-- Create Course_GradOutcomes table
+-- Maps each grad outcome to the courses it belongs in
+DROP TABLE IF EXISTS Course_GradOutcomes;
+CREATE TABLE Course_GradOutcomes (
+	g_outcome TEXT NOT NULL, 
+	code TEXT NOT NULL,
+	university TEXT NOT NULL,
+	FOREIGN KEY (g_outcome)
+		REFERENCES GraduateOutcomes (g_outcome)
+			ON DELETE CASCADE
+			ON UPDATE CASCADE,
+	FOREIGN KEY (code)
+		REFERENCES Course (code)
+			ON DELETE CASCADE
+			ON UPDATE CASCADE,
+	FOREIGN KEY (university)
+		REFERENCES Course (university)
+			ON DELETE CASCADE
+			ON UPDATE CASCADE,
+	PRIMARY KEY (g_outcome, code, university)
+);
+
+
 -- Create Employment_ePortfolio table
 -- Maps each EP to each instance of past employment info
 DROP TABLE IF EXISTS Employment_ePortfolio;
@@ -104,7 +163,8 @@ CREATE TABLE Employment_ePortfolio (
 	FOREIGN KEY (portfolioName)
 		REFERENCES ePortfolio (name)
 			ON DELETE CASCADE
-			ON UPDATE CASCADE
+			ON UPDATE CASCADE,
+	PRIMARY KEY (employmentId, portfolioName)
 );
 
 

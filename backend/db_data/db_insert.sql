@@ -34,10 +34,22 @@ VALUES
 	('sbadmin2@gmail.com', 'sbadmin2');
 
 -- Inserting data into Course table
-INSERT INTO Course (code, learningOutcomes, university, faculty, gradOutcomes, description, name, link)
+INSERT INTO Course (code, university, faculty, description, name, link)
 VALUES
-	('COMP3900', 'coding', 'UNSW', 'Computer Science and Engineering', 'smart', 'build a project in a team', 'Computer Science Project', 'COMP3900.com'),
-	('COMP1000', 'hacking', 'USYD', 'Computer Science', 'teamwork', 'hack the system', 'Hackerman 101', 'COMP1000.com');
+	('COMP3900', 'UNSW', 'Computer Science and Engineering', 'build a project in a team', 'Computer Science Project', 'COMP3900.com'),
+	('COMP1000', 'USYD', 'Computer Science', 'hack the system', 'Hackerman 101', 'COMP1000.com');
+
+-- Inserting data into LearningOutcomes table
+INSERT INTO LearningOutcomes(l_outcome)
+VALUES
+	('hacking'),
+	('coding');
+
+-- Inserting data into GraduateOutcomes table
+INSERT INTO GraduateOutcomes(g_outcome)
+VALUES
+	('teamwork'),
+	('leadership');
 
 -- Inserting data into ePortfolio table
 INSERT INTO ePortfolio(id, employabilitySkills, jobSkills)
@@ -51,11 +63,25 @@ VALUES
 	(1, 'software development', '01/01/2020', '02/01/2020', 'Macquarie Group'),
 	(2, 'hacking', '01/01/2020', '02/01/2020', 'Google');
 
+-- Inserting data into Course_LearnOutcomes table
+INSERT INTO Course_LearnOutcomes(l_outcome, code, university)
+VALUES
+	('hacking', 'COMP1000', 'USYD'),
+	('hacking', 'COMP3900', 'UNSW'),
+	('coding', 'COMP3900', 'UNSW');
+
+-- Inserting data into Course_GradOutcomes table
+INSERT INTO Course_GradOutcomes(g_outcome, code, university)
+VALUES
+	('teamwork', 'COMP3900', 'UNSW'),
+	('leadership', 'COMP3900', 'UNSW'),
+	('teamwork', 'COMP1000', 'USYD');
+
 -- Inserting data into Employment_ePortfolio table
 INSERT INTO Employment_ePortfolio(employmentId, portfolioName)
 VALUES
-	('1', 'Charmaine Leung'),
-	('2', 'Miran Nakamura');
+	(1, 'Charmaine Leung'),
+	(2, 'Miran Nakamura');
 
 -- Inserting data into ePortfolio_courses table
 INSERT INTO ePortfolio_Courses (name, code, university)
