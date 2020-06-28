@@ -27,7 +27,7 @@ account_package = api.model('create', {
 class login(Resource):
     @api.expect(login_package)
     def post(self):
-        req = request.get_json()
+        req = request.get_json(force=True)
 
         conn= db.get_conn()
         c = conn.cursor()
@@ -64,6 +64,7 @@ class login(Resource):
                 'message' : "Password incorrect"
             }
 
+        print(return_val)
         return return_val
 
 @api.route('/create')

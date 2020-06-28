@@ -11,3 +11,13 @@ Week 2
 Completed all required storyboards with Charmaine and made changes to corresponding user stories where required. I am currently re-formatting our Project Proposal on Confluence for PDF export.
 With the entire team, planned all sprints (decided on 6 weekly sprints, ~8 story points each). Divided roles for backend, frontend, data and API development.
 Started looking into JSON formatting required to end data from frontend forms to database with Charmaine.
+
+Week 3
+Divided roles for Sprint 1. Started on front-end login and register forms with Charmaine.
+Set up a generic home page, generic registration form, and looked into creating tabs to redirect different users to different forms using React and Material UI.
+Completed: Register UI but no actual data being sent to back-end yet.
+
+Week 4
+Tabs to redirect different user types to different forms working.
+Form input (email, password, confirm password) validation working.
+Worked with Charmaine and Kevin on connecting back-end APIs to the front-end form UIs we have created.
