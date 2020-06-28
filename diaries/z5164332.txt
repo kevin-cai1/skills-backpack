@@ -15,3 +15,11 @@ Week 3
 - Updated system architecture diagram based on feedback from the tutorial.
 - added frontend routing file
 - added login page
+- added session handling for users logged in
+
+Week 4
+- Worked with Kevin on fixing the integration of the frontend with backend APIs, after coming across CORS error
+- Created a generic navigation bar for all the views
+- Outlined the JSON format for the changePassword API
+- Redesigned the landing page
+- Added the change password form
