@@ -31,53 +31,145 @@ class Register extends React.Component {
       this.setState({ value: index });
     };
 
+    sendSiteAdmin(e, type) {
+        let data = JSON.stringify({
+            "user_type": type,
+            "name": e.target.name.value,
+            "email": e.target.email.value,
+            "password": e.target.password.value,
+        });
+        let url = 'http://localhost:5000/account/create';
+        console.log('Sending to ' + url + ': ' + data);
+
+        return fetch(url, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: data
+        }).then(response => {
+            console.log('response ' + response);
+            console.log('response stat HELLO?? ' + response.status);
+            return response.ok && response.json();
+        })
+            .catch(err => console.log('Error:', err));
+    }
+
+    sendCourseAdmin(e, type) {
+        let data = JSON.stringify({
+            "user_type": type,
+            "name": e.target.name.value,
+            "email": e.target.email.value,
+            "password": e.target.password.value,
+            "university": e.target.uni.value
+        });
+        let url = 'http://localhost:5000/account/create';
+        console.log('Sending to ' + url + ': ' + data);
+
+        return fetch(url, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: data
+        }).then(response => {
+            console.log('response ' + response.status)
+            return response.ok && response.json();
+
+        })
+            .catch(err => console.log('Error:', err));
+    }
+
+    sendCandidate(e, type) {
+        let data = JSON.stringify({
+            "user_type": type,
+            "name": e.target.name.value,
+            "email": e.target.email.value,
+            "password": e.target.password.value,
+            "university": e.target.uni.value,
+            "degree": e.target.degree.value,
+            "graduation": e.target.graduation.value
+        });
+        let url = 'http://localhost:5000/account/create';
+        console.log('Sending to ' + url + ': ' + data);
+
+        return fetch(url, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: data
+        }).then(response => {
+            console.log('response ' + response.status)
+            return response.ok && response.json();
+        })
+            .catch(err => console.log('Error:', err));
+    }
+
+    sendEmployer(e, type) {
+        let data = JSON.stringify({
+            "user_type": type,
+            "name": e.target.name.value,
+            "email": e.target.email.value,
+            "password": e.target.password.value,
+            "company": e.target.company.value
+        });
+        let url = 'http://localhost:5000/account/create';
+        console.log('Sending to ' + url + ': ' + data);
+
+        return fetch(url, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: data
+        }).then(response => {
+            console.log('response ' + response);
+            console.log('response stat HELLO?? ' + response.status);
+            return response.ok && response.json();
+        })
+            .catch(err => console.log('Error:', err));
+    }
+
+
+
     createAccount = (e, type) => {
-        const name = e.target.name.value;
-        const email = e.target.email.value;
-        const password = e.target.password.value;
-        const confirm = e.target.confirm.value;
-        if(type == "site-admin") {
-          console.log("site-admin!");
-          console.log(name);
-          console.log(email);
-          console.log(password);
+        console.log(type);
+        if(type == "skillsAdmin") {
+          console.log("skillsadmin!");
           this.setState({redirect: 1});
+          return this.sendSiteAdmin(e, type).then( (response) => {
+              console.log(response);
+          });
         }
-        else if (type == "course-admin") {
-          const title = e.target.title.value;
+        else if (type == "courseAdmin") {
           const uni = e.target.uni.value;
-          console.log("course-admin!");
-          console.log(name);
-          console.log(email);
-          console.log(password);
-          console.log(title);
-          console.log(uni);
+          console.log("courseAdmin!");
           this.setState({redirect: 1});
+          return this.sendCourseAdmin(e, type).then( (response) => {
+              console.log(response);
+          });
         }
-        else if (type == "student") {
-          const uni = e.target.uni.value;
-          const degree = e.target.degree.value;
-          const graduation = e.target.graduation.value;
+        else if (type == "candidate") {
           console.log("student!");
           this.setState({redirect: 1});
-          console.log(name);
-          console.log(email);
-          console.log(password);
-          console.log(uni);
-          console.log(degree);
-          console.log(graduation);
+          return this.sendCandidate(e, type).then( (response) => {
+              console.log(response);
+          });
         }
         else if (type == "employer") {
           console.log("employer!");
-          const company = e.target.company.value;
           this.setState({redirect: 1});
-          console.log(name);
-          console.log(email);
-          console.log(password);
-          console.log(company);
+          return this.sendEmployer(e, type).then( (response) => {
+              console.log(response);
+          });
         }
         else {
-          alert("Something went wrong. Try again later.");
+          return false;
         }
     }
 
@@ -102,8 +194,14 @@ class Register extends React.Component {
         const confirm = e.target.confirm.value;
         const errors = this.validate(email, password, confirm);
         if (errors.length == 0) {
-            this.createAccount(e, type);
-            alert("Your account has been created.");
+            const response = this.createAccount(e, type);
+            if (response === false) {
+              alert("Something went wrong. Try again later.");
+            }
+            else{
+              alert("Your account has been created!");
+            }
+
         }
         else {
             alert(errors);
@@ -116,7 +214,7 @@ class Register extends React.Component {
     ItemOne = theme => {
       return (
           <div>
-            <form onSubmit={(e) => this.handleFormSubmit(e, "site-admin")}>
+            <form onSubmit={(e) => this.handleFormSubmit(e, "skillsAdmin")}>
               <FormControl fullWidth={true} required={true} margin='normal'>
                 <InputLabel htmlFor="input-name">Full Name</InputLabel>
                 <Input type="text" id="input-name" name="name"/>
@@ -149,7 +247,7 @@ class Register extends React.Component {
     ItemTwo = theme => {
       return (
         <div>
-          <form onSubmit={(e) => this.handleFormSubmit(e, "course-admin")}>
+          <form onSubmit={(e) => this.handleFormSubmit(e, "courseAdmin")}>
             <FormControl style={{minWidth:100}} required={true} margin='normal'>
               <InputLabel htmlFor="title-select">Title</InputLabel>
               <Select name="title" labelId="title-select" id="select">
@@ -201,7 +299,7 @@ class Register extends React.Component {
     ItemThree = theme => {
       return (
         <div>
-          <form onSubmit={(e) => this.handleFormSubmit(e, "student")}>
+          <form onSubmit={(e) => this.handleFormSubmit(e, "candidate")}>
             <FormControl fullWidth={true} required={true} margin='normal'>
               <InputLabel htmlFor="input-name">Full Name</InputLabel>
               <Input name="name" type="text" id="input-name" aria-describedby="my-helper-text"/>
@@ -289,7 +387,7 @@ class Register extends React.Component {
     render() {
         if(this.state.redirect) {
             return (
-              <Redirect to='./login'/>
+              <Redirect to='./home'/>
             )
         }
         return (
