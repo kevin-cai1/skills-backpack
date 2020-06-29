@@ -3,6 +3,7 @@ import ls from 'local-storage';
 
 var SessionDetails = (function() {
     var full_email = "";
+    var user_type = "";
 
     var getEmail = function() {
         full_email = ls.get('email') || [];
@@ -18,10 +19,27 @@ var SessionDetails = (function() {
         ls.set('email', '');
     };
 
+    var getType = function() {
+        user_type = ls.get('user_type') || [];
+        return user_type;
+    };
+
+    var setType = function(type) {
+        user_type = type;
+        ls.set('user_type', user_type);
+    };
+
+    var removeType = function() {
+        ls.set('user_type', '');
+    };
+
     return {
         getEmail: getEmail,
         setEmail: setEmail,
-        removeEmail: removeEmail
+        removeEmail: removeEmail,
+        getType: getType,
+        setType: setType,
+        removeType: removeType
     }
 
 })();
