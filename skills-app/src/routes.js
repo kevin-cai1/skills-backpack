@@ -11,6 +11,7 @@ import Navbar from './Navbar';
 import Home from './home'
 import Course_Create from './course-create-forms';
 import Manage_Courses from './manage_courses';
+import AdminInvite from './AdminInvite';
 
 const allRoutes = () => (
     <Router>
@@ -18,6 +19,7 @@ const allRoutes = () => (
         <Route exact path="/" component={App} />
         <Route exact path="/login" component={Login} />
         <Route exact path="/register" component={Register} />
+        <Route exact path="/register/:email" component={AdminInvite} />
         <PrivateRoute path="/home" component={Home} />
         <PrivateRoute path="/changePassword" component={ChangePassword} />
         <PrivateRoute exact path="/home" component={Home}/>

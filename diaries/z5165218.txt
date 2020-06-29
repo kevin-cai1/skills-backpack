@@ -16,3 +16,10 @@ Started our first sprint. Outlined some of the specific features and behaviours 
 Worked on database middlewares to connect our API to the SQL schema Gordon created.
 Also wrote some of the first API endpoints for login and createAccount. Most of the time was spent troubleshooting
 database queries and fine tuning tables and attributes.
+
+Week 4
+Started the week troubleshooting some connection issues with the API. Debugged some minor issues encountered with consumption
+of the API. Also had a brief look at some issues with CORS.
+I also wrote a few endpoints to implement skills administration account creation.
+I then looked at integration with the SendGrid API to send email invites. I implemented a basic email invite system, with potential
+for more complex features to be added at a later stage.
