@@ -22,7 +22,6 @@ const allRoutes = () => (
         <Route exact path="/register/:email" component={AdminInvite} />
         <PrivateRoute path="/home" component={Home} />
         <PrivateRoute path="/changePassword" component={ChangePassword} />
-        <PrivateRoute exact path="/home" component={Home}/>
         <PrivateRoute exact path="/course_create" component={Course_Create}/>
         <PrivateRoute exact path="/manage_courses" component={Manage_Courses}/>
     </Router>
