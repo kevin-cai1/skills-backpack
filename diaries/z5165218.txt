@@ -21,5 +21,6 @@ Week 4
 Started the week troubleshooting some connection issues with the API. Debugged some minor issues encountered with consumption
 of the API. Also had a brief look at some issues with CORS.
 I also wrote a few endpoints to implement skills administration account creation.
-I then looked at integration with the SendGrid API to send email invites. I implemented a basic email invite system, with potential
-for more complex features to be added at a later stage.
+I then looked at integration with the SendGrid API to send email invites. I started by implementing a basic email invite system.
+Later in the week I added a front end interface for course admin creation and linked the email through the url to autofill email
+on account creation.
