@@ -7,7 +7,6 @@ from .skillsAdmin import api as ns4
 from .course import api as ns5
 from .courseAdmin import api as ns6
 
-=======
 api = Api(
         title="Skills Backpack",
         version='1.0',

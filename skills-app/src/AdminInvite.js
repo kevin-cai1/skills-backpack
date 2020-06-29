@@ -80,7 +80,8 @@ class AdminInvite extends React.Component {
             "email": this.state.email,
             "password": this.state.password,
             "university": this.state.university,
-            "name": this.state.name
+            "name": this.state.name,
+            "user_type": "courseAdmin"
 
         });
         let url = 'http://localhost:5000/account/create';
@@ -135,7 +136,8 @@ class AdminInvite extends React.Component {
 
     render() {
         if ((this.state.formSuccess) || (SessionDetails.getEmail() != "")) {
-            return <Redirect to='./home' />
+            console.log("REDIRECTING TO HOME")
+            return <Redirect to='../home' />
         } else {
             console.log(this.state.email)
             const userEmail = this.state.email
