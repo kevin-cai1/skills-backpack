@@ -128,10 +128,37 @@ class AdminInvite extends React.Component {
         this.setState({formValid: this.state.passwordValid && this.state.passwordMatch && this.state.universityValid && this.state.nameValid});
     }
 
+    decryptEmail(token) {
+        let url = 'http://localhost:5000/course_admin/email/decode';
+        
+        let data = JSON.stringify({
+            "token": token
+        });
+
+        console.log('Sending to ' + url + ': ' + data);
+
+        return fetch(url, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: data
+        }).then(response => {
+            console.log(response)
+            return response.json();
+            //console.log('response ' + response.status)
+            //this.setState({ email: response.email })
+        }).catch(err => console.log('Error:', err));
+    }
+
     componentDidMount() {
         const { match: { params } } = this.props;
-        this.setState({ email: params.email})
-        console.log(params.email)
+        this.decryptEmail(params.email).then( (response) => {
+            console.log(response)
+            this.setState({email: response.email})
+        });
+        console.log(this.state.email)
     }
 
     render() {
