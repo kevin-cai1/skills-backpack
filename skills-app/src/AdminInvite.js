@@ -4,7 +4,7 @@ import {
     Link,
     Redirect
 } from 'react-router-dom'
-
+import { Alert } from '@material-ui/lab';
 import {
     FormControl,
     TextField,
@@ -30,18 +30,124 @@ const theme = createMuiTheme({
 });
 
 class AdminInvite extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            email: '',
+            password: '',
+            name: '',
+            university: '',
+            passwordError: 'Password cannot be empty.',
+            matchError: 'Passwords do not match.',
+            passwordMatch: true,
+            passwordValid: true,
+            nameValid: true,
+            universityValid: true,
+            formValid: false,
+            passwordInit: false,
+            formError: false,
+            formSuccess: false
+        };
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    handleChange(event) {
+        const fieldName = event.target.name;
+        const fieldValue = event.target.value;
+        this.setState({ [fieldName]: fieldValue },
+            () => { this.validateField(fieldName, fieldValue) });
+    }
+
+    validateField(field, value) {
+        if (field === 'password') {
+            this.state.passwordValid = value.length > 0;
+            console.log(value)
+        } else if (field === 'name') {
+            this.state.nameValid = value.length > 0;
+        } else if (field === 'university') {
+            this.state.universityValid = value.length > 0;
+        } else if (field === 'password2') {
+            this.state.passwordInit = true;
+            this.state.passwordMatch = value.length > 0 && value === this.state.password
+        }
+
+        this.validateForm();
+    }
+
+    postSignup() {
+        let data = JSON.stringify({
+            "email": this.state.email,
+            "password": this.state.password,
+            "university": this.state.university,
+            "name": this.state.name
+
+        });
+        let url = 'http://localhost:5000/account/create';
+        console.log('Sending to ' + url + ': ' + data);
+
+        return fetch(url, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: data
+        }).then(response => {
+            console.log(response)
+            console.log('response ' + response.status)
+            return response.ok && response.json();
+        })
+            .catch(err => console.log('Error:', err));
+    }
+
+    handleSubmit(event) {
+        console.log(this.state.email)
+        console.log(this.state.password)
+        console.log(this.state.university)
+        console.log(this.state.name)
+        return this.postSignup().then( (response) => {
+            console.log(response);
+            let status = response["ok"];
+            let email = response["account"]["email"];
+            console.log('status' + status);
+            console.log(email)
+            if (!status) {
+                this.state.formError = true;
+                this.forceUpdate();
+            } else {
+                SessionDetails.setEmail(email);
+                this.state.formSuccess = true;
+                this.forceUpdate();
+            }
+        });
+    }
+
+    validateForm() {
+        this.setState({formValid: this.state.passwordValid && this.state.passwordMatch && this.state.universityValid && this.state.nameValid});
+    }
+
+    componentDidMount() {
+        const { match: { params } } = this.props;
+        this.setState({ email: params.email})
+        console.log(params.email)
+    }
+
     render() {
         if ((this.state.formSuccess) || (SessionDetails.getEmail() != "")) {
             return <Redirect to='./home' />
         } else {
+            console.log(this.state.email)
+            const userEmail = this.state.email
+            console.log("RENDER")
             return (
                 <div className="App">
                     <header className="App-header">
                         <h1>Skills Backpack</h1>
                     </header>
                     <body className="Login-body">
-                    <div className="Form-container" style={{marginBottom: "30px"}}>
-                        <h3 className="Login-title">Sign In</h3>
+                    <div className="Form-container" style={{marginBottom: "10px"}}>
+                        <h3 className="Login-title">Welcome { userEmail }</h3>
                         {this.state.formError === true &&
                         <div className=".Login-alert-row">
                             <div className="Login-alert-container">
@@ -49,42 +155,34 @@ class AdminInvite extends React.Component {
                             </div>
                         </div>
                         }
-                        <FormControl variant="outlined" classType="Login-text-field">
-                            <InputLabel className="Login-label" htmlFor="outlined-age-native-simple">I'm a
-                                ...</InputLabel>
-                            <Select
-                                className="Login-select"
-                                native
-                                value={this.state.userType}
-                                onChange={this.handleChange}
-                                label="Age"
-                                inputProps={{
-                                    name: 'userType',
-                                    id: 'outlined-userType-native-simple',
-                                }}
-                            >
-                                <option aria-label="None" value=""/>
-                                <option value="Skills Backpack Admin">Skills Backpack Admin</option>
-                                <option value="Course Admin">Course Admin</option>
-                                <option value="Student">Student</option>
-                                <option value="Employer">Employer</option>
-                            </Select>
-                        </FormControl>
+                    </div>
+                    <div className="Form-container">
+                        <p className="Register-redirect-text" style={{alignSelf: "centre"}}>Fill in the details to finish creating your account</p>
                     </div>
                     <div className="Form-container">
                         <FormControl>
-                            {/*<h5 className="Login-field-title">Email Address</h5>*/}
                             <div className="Login-text-field">
                                 <TextField
-                                    id="email-input"
-                                    name="email"
-                                    label="Email Address"
+                                    id="name-input"
+                                    name="name"
+                                    label="Name"
                                     type="text"
                                     variant="outlined"
                                     size="small"
                                     className="Login-input-field"
                                     onChange={this.handleChange}
-                                    helperText={this.state.emailValid ? '' : this.state.emailError}
+                                />
+                            </div>
+                            <div className="Login-text-field">
+                                <TextField
+                                    id="university-input"
+                                    name="university"
+                                    label="University"
+                                    type="text"
+                                    variant="outlined"
+                                    size="small"
+                                    className="Login-input-field"
+                                    onChange={this.handleChange}
                                 />
                             </div>
                             {/*<h5 className="Login-field-title">Password</h5>*/}
@@ -98,7 +196,20 @@ class AdminInvite extends React.Component {
                                     size="small"
                                     className="Login-input-field"
                                     onChange={this.handleChange}
-                                    helperText={this.state.passwordValid ? '' : this.state.passworError}
+                                    helperText={this.state.passwordInit ? '' : this.state.passwordError}
+                                />
+                            </div>
+                            <div className="Login-text-field">
+                                <TextField
+                                    id="password-input"
+                                    name="password2"
+                                    label="Confirm Password"
+                                    type="password"
+                                    variant="outlined"
+                                    size="small"
+                                    className="Login-input-field"
+                                    onChange={this.handleChange}
+                                    helperText={this.state.passwordMatch ? '' : this.state.matchError}
                                 />
                             </div>
                         </FormControl>
@@ -109,15 +220,14 @@ class AdminInvite extends React.Component {
                                          aria-label="contained primary button group">
                                 <Button
                                     type="submit"
-                                    disabled={!(this.state.formValid && this.state.passwordInit)}
+                                    disabled={!(this.state.formValid && this.state.passwordInit && this.state.passwordMatch)}
                                     onClick={this.handleSubmit}
-                                >Sign In</Button>
+                                >Create Account</Button>
                             </ButtonGroup>
                         </MuiThemeProvider>
                     </div>
                     <div className="Register-redirect-container">
-                        <p className="Register-redirect-text" style={{alignSelf: "centre"}}>Don't have an account
-                            yet? <a href='./register'>Sign up!</a></p>
+                        <p className="Register-redirect-text" style={{alignSelf: "centre"}}>Already have an account? <a href='../login'>Sign in!</a></p>
                     </div>
                     </body>
                     <footer className="Home-footer">
