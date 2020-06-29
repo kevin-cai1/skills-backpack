@@ -98,7 +98,11 @@ class Login extends React.Component {
             console.log(response);
             let status = response["logged_in"];
             let email = response["user"];
-            console.log('status' + status);
+            this.setState({
+                email: '',
+                password: '',
+                userType: ''
+            });
             if (!status) {
                 this.state.formError = true;
                 this.forceUpdate();
@@ -160,6 +164,7 @@ class Login extends React.Component {
                                     id="email-input"
                                     name="email"
                                     label="Email Address"
+                                    value={this.state.email}
                                     type="text"
                                     variant="outlined"
                                     size="small"
@@ -174,6 +179,7 @@ class Login extends React.Component {
                                     id="password-input"
                                     name="password"
                                     label="Password"
+                                    value={this.state.password}
                                     type="password"
                                     variant="outlined"
                                     size="small"
