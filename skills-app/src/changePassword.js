@@ -86,45 +86,69 @@ class ChangePassword extends React.Component {
         this.setState({formValid: this.state.currentValid && this.state.newValid && this.state.confirmValid});
     }
 
+    postPassword() {
+        let data = JSON.stringify({
+            "email": SessionDetails.getEmail(),
+            "currentPassword": this.state.currentPassword,
+            "newPassword": this.state.newPassword
+        });
+        let url = 'http://localhost:5000/account/changePassword';
+        console.log('Sending to ' + url + ': ' + data);
+
+        return fetch(url, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: data
+        }).then(response => {
+            console.log(response)
+            console.log('response ' + response.status)
+            return response.ok && response.json();
+        })
+            .catch(err => console.log('Error:', err));
+    }
+
     handleSubmit(event) {
-        // let data = JSON.stringify({
-        //     username: this.state.email,
-        //     password: this.state.password
-        // });
-        // let url = 'http://localhost:5000/account/login';
-        // console.log('Sending to ' + url + ': ' + data);
-        // var xhr = new XMLHttpRequest();
-        //
-        // xhr.addEventListener('load', () => {
-        //     // get the data from the json response
-        //     let response = xhr.responseText;
+        // return this.postPassword().then( (response) => {
         //     console.log(response);
-        //     let status = response["ok"];
-        //     let username = response["user"];
-        //     if (!status) {
-        //         this.state.formError = true;
-        //         this.forceUpdate();
-        //     } else {
-        //         SessionDetails.setEmail("gordon.xie@atlassian.com");
-        //         this.state.formSuccess = true;
-        //         this.forceUpdate();
-        //     }
+        //     this.state.formError = '';
+        //     this.state.formSuccess = '';
+        //     let status = response["success"];
+            let status = false;
+            this.setState({
+                currentPassword: '',
+                newPassword: '',
+                confirmPassword: ''
+            });
+            if (!status) {
+                this.state.formError = true;
+                this.forceUpdate();
+            } else {
+                this.state.formSuccess = true;
+                this.forceUpdate();
+            }
         // });
-        //
-        // xhr.open('POST', url);
-        // xhr.send(data);
     }
 
     render() {
         return (
             <div className="App">
                 <body className="Login-body">
-                <div className="Form-container" style={{marginBottom: "30px"}}>
+                <div className="Form-container" style={{marginBottom: "20px"}}>
                     <h3 className="Login-title">Change Password</h3>
                     {this.state.formError === true &&
                     <div className=".Login-alert-row">
                         <div className="Login-alert-container">
-                            <Alert className="Login-alert" severity="error">Incorrect email or password.</Alert>
+                            <Alert className="Login-alert" severity="error">Current password is incorrect.</Alert>
+                        </div>
+                    </div>
+                    }
+                    {this.state.formSuccess === true &&
+                    <div className=".Login-alert-row">
+                        <div className="Login-alert-container">
+                            <Alert className="Login-alert" severity="success">Password successfully changed.</Alert>
                         </div>
                     </div>
                     }
@@ -138,22 +162,25 @@ class ChangePassword extends React.Component {
                                 label="Current Password"
                                 type="password"
                                 variant="outlined"
+                                value={this.state.currentPassword}
                                 size="small"
                                 className="Login-input-field"
                                 onChange={this.handleChange}
                                 helperText={this.state.currentValid ? '' : this.state.currentError}
                             />
                         </div>
-                        <div className="Login-text-field">
+                        <div className="Login-text-field" style={{'align-items': "center"}}>
                             <TextField
                                 id="new-pw-input"
                                 name="newPassword"
                                 label="New Password"
                                 type="password"
                                 variant="outlined"
+                                value={this.state.newPassword}
                                 size="small"
                                 className="Login-input-field"
                                 onChange={this.handleChange}
+                                style={{'max-width':"220px"}}
                                 helperText={this.state.newValid ? '' : this.state.newError}
                             />
                         </div>
@@ -164,6 +191,7 @@ class ChangePassword extends React.Component {
                                 label="Confirm Password"
                                 type="password"
                                 variant="outlined"
+                                value={this.state.confirmPassword}
                                 size="small"
                                 className="Login-input-field"
                                 onChange={this.handleChange}
