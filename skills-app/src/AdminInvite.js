@@ -110,13 +110,12 @@ class AdminInvite extends React.Component {
         return this.postSignup().then( (response) => {
             console.log(response);
             let status = response["ok"];
-            let email = response["account"]["email"];
             console.log('status' + status);
-            console.log(email)
             if (!status) {
                 this.state.formError = true;
                 this.forceUpdate();
             } else {
+                let email = response["account"]["email"];
                 SessionDetails.setEmail(email);
                 this.state.formSuccess = true;
                 this.forceUpdate();
@@ -180,7 +179,7 @@ class AdminInvite extends React.Component {
                         {this.state.formError === true &&
                         <div className=".Login-alert-row">
                             <div className="Login-alert-container">
-                                <Alert className="Login-alert" severity="error">Incorrect email or password.</Alert>
+                                <Alert className="Login-alert" severity="error">User already exists</Alert>
                             </div>
                         </div>
                         }
