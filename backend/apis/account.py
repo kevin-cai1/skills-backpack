@@ -74,7 +74,7 @@ class createAccount(Resource):
         req = request.get_json()
         conn = db.get_conn()
         c = conn.cursor()
-
+        print(req)
         # check type of account
         accountType = req['user_type']
         if (accountType == "candidate"):           
