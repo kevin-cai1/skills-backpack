@@ -4,6 +4,7 @@ from flask import request, jsonify
 import db
 import secrets
 import string
+from werkzeug.security import generate_password_hash, check_password_hash
 
 api = Namespace('Login', description='Login validation operations')
 
@@ -50,7 +51,7 @@ class login(Resource):
         
         password = account[1]
         # check password match
-        if (req['password'] == password):         # if password matches
+        if (check_password_hash(password, req['password'])):         # if password matches
             return_val = {
                 'logged_in' : True,
                 'user' : req['email'],
@@ -77,6 +78,8 @@ class createAccount(Resource):
         print(req)
         # check type of account
         accountType = req['user_type']
+        password = req['password']
+        hashed_password = generate_password_hash(password, "sha256")
         if (accountType == "candidate"):           
             c.execute("SELECT EXISTS(SELECT email FROM Candidate WHERE email = ?)", (req['email'],))
             account_check = c.fetchone()[0] # returns 1 if exists
@@ -84,7 +87,7 @@ class createAccount(Resource):
             if (account_check == 1):    # user already exists
                 api.abort(400, "User '{}' already exists".format(req['email']), ok=False)
 
-            c.execute("INSERT INTO Candidate values (?,?,?,?,?,?)",(req['email'], req['name'], req['university'], req['password'], req['degree'], req['gradYear'],),)
+            c.execute("INSERT INTO Candidate values (?,?,?,?,?,?)",(req['email'], req['name'], req['university'], hashed_password, req['degree'], req['gradYear'],),)
             conn.commit()
             conn.close()
             account = {
@@ -103,7 +106,7 @@ class createAccount(Resource):
             if (account_check == 1):    # user already exists
                 api.abort(400, "User '{}' already exists".format(req['email']), ok=False)
             
-            c.execute("INSERT INTO Employer(email, name, password, company) values (?,?,?,?)", (req['email'], req['name'],req['password'], req['company'],),)
+            c.execute("INSERT INTO Employer(email, name, password, company) values (?,?,?,?)", (req['email'], req['name'],hashed_password , req['company'],),)
             conn.commit()
             conn.close()
             account = {
@@ -119,7 +122,7 @@ class createAccount(Resource):
             if (account_check == 1):    # user already exists
                 api.abort(400, "User '{}' already exists".format(req['email']), ok=False)
             
-            c.execute("INSERT INTO CourseAdmin(name, email, university, password) values (?,?,?,?)", (req['name'], req['email'],req['university'], req['password'],),)
+            c.execute("INSERT INTO CourseAdmin(name, email, university, password) values (?,?,?,?)", (req['name'], req['email'],req['university'], hashed_password,),)
             conn.commit()
             conn.close()
             account = {
@@ -135,8 +138,8 @@ class createAccount(Resource):
             if (account_check == 1):    # user already exists
                 api.abort(400, "User '{}' already exists".format(req['email']), ok=False)
             
-            new_password = generatePassword(20)
-
+            new_password = generate_password_hash(generatePassword(20), "sha256")
+            
 
             c.execute("INSERT INTO SkillsBackpackAdmin(name, email, password, newAccount) values (?,?,?,?)", (req['name'], req['email'],new_password,1,),)
             conn.commit()
