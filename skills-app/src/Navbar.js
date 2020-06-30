@@ -13,6 +13,7 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import SessionDetails from './SessionDetails';
 import './main.css';
 import { Menu, MenuItem } from '@material-ui/core';
+import { useHistory } from "react-router-dom";
 
 const theme = createMuiTheme({
     palette: {
@@ -42,6 +43,7 @@ export default function Navbar() {
 
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
+    const history = useHistory();
 
     const handleMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -56,6 +58,10 @@ export default function Navbar() {
         SessionDetails.removeEmail();
     }
 
+    const changeRoute = () => {
+        history.push("./home");
+    }
+
     return (
         <div className={classes.root}>
             <MuiThemeProvider theme={theme}>
@@ -64,13 +70,17 @@ export default function Navbar() {
                         <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" color="secondary">
                             <MenuIcon />
                         </IconButton>
-                        <AssignmentTurnedInIcon />
-                        <Typography variant="h6" className={classes.title} color="secondary">
-                            &nbsp;Skills Backpack
-                        </Typography>
+                        <div onClick={changeRoute} style={{"overflow":"auto","cursor": "pointer"}}>
+                            <div style={{"float":"left"}}><AssignmentTurnedInIcon /></div>
+                            <div style={{"overflow":"hidden"}}>
+                                <Typography variant="h6" className={classes.title} color="secondary">
+                                    &nbsp;Skills Backpack
+                                </Typography>
+                            </div>
+                        </div>
                         {
                             (SessionDetails.getEmail() != "") ?
-                                <div>
+                                <div style={{"margin-left":"auto","margin-right":"0"}}>
                                     <IconButton
                                         aria-label="account of current user"
                                         aria-controls="menu-appbar"
@@ -102,8 +112,9 @@ export default function Navbar() {
                                         <MenuItem onClick={handleLogout}><Link to='./login'>Logout</Link></MenuItem>
                                     </Menu>
                                 </div> :
-                                <Button color="secondary"><Link to='./login' className="header-button">Login</Link></Button>
-
+                                <div style={{"margin-left":"auto","margin-right":"0"}}>
+                                    <Button color="secondary"><Link to='./login' className="header-button">Login</Link></Button>
+                                </div>
                         }
                     </Toolbar>
                 </AppBar>
