@@ -98,6 +98,8 @@ class Login extends React.Component {
             console.log(response);
             let status = response["logged_in"];
             let email = response["user"];
+            let name = response["name"];
+            let user_type = response["user_type"];
             this.setState({
                 email: '',
                 password: '',
@@ -108,6 +110,7 @@ class Login extends React.Component {
                 this.forceUpdate();
             } else {
                 SessionDetails.setEmail(email);
+                SessionDetails.setType(user_type);
                 this.state.formSuccess = true;
                 this.forceUpdate();
             }
@@ -134,7 +137,7 @@ class Login extends React.Component {
                             </div>
                         </div>
                         }
-                        <FormControl variant="outlined" classType="Login-text-field">
+                        {/*<FormControl variant="outlined" classType="Login-text-field">
                             <InputLabel className="Login-label" htmlFor="outlined-age-native-simple">I'm a
                                 ...</InputLabel>
                             <Select
@@ -154,7 +157,7 @@ class Login extends React.Component {
                                 <option value="Student">Student</option>
                                 <option value="Employer">Employer</option>
                             </Select>
-                        </FormControl>
+                            </FormControl>*/}
                     </div>
                     <div className="Form-container">
                         <FormControl>

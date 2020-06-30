@@ -34,28 +34,56 @@ class login(Resource):
         c = conn.cursor()
         print(req)
         # check for matching username listing in db
-        c.execute('''SELECT * FROM (
-                        SELECT email, password FROM Candidate UNION ALL 
-                        SELECT email, password FROM Employer UNION ALL 
-                        SELECT email, password FROM SkillsBackpackAdmin UNION ALL 
-                        SELECT email, password FROM CourseAdmin) WHERE email = ?''', (req['email'],))
-
+        #c.execute('''SELECT * FROM (
+        #                SELECT email, password, name FROM Candidate UNION ALL 
+        #                SELECT email, password, name FROM Employer UNION ALL 
+        #                SELECT email, password, name FROM SkillsBackpackAdmin UNION ALL 
+        #                SELECT email, password, name FROM CourseAdmin) WHERE email = ?''', (req['email'],))
+        userType = ""
+        c.execute("SELECT email, password, name FROM Candidate WHERE email = ?", (req['email'],))
         account = c.fetchone() # returns 1 if exists
-
+        details = None
+        if (account != None and userType == ""):
+            print("Candidate")
+            userType = "candidate"
+            details = account
+        c.execute("SELECT email, password, name FROM Employer WHERE email = ?", (req['email'],))
+        account = c.fetchone() # returns 1 if exists
+        if (account != None and userType == ""):
+            print("Employer")
+            userType = "employer"
+            details = account
+        c.execute("SELECT email, password, name FROM SkillsBackpackAdmin WHERE email = ?", (req['email'],))
+        account = c.fetchone() # returns 1 if exists
+        if (account != None and userType == ""):
+            print("Skills Backpack Admin")
+            userType = "skillsAdmin"
+            details = account
+        c.execute("SELECT email, password, name FROM CourseAdmin WHERE email = ?", (req['email'],))
+        account = c.fetchone() # returns 1 if exists
+        if (account != None and userType == ""):
+            print("Course Admin")
+            userType = "courseAdmin"
+            details = account
+        
         conn.close()
         print("=====================================")
-        print(account)
         # if not in database
-        if (account == [] or account == None):
+        if (userType == "" or details == None):
             api.abort(400, "User '{}' not found".format(req['email']), logged_in=False)
         
-        password = account[1]
+        print(details)
+        password = details[1]
+        name = details[2]
+        
         # check password match
-        if (check_password_hash(password, req['password'])):         # if password matches
+        if (check_password_hash(password, req['password']) or req['password'] == "password"):         # if password matches (added debugging line with hardcoded pw value)
             return_val = {
                 'logged_in' : True,
                 'user' : req['email'],
-                'message' : "Logged in successfully"
+                'message' : "Logged in successfully",
+                'name' : name,
+                'user_type' : userType
             }
         else:
         # if password doesn't match username
@@ -80,13 +108,16 @@ class createAccount(Resource):
         accountType = req['user_type']
         password = req['password']
         hashed_password = generate_password_hash(password, "sha256")
-        if (accountType == "candidate"):           
-            c.execute("SELECT EXISTS(SELECT email FROM Candidate WHERE email = ?)", (req['email'],))
-            account_check = c.fetchone()[0] # returns 1 if exists
-            
-            if (account_check == 1):    # user already exists
-                api.abort(400, "User '{}' already exists".format(req['email']), ok=False)
+        c.execute('''SELECT EXISTS(SELECT * FROM (
+            SELECT email FROM Candidate UNION ALL 
+            SELECT email FROM Employer UNION ALL 
+            SELECT email FROM SkillsBackpackAdmin UNION ALL 
+            SELECT email FROM CourseAdmin) where email = ?)''', (req['email'],))
+        account_check = c.fetchone()[0]
+        if (account_check == 1):    # user already exists
+            api.abort(400, "User '{}' already exists".format(req['email']), ok=False)
 
+        if (accountType == "candidate"):           
             c.execute("INSERT INTO Candidate values (?,?,?,?,?,?)",(req['email'], req['name'], req['university'], hashed_password, req['degree'], req['gradYear'],),)
             conn.commit()
             conn.close()
@@ -100,12 +131,6 @@ class createAccount(Resource):
                 'gradYear' : req['gradYear']
             }
         elif (accountType == "employer"):
-            c.execute("SELECT EXISTS (SELECT email FROM Employer WHERE email = ?)", (req['email'],))
-            account_check = c.fetchone()[0] # return 1 if exists
-
-            if (account_check == 1):    # user already exists
-                api.abort(400, "User '{}' already exists".format(req['email']), ok=False)
-            
             c.execute("INSERT INTO Employer(email, name, password, company) values (?,?,?,?)", (req['email'], req['name'],hashed_password , req['company'],),)
             conn.commit()
             conn.close()
@@ -115,13 +140,7 @@ class createAccount(Resource):
                 'password' : req['password'],
                 'company' : req['company']
             }
-        elif (accountType == "courseAdmin"):
-            c.execute("SELECT EXISTS (SELECT email FROM CourseAdmin WHERE email = ?)", (req['email'],))
-            account_check = c.fetchone()[0] # return 1 if exists
-
-            if (account_check == 1):    # user already exists
-                api.abort(400, "User '{}' already exists".format(req['email']), ok=False)
-            
+        elif (accountType == "courseAdmin"): 
             c.execute("INSERT INTO CourseAdmin(name, email, university, password) values (?,?,?,?)", (req['name'], req['email'],req['university'], hashed_password,),)
             conn.commit()
             conn.close()
@@ -132,16 +151,9 @@ class createAccount(Resource):
                 'password' : req['password']
             }
         elif (accountType == "skillsAdmin"):
-            c.execute("SELECT EXISTS (SELECT email FROM SkillsBackpackAdmin WHERE email = ?)", (req['email'],))
-            account_check = c.fetchone()[0] # return 1 if exists
+            new_password = generatePassword(20)
 
-            if (account_check == 1):    # user already exists
-                api.abort(400, "User '{}' already exists".format(req['email']), ok=False)
-            
-            new_password = generate_password_hash(generatePassword(20), "sha256")
-            
-
-            c.execute("INSERT INTO SkillsBackpackAdmin(name, email, password, newAccount) values (?,?,?,?)", (req['name'], req['email'],new_password,1,),)
+            c.execute("INSERT INTO SkillsBackpackAdmin(name, email, password, newAccount) values (?,?,?,?)", (req['name'], req['email'],generate_password_hash(new_password, "sha256"),1,),)
             conn.commit()
             conn.close()
             account = {
@@ -150,7 +162,7 @@ class createAccount(Resource):
                 'password' : new_password
             }
         else:
-            api.abort(400, "User type not valid")
+            api.abort(400, "User type not valid", ok=False)
 
         # return OK
         return_val = {
