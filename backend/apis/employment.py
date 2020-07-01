@@ -3,6 +3,7 @@ from flask import request, jsonify
 
 import db
 import re
+from pprint import pprint
 
 api = Namespace('Employment', description='Endpoints relating to employment details on candidate ePortfolios')
 
@@ -48,7 +49,23 @@ class EmploymentDetails(Resource):
 
     @api.doc(description="Delete single employment record")
     def delete(self, record_id):
-        pass
+        conn = db.get_conn()
+        c = conn.cursor()
+
+        c.execute("SELECT EXISTS(SELECT id FROM Employment WHERE id = ?)", (record_id,))  
+        record_check = c.fetchone()[0]    # returns 1 if exists, otherwise 0
+
+        if (record_check == 0):   # entry doesn't exist
+            api.abort(400, "Entry '{}' doesn't exist".format(record_id),ok=False)
+
+        c.execute("DELETE FROM Employment WHERE id = ?", (record_id,))
+
+        conn.commit()
+        conn.close()
+        return_val = {
+            'ok' : True
+        }
+        return return_val
 
 @api.route('/add')
 class AddEmployment(Resource):
@@ -106,7 +123,36 @@ class AddEmployment(Resource):
 class StudentEmployment(Resource):
     @api.doc(description="Get all employment records for specified student")
     def get(self, email):
-        pass
+        conn = db.get_conn()
+        c = conn.cursor()
+        c.execute('''SELECT e.id, e.description, e.startDate, e.endDate, e.employer FROM Candidate c LEFT JOIN
+                    Employment_ePortfolio ep ON ep.EP_ID = c.EP_ID LEFT JOIN
+                    Employment e ON ep.employmentId = e.id WHERE c.email = ?''', (email,))
+        results = c.fetchall()
+        if (results == []):
+            api.abort(400, "No employment records found for '{}'".format(email), ok=False)
+            
+        entries = []
+        entry_count = 0
+        for r in results:
+            print(r)
+            entry = {
+                'id': r[0],
+                'description': r[1],
+                'start_date': r[2],
+                'end_date': r[3],
+                'employer': r[4]
+            }
+            entries.append(entry)
+            entry_count += 1
+        pprint(entries)
+        return_val = {
+            'ok': True,
+            'entry_count': entry_count,
+            'entries': entries
+        }
+
+        return return_val
 
 
 def generate_employmentID():
