@@ -90,7 +90,7 @@ class Register extends React.Component {
             "password": e.target.password.value,
             "university": e.target.uni.value,
             "degree": e.target.degree.value,
-            "graduation": e.target.graduation.value
+            "gradYear": e.target.graduation.value
         });
         let url = 'http://localhost:5000/account/create';
         console.log('Sending to ' + url + ': ' + data);
