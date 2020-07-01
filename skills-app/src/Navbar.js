@@ -90,7 +90,7 @@ export default function Navbar() {
                                     >
                                         <AccountCircleIcon />
                                         <Typography variant="h6" className={classes.title} color="secondary">
-                                            &nbsp;{SessionDetails.getEmail()}
+                                            &nbsp;{SessionDetails.getName()}
                                         </Typography>
                                     </IconButton>
                                     <Menu
@@ -109,7 +109,7 @@ export default function Navbar() {
                                         onClose={handleClose}
                                     >
                                         <MenuItem onClick={handleClose}><Link to='./changePassword'>Change Password</Link></MenuItem>
-                                        <MenuItem onClick={handleLogout}><Link to='./login'>Logout</Link></MenuItem>
+                                        <MenuItem onClick={handleLogout}><Link to='./'>Logout</Link></MenuItem>
                                     </Menu>
                                 </div> :
                                 <div style={{"margin-left":"auto","margin-right":"0"}}>
