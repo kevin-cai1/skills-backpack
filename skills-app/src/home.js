@@ -17,6 +17,7 @@ class Home extends React.Component {
           course_admin_open: false,
           site_admin_open: false,
           details_open: false,
+          change_password: false,
           name_details: '',
           email_details: '',
           password_details: ''
@@ -30,6 +31,12 @@ class Home extends React.Component {
         this.handleDetailsOpen = this.handleDetailsOpen.bind(this);
         this.handleDetailsClose = this.handleDetailsClose.bind(this);
         this.handleSkillsAdminLoad = this.handleSkillsAdminLoad.bind(this);
+    }
+
+    componentDidMount() {
+        if(SessionDetails.getType() == "skillsAdmin"){
+            this.handleSkillsAdminLoad()
+        }
     }
 
     handleLogout() {
@@ -60,13 +67,50 @@ class Home extends React.Component {
         this.setState({details_open: false});
     }
 
+    handleChangePassword() {
+        this.setState({change_password: true});
+    }
+
+    validatePassword = (password) => {
+        const errors = [];
+        if(!password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/)){
+            errors.push("Invalid password: Password must be min. 8 characters with at least one lower case and upper case letter and number.")
+        }
+        console.log("errors: ", errors);
+        return errors;
+    };
+
+    handleChangePasswordSubmit = (e) => {
+        const password = e.target.password.value;
+        const errors = this.validatePassword(password);
+        if (errors.length == 0) {
+            const response = this.sendSiteAdmin(e);
+            if (response === false) {
+              alert("Something went wrong. Try again later.");
+            }
+            else{
+              this.setState({change_password: false});
+              alert("Password successfully updated.");
+            }
+
+        }
+        else {
+            alert(errors);
+        }
+    }
+
     handleSkillsAdminLoad() {
-      const account = this.sendSkillsAdminLogin();
-      alert(account);
+      return this.sendSkillsAdminLogin().then( (response) => {
+          console.log(response);
+          if(response.message == "Password needs to be updated") {
+              this.handleChangePassword();
+              alert("Change password before proceeding");
+          }
+      });
     }
 
     sendSkillsAdminLogin() {
-        let url = 'http://localhost:5000/'+ SessionDetails.getEmail() + '/new&' + SessionDetails.getEmail();
+        let url = 'http://localhost:5000/skills_admin/new/' + SessionDetails.getEmail();
         console.log('Sending to ' + url);
 
         return fetch(url, {
@@ -104,7 +148,7 @@ class Home extends React.Component {
             .catch(err => console.log('Error:', err));
     }
 
-    validate = (email) => {
+    validateEmail = (email) => {
         const errors = [];
         if(!email.match(/^.+@.+$/i)){
             errors.push("Invalid email.")
@@ -116,7 +160,7 @@ class Home extends React.Component {
     handleFormSubmit = (e) => {
         e.preventDefault();
         const email = e.target.email.value;
-        const errors = this.validate(email);
+        const errors = this.validateEmail(email);
         if (errors.length == 0) {
             const response = this.sendSiteAdmin(e).then( (response) => {
                 console.log('Final response?: ', response);
@@ -172,7 +216,6 @@ class Home extends React.Component {
         }
         if( SessionDetails.getType() === "skillsAdmin" ) {
           return (
-            this.handleSkillsAdminLoad(),
             <div className="A-page">
               <header className="App-header">
                   <h1>Skills Backpack</h1>
@@ -297,6 +340,33 @@ class Home extends React.Component {
                       <Button onClick={this.handleDetailsClose} color="primary">
                         OK
                       </Button>
+                    </DialogContent>
+                  </Dialog>
+              </MuiThemeProvider>
+              <MuiThemeProvider theme={theme}>
+                  <Dialog
+                    aria-labelledby="form-dialog-title"
+                    open={this.state.change_password}
+                  >
+                    <DialogContent>
+                      <DialogContentText type="title" id="modal-title">
+                        Set new permanent password:
+                      </DialogContentText>
+                      <form onSubmit={(e) => this.handleChangePasswordSubmit(e)}>
+                        <TextField
+                          autoFocus
+                          required
+                          margin="normal"
+                          id="password"
+                          name="name"
+                          label="New Password"
+                          type="password"
+                          fullWidth
+                        />
+                        <Button type="submit" color="primary">
+                          Set Password
+                        </Button>
+                      </form>
                     </DialogContent>
                   </Dialog>
               </MuiThemeProvider>
