@@ -14,15 +14,40 @@ employment_data = api.model('employment', {
     'description' : fields.String(description="Free text input description of employment")
 })
 
-@api.route('/<int:id>')
-@api.doc(params={'id': 'the id from an existing employment record'})
+@api.route('/<int:record_id>')
+@api.doc(params={'record_id': 'the id from an existing employment record'})
 class EmploymentDetails(Resource):
     @api.doc(description="Get details of a single employment record")
-    def get(self, id):
-        pass
+    def get(self, record_id):
+        conn = db.get_conn()
+        c = conn.cursor()
+
+        c.execute("SELECT id, description, startDate, endDate, employer FROM Employment WHERE id = ?", (record_id,))
+        result = c.fetchone()
+        if (result == None):
+            api.abort(400, "Employment record '{}' doesn't exist".format(record_id), ok=False)
+
+        entry = {
+            'id' : result[0],
+            'start_date' : result[2],
+            'end_date' : result[3],
+            'description' : result[1],
+            'employer' : result[4],
+        }
+        c.execute('''select email from Candidate c 
+            LEFT JOIN Employment_ePortfolio ep ON ep.EP_ID = c.EP_ID 
+            LEFT JOIN Employment e ON ep.employmentId = e.id WHERE e.id = ?''', (record_id,))
+        user = c.fetchone()[0]
+
+        return_val = {
+            'ok' : True,
+            'user': user,
+            'employment' : entry
+        }
+        return return_val
 
     @api.doc(description="Delete single employment record")
-    def delete(self, id):
+    def delete(self, record_id):
         pass
 
 @api.route('/add')
@@ -39,45 +64,30 @@ class AddEmployment(Resource):
         c = conn.cursor()
 
         # check user exists
-        c.execute("SELECT EXISTS(SELECT email FROM Candidate WHERE email = ?)", (req['user'],))  
-        user_check = c.fetchone()[0]    # returns 1 if exists, otherwise 0
+        c.execute("SELECT EP_ID FROM Candidate WHERE email = ?", (req['user'],))
+        portfolioID = c.fetchone()   # check if exists
 
-        if (user_check == 0):
-            api.abort(400, "User '{}' doesn't exist".format(req['user']), ok=False)
-
-        # check ePortfolio of user
-        # WAIT ON CHANGE FROM GORDON
-        # should be SELECT portfolioID from Candidate WHERE email = ?
-        c.execute("SELECT id FROM ePortfolio WHERE email = ?", (req['user'],))
-        portfolioID = c.fetchone()[0]   # check if exists
-
-        print(portfolioID)
         # if ! exists:
         if (portfolioID == None):
-            # create ePortfolio for user
-            newID = generate_portfolioID()
-            c.execute("INSERT INTO ePortfolio (id, email) VALUES(?,?)", (newID, req['user'],))
-            conn.commit()
-            portfolioID = newID
-
+            api.abort(400, "User '{}' doesn't exist".format(req['user']), ok=False)
+        
         #portfolioID = __
+        portfolioID = portfolioID[0]
 
         # create employment record
 
         employmentID = generate_employmentID()
         employment = (employmentID, req['description'], req['start_date'], req['end_date'], req['employer'],)
         c.execute("INSERT INTO Employment (id, description, startDate, endDate, employer) VALUES (?,?,?,?,?)", employment)
-        print(c.fetchone())
-        conn.commit()
-
+        
         # map employmentID to portfolioID
-        c.execute("INSERT INTO Employment_ePortfolio (employmentID, portfolioId) VALUES(?,?)", (employmentID, portfolioID,))
+        c.execute("INSERT INTO Employment_ePortfolio (employmentID, EP_ID) VALUES(?,?)", (employmentID, portfolioID,))
         conn.commit()
         conn.close()
+        
         # return success
         entry = {
             'id' : employmentID,
-            'user' : req['user'],
             'start_date' : req['start_date'],
             'end_date' : req['end_date'],
             'description' : req['description'],
@@ -86,6 +96,7 @@ class AddEmployment(Resource):
 
         return_val = {
             'ok' : True,
+            'user' : req['user'],
             'employment' : entry
         }
         return return_val
@@ -97,13 +108,6 @@ class StudentEmployment(Resource):
     def get(self, email):
         pass
 
-
-def generate_portfolioID():
-    conn = db.get_conn() 
-    c = conn.cursor() #cursor to execute commands
-    c.execute('SELECT MAX(id) FROM ePortfolio')
-    val = c.fetchone()[0]
-    return val+1
 
 def generate_employmentID():
     conn = db.get_conn() 
