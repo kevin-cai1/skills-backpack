@@ -24,3 +24,7 @@ I also wrote a few endpoints to implement skills administration account creation
 I then looked at integration with the SendGrid API to send email invites. I started by implementing a basic email invite system.
 Later in the week I added a front end interface for course admin creation and linked the email through the url to autofill email
 on account creation.
+
+Week 5
+We presented our sprint 1 demo at the start of the week and performed our retrospective immediately after.
+We took on some feedback from Rachid, and I worked to remedy some issues with our system (fixing our login page, adding password encryption)
