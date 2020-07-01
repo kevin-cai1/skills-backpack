@@ -184,6 +184,7 @@ class Register extends React.Component {
         else if(confirm != password) {
             errors.push("Passwords do not match.")
         }
+        console.log("errors: ", errors);
         return errors;
     };
 
@@ -252,7 +253,7 @@ class Register extends React.Component {
               <InputLabel htmlFor="title-select">Title</InputLabel>
               <Select name="title" labelId="title-select" id="select">
                 <MenuItem value="Dr">Dr</MenuItem>
-                <MenuItem value="Prof">Dr</MenuItem>
+                <MenuItem value="Prof">Prof</MenuItem>
                 <MenuItem value="Mr">Mr</MenuItem>
                 <MenuItem value="Mrs">Mrs</MenuItem>
                 <MenuItem value="Ms">Ms</MenuItem>
@@ -286,7 +287,7 @@ class Register extends React.Component {
             </FormControl>
             <MuiThemeProvider theme={theme}>
               <Box m={3}>
-                <Button type="submit" variant="contained" color="primary" component={Link} to="./login">
+                <Button type="submit" variant="contained" color="primary">
                   Sign Up
                 </Button>
               </Box>
@@ -338,7 +339,7 @@ class Register extends React.Component {
             </FormControl>
             <MuiThemeProvider theme={theme}>
               <Box m={3}>
-                <Button type="submit" variant="contained" color="primary" component={Link} to="./login">
+                <Button type="submit" variant="contained" color="primary">
                   Sign Up
                 </Button>
               </Box>
@@ -375,7 +376,7 @@ class Register extends React.Component {
             </FormControl>
             <MuiThemeProvider theme={theme}>
               <Box m={3}>
-                <Button type="submit" variant="contained" color="primary" component={Link} to="./login">
+                <Button type="submit" variant="contained" color="primary">
                   Sign Up
                 </Button>
               </Box>
