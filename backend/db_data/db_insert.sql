@@ -78,7 +78,7 @@ VALUES
 	('teamwork', 'COMP1000', 'USYD');
 
 -- Inserting data into Employment_ePortfolio table
-INSERT INTO Employment_ePortfolio(employmentId, portfolioName)
+INSERT INTO Employment_ePortfolio(employmentId, portfolioId)
 VALUES
 	(1, 'Charmaine Leung'),
 	(2, 'Miran Nakamura');

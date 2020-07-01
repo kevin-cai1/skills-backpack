@@ -155,16 +155,16 @@ CREATE TABLE Course_GradOutcomes (
 DROP TABLE IF EXISTS Employment_ePortfolio;
 CREATE TABLE Employment_ePortfolio (
 	employmentId INTEGER NOT NULL,
-	portfolioName TEXT NOT NULL,
+	portfolioId TEXT NOT NULL,
 	FOREIGN KEY (employmentId)
 		REFERENCES Employment (id)
 			ON DELETE CASCADE
 			ON UPDATE CASCADE,
-	FOREIGN KEY (portfolioName)
-		REFERENCES ePortfolio (name)
+	FOREIGN KEY (portfolioId)
+		REFERENCES ePortfolio (id)
 			ON DELETE CASCADE
 			ON UPDATE CASCADE,
-	PRIMARY KEY (employmentId, portfolioName)
+	PRIMARY KEY (employmentId, portfolioId)
 );
 
 
