@@ -15,13 +15,20 @@ class Home extends React.Component {
         super(props);
         this.state = {
           course_admin_open: false,
-          site_admin_open: false
+          site_admin_open: false,
+          details_open: false,
+          name_details: '',
+          email_details: '',
+          password_details: ''
         };
         this.handleLogout = this.handleLogout.bind(this);
+        this.handleFormSubmit = this.handleFormSubmit.bind(this);
         this.handleCourseAdminModal = this.handleCourseAdminModal.bind(this);
         this.handleSiteAdminModal = this.handleSiteAdminModal.bind(this);
         this.handleCourseAdminModalClose = this.handleCourseAdminModalClose.bind(this);
         this.handleSiteAdminModalClose = this.handleSiteAdminModalClose.bind(this);
+        this.handleDetailsOpen = this.handleDetailsOpen.bind(this);
+        this.handleDetailsClose = this.handleDetailsClose.bind(this);
     }
 
     handleLogout() {
@@ -43,6 +50,70 @@ class Home extends React.Component {
     handleSiteAdminModalClose() {
         this.setState({site_admin_open: false});
     }
+
+    handleDetailsOpen() {
+        this.setState({details_open: true});
+    }
+
+    handleDetailsClose() {
+        this.setState({details_open: false});
+    }
+
+    sendSiteAdmin(e) {
+        let data = JSON.stringify({
+            "user_type": "skillsAdmin",
+            "name": e.target.name.value,
+            "email": e.target.email.value
+        });
+        let url = 'http://localhost:5000/account/create';
+        console.log('Sending to ' + url + ': ' + data);
+
+        return fetch(url, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: data
+        }).then(response => {
+            return response.ok && response.json();
+        })
+            .catch(err => console.log('Error:', err));
+    }
+
+    validate = (email) => {
+        const errors = [];
+        if(!email.match(/^.+@.+$/i)){
+            errors.push("Invalid email.")
+        }
+        console.log("errors: ", errors);
+        return errors;
+    };
+
+    handleFormSubmit = (e) => {
+        e.preventDefault();
+        const email = e.target.email.value;
+        const errors = this.validate(email);
+        if (errors.length == 0) {
+            const response = this.sendSiteAdmin(e).then( (response) => {
+                console.log('Final response?: ', response);
+                this.setState({ name_details: response.account.name })
+                this.setState({ email_details: response.account.email })
+                this.setState({ password_details: response.account.password })
+            });
+            if (response === false) {
+              alert("Something went wrong. Try again later.");
+            }
+            else{
+              this.handleSiteAdminModalClose();
+              this.handleDetailsOpen();
+            }
+
+        }
+        else {
+            alert(errors);
+        }
+    };
 
     render() {
         if( SessionDetails.getType() === "course_admin" ) {
@@ -116,6 +187,7 @@ class Home extends React.Component {
                     </DialogContentText>
                     <TextField
                       autoFocus
+                      required
                       margin="dense"
                       id="email"
                       name="email"
@@ -135,43 +207,74 @@ class Home extends React.Component {
                 </Dialog>
               </MuiThemeProvider>
               <MuiThemeProvider theme={theme}>
-                <Dialog
-                  aria-labelledby="form-dialog-title"
-                  open={this.state.site_admin_open}
-                  onClose={this.handleSiteAdminModalClose}
-                >
-                  <DialogContent>
-                    <DialogContentText type="title" id="modal-title">
-                      New Skills Backpack admin details
-                    </DialogContentText>
-                    <TextField
-                      autoFocus
-                      margin="dense"
-                      id="email"
-                      name="email"
-                      label="Email Address"
-                      type="email"
-                      fullWidth
-                    />
-                    <TextField
-                      margin="dense"
-                      id="temp-password"
-                      name="temp-password"
-                      label="Temporary Password"
-                      type="text"
-                      helperText="User will be prompted to change password on first login"
-                      fullWidth
-                    />
-                  </DialogContent>
-                  <DialogActions>
-                    <Button onClick={this.handleSiteAdminModalClose} color="primary">
-                      Cancel
-                    </Button>
-                    <Button color="primary">
-                      Create
-                    </Button>
-                  </DialogActions>
-                </Dialog>
+                  <Dialog
+                    aria-labelledby="form-dialog-title"
+                    open={this.state.site_admin_open}
+                    onClose={this.handleSiteAdminModalClose}
+                  >
+                    <DialogContent>
+                      <form onSubmit={(e) => this.handleFormSubmit(e)}>
+                        <DialogContentText type="title" id="modal-title">
+                          New Skills Backpack admin details
+                        </DialogContentText>
+                        <TextField
+                          autoFocus
+                          required
+                          margin="normal"
+                          id="name"
+                          name="name"
+                          label="Full Name"
+                          type="text"
+                          fullWidth
+                        />
+                        <TextField
+                          required
+                          margin="normal"
+                          id="email"
+                          name="email"
+                          label="Email Address"
+                          type="email"
+                          fullWidth
+                        />
+                        <Button onClick={this.handleSiteAdminModalClose} color="primary">
+                          Cancel
+                        </Button>
+                        <Button type="submit" color="primary">
+                          Create
+                        </Button>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
+              </MuiThemeProvider>
+              <MuiThemeProvider theme={theme}>
+                  <Dialog
+                    aria-labelledby="form-dialog-title"
+                    open={this.state.details_open}
+                    onClose={this.handleDetailsClose}
+                  >
+                    <DialogContent>
+                      <DialogContentText type="title" id="modal-title">
+                        Admin account has been created!
+                      </DialogContentText>
+                      <DialogContentText type="title" id="modal-title">
+                        Copy below details to login and change password
+                      </DialogContentText>
+                      <DialogContent>
+                        <p>
+                          Name: {this.state.name_details}
+                        </p>
+                        <p>
+                          Email: {this.state.email_details}
+                        </p>
+                        <p>
+                          Temporary Password: {this.state.password_details}
+                        </p>
+                      </DialogContent>
+                      <Button onClick={this.handleDetailsClose} color="primary">
+                        OK
+                      </Button>
+                    </DialogContent>
+                  </Dialog>
               </MuiThemeProvider>
             </div>
           );
