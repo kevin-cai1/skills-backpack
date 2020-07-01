@@ -28,3 +28,4 @@ on account creation.
 Week 5
 We presented our sprint 1 demo at the start of the week and performed our retrospective immediately after.
 We took on some feedback from Rachid, and I worked to remedy some issues with our system (fixing our login page, adding password encryption)
+I then wrote up all the endpoints relating to working with employment records on user portfolios.

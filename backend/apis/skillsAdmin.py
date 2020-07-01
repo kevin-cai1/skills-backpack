@@ -2,11 +2,12 @@ from flask_restplus import Namespace, Resource, fields
 from flask import request, jsonify
 
 import db
+from werkzeug.security import generate_password_hash, check_password_hash
+
 
 api = Namespace('SkillsAdmin', description='SkillsAdmin user operations')
 
-update_details = api.model('update', {
-    'password'  : fields.String(description='password for account access', required=True),
+update_details = api.model('update_skills', {
     'new_password' : fields.String(description='new password for account access', required=True)
 })
 
@@ -50,11 +51,11 @@ class SkillsAdminAccount(Resource):
             api.abort(400, "User '{}' not found".format(email), ok=False)
         
         password = query[0]
-        if req['password'] == password:
-            c.execute("UPDATE SkillsBackpackAdmin SET password = ? WHERE email = ?", (req['new_password'],email,))
-            conn.commit()
-        else:
-            api.abort(400, "Password incorrect", ok=False)
+        #(check_password_hash(password, req['password'])
+        hashed_password = generate_password_hash(req['new_password'], "sha256")
+        c.execute("UPDATE SkillsBackpackAdmin SET password = ? WHERE email = ?", (hashed_password, email,))
+        conn.commit()
+            #api.abort(400, "Password incorrect", ok=False)
         conn.close()
 
         return {
