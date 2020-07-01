@@ -29,6 +29,7 @@ class Home extends React.Component {
         this.handleSiteAdminModalClose = this.handleSiteAdminModalClose.bind(this);
         this.handleDetailsOpen = this.handleDetailsOpen.bind(this);
         this.handleDetailsClose = this.handleDetailsClose.bind(this);
+        this.handleSkillsAdminLoad = this.handleSkillsAdminLoad.bind(this);
     }
 
     handleLogout() {
@@ -59,11 +60,33 @@ class Home extends React.Component {
         this.setState({details_open: false});
     }
 
+    handleSkillsAdminLoad() {
+      const account = this.sendSkillsAdminLogin();
+      alert(account);
+    }
+
+    sendSkillsAdminLogin() {
+        let url = 'http://localhost:5000/'+ SessionDetails.getEmail() + '/new&' + SessionDetails.getEmail();
+        console.log('Sending to ' + url);
+
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+        }).then(response => {
+            return response.ok && response.json();
+        })
+            .catch(err => console.log('Error:', err));
+    }
+
     sendSiteAdmin(e) {
         let data = JSON.stringify({
             "user_type": "skillsAdmin",
             "name": e.target.name.value,
-            "email": e.target.email.value
+            "email": e.target.email.value,
+            "password": ''
         });
         let url = 'http://localhost:5000/account/create';
         console.log('Sending to ' + url + ': ' + data);
@@ -116,7 +139,7 @@ class Home extends React.Component {
     };
 
     render() {
-        if( SessionDetails.getType() === "course_admin" ) {
+        if( SessionDetails.getType() === "courseAdmin" ) {
           return (
             <div className="A-page">
               <header className="App-header">
@@ -147,8 +170,9 @@ class Home extends React.Component {
             </div>
           );
         }
-        if( SessionDetails.getType() === "site_admin" ) {
+        if( SessionDetails.getType() === "skillsAdmin" ) {
           return (
+            this.handleSkillsAdminLoad(),
             <div className="A-page">
               <header className="App-header">
                   <h1>Skills Backpack</h1>
