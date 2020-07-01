@@ -9,7 +9,12 @@ CREATE TABLE Candidate (
 	university TEXT,
 	password TEXT NOT NULL,
 	degree TEXT,
-	gradYear INTEGER
+	gradYear INTEGER,
+	EP_ID INTEGER,
+	FOREIGN KEY(EP_ID) 
+		REFERENCES ePortfolio (id)
+			ON DELETE CASCADE
+			ON UPDATE CASCADE
 );
 
 -- Create ePortfolioLink table
@@ -85,13 +90,8 @@ CREATE TABLE GraduateOutcomes (
 DROP TABLE IF EXISTS ePortfolio;
 CREATE TABLE ePortfolio (
 	id INTEGER PRIMARY KEY,
-	email TEXT,
 	employabilitySkills TEXT, 
-	jobSkills TEXT,
-	FOREIGN KEY (email)
-		REFERENCES Candidate (email)
-			ON DELETE CASCADE
-			ON UPDATE CASCADE
+	jobSkills TEXT
 );
 
 -- Create Employment table
@@ -116,12 +116,8 @@ CREATE TABLE Course_LearnOutcomes (
 		REFERENCES LearningOutcomes (l_outcome)
 			ON DELETE CASCADE
 			ON UPDATE CASCADE,
-	FOREIGN KEY (code)
-		REFERENCES Course (code)
-			ON DELETE CASCADE
-			ON UPDATE CASCADE,
-	FOREIGN KEY (university)
-		REFERENCES Course (university)
+	FOREIGN KEY (code, university)
+		REFERENCES Course (code, university)
 			ON DELETE CASCADE
 			ON UPDATE CASCADE,
 	PRIMARY KEY (l_outcome, code, university)
@@ -138,12 +134,8 @@ CREATE TABLE Course_GradOutcomes (
 		REFERENCES GraduateOutcomes (g_outcome)
 			ON DELETE CASCADE
 			ON UPDATE CASCADE,
-	FOREIGN KEY (code)
-		REFERENCES Course (code)
-			ON DELETE CASCADE
-			ON UPDATE CASCADE,
-	FOREIGN KEY (university)
-		REFERENCES Course (university)
+	FOREIGN KEY (code, university)
+		REFERENCES Course (code, university)
 			ON DELETE CASCADE
 			ON UPDATE CASCADE,
 	PRIMARY KEY (g_outcome, code, university)
@@ -155,16 +147,16 @@ CREATE TABLE Course_GradOutcomes (
 DROP TABLE IF EXISTS Employment_ePortfolio;
 CREATE TABLE Employment_ePortfolio (
 	employmentId INTEGER NOT NULL,
-	portfolioId TEXT NOT NULL,
+	EP_ID TEXT NOT NULL,
 	FOREIGN KEY (employmentId)
 		REFERENCES Employment (id)
 			ON DELETE CASCADE
 			ON UPDATE CASCADE,
-	FOREIGN KEY (portfolioId)
+	FOREIGN KEY (EP_ID)
 		REFERENCES ePortfolio (id)
 			ON DELETE CASCADE
 			ON UPDATE CASCADE,
-	PRIMARY KEY (employmentId, portfolioId)
+	PRIMARY KEY (employmentId, EP_ID)
 );
 
 
@@ -172,18 +164,18 @@ CREATE TABLE Employment_ePortfolio (
 -- Maps each EP to each completed course included in it
 DROP TABLE IF EXISTS ePortfolio_Courses;
 CREATE TABLE ePortfolio_Courses (
-	name TEXT NOT NULL,
+	EP_ID TEXT NOT NULL,
 	code TEXT NOT NULL,
 	university TEXT NOT NULL,
-	FOREIGN KEY (name)
-		REFERENCES ePortfolio (name)
+	FOREIGN KEY (EP_ID)
+		REFERENCES ePortfolio (id)
 			ON DELETE CASCADE
 			ON UPDATE CASCADE,
 	FOREIGN KEY (code, university)
 		REFERENCES Course (code, university)
 			ON DELETE CASCADE
 			ON UPDATE CASCADE,
-	PRIMARY KEY (name, code, university)
+	PRIMARY KEY (EP_ID, code, university)
 );
 
 
@@ -202,23 +194,6 @@ CREATE TABLE Candidate_Links (
 			ON DELETE CASCADE
 			ON UPDATE CASCADE,
 	PRIMARY KEY (link, email)
-);
-
--- Create Candidate_ePortfolio table
--- Maps each candidate to their corresponding ePortfolio
-DROP TABLE IF EXISTS Candidate_ePortfolio;
-CREATE TABLE Candidate_ePortfolio (
-	id INTEGER NOT NULL,
-	email TEXT NOT NULL,
-	FOREIGN KEY (id)
-		REFERENCES ePortfolio (id)
-			ON DELETE CASCADE
-			ON UPDATE CASCADE,
-	FOREIGN KEY (email)
-		REFERENCES Candidate (email)
-			ON DELETE CASCADE
-			ON UPDATE CASCADE,
-	PRIMARY KEY (id, email)
 );
 
 -- Create Course_CourseAdmin table

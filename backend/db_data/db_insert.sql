@@ -1,10 +1,10 @@
 -- sample data for skills system
 
 -- Inserting data into candidate table
-INSERT INTO Candidate (email, name, university, password) 
+INSERT INTO Candidate (email, name, university, password, degree, gradYear, EP_ID) 
 VALUES 
-	('charmaineleung@unsw.edu.au', 'Charmaine Leung', 'UNSW', 'charmaine'),
-	('mirannakamura@usyd.edu.au', 'Miran Nakamura', 'USYD', 'miran');
+	('charmaineleung@unsw.edu.au', 'Charmaine Leung', 'UNSW', 'charmaine', 'Computer Science', 2021, 1),
+	('mirannakamura@usyd.edu.au', 'Miran Nakamura', 'USYD', 'miran', 'Computer Science', 2021, 2);
 	--('alexgu@uts.edu.au', 'Alex Gu', 'UTS', 'alex'
 
 -- Inserting data in ePortfolioLink table
@@ -78,16 +78,16 @@ VALUES
 	('teamwork', 'COMP1000', 'USYD');
 
 -- Inserting data into Employment_ePortfolio table
-INSERT INTO Employment_ePortfolio(employmentId, portfolioId)
+INSERT INTO Employment_ePortfolio(employmentId, EP_ID)
 VALUES
-	(1, 'Charmaine Leung'),
-	(2, 'Miran Nakamura');
+	(1, 1),
+	(2, 2);
 
 -- Inserting data into ePortfolio_courses table
-INSERT INTO ePortfolio_Courses (name, code, university)
+INSERT INTO ePortfolio_Courses (EP_ID, code, university)
 VALUES
-	('Charmaine Leung', 'COMP3900', 'UNSW'),
-	('Miran Nakamura', 'COMP1000', 'USYD');
+	(1, 'COMP3900', 'UNSW'),
+	(2, 'COMP1000', 'USYD');
 
 -- Inserting data into Candidate_Links table
 INSERT INTO Candidate_Links (link, email)
@@ -100,9 +100,3 @@ INSERT INTO Course_CourseAdmin (email, code, university)
 VALUES
 	('courseadmin1@unsw.edu.au', 'COMP3900', 'UNSW'),
 	('courseadmin2@usyd.edu.au', 'COMP1000', 'USYD');
-
--- Inserting data into Candidate_ePortfolio table
-INSERT INTO Candidate_ePortfolio (id, email)
-VALUES
-	(1, 'charmaineleung@unsw.edu.au'),
-	(2, 'mirannakamura@usyd.edu.au');
