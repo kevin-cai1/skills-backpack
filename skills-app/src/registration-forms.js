@@ -31,31 +31,6 @@ class Register extends React.Component {
       this.setState({ value: index });
     };
 
-    sendSiteAdmin(e, type) {
-        let data = JSON.stringify({
-            "user_type": type,
-            "name": e.target.name.value,
-            "email": e.target.email.value,
-            "password": e.target.password.value,
-        });
-        let url = 'http://localhost:5000/account/create';
-        console.log('Sending to ' + url + ': ' + data);
-
-        return fetch(url, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: data
-        }).then(response => {
-            console.log('response ' + response);
-            console.log('response stat HELLO?? ' + response.status);
-            return response.ok && response.json();
-        })
-            .catch(err => console.log('Error:', err));
-    }
-
     sendCourseAdmin(e, type) {
         let data = JSON.stringify({
             "user_type": type,
@@ -139,14 +114,7 @@ class Register extends React.Component {
 
     createAccount = (e, type) => {
         console.log(type);
-        if(type == "skillsAdmin") {
-          console.log("skillsadmin!");
-          this.setState({redirect: 1});
-          return this.sendSiteAdmin(e, type).then( (response) => {
-              console.log(response);
-          });
-        }
-        else if (type == "courseAdmin") {
+        if (type == "courseAdmin") {
           const uni = e.target.uni.value;
           console.log("courseAdmin!");
           this.setState({redirect: 1});
@@ -214,39 +182,6 @@ class Register extends React.Component {
 
     ItemOne = theme => {
       return (
-          <div>
-            <form onSubmit={(e) => this.handleFormSubmit(e, "skillsAdmin")}>
-              <FormControl fullWidth={true} required={true} margin='normal'>
-                <InputLabel htmlFor="input-name">Full Name</InputLabel>
-                <Input type="text" id="input-name" name="name"/>
-              </FormControl>
-              <FormControl fullWidth={true} required={true} margin='normal'>
-                <InputLabel htmlFor="input-email">Email address</InputLabel>
-                <Input type="email" id="input-email" name="email"/>
-              </FormControl>
-              <FormControl fullWidth={true} required={true} margin='normal'>
-                <InputLabel htmlFor="input-password">Password</InputLabel>
-                <Input id="input-password" name="password" type="password" aria-describedby="my-helper-text"/>
-                <FormHelperText id="my-helper-text">min. 8 characters with at least one lower case and upper case letter and number</FormHelperText>
-              </FormControl>
-              <FormControl fullWidth={true} required={true} margin='normal'>
-                <InputLabel htmlFor="input-confirm">Confirm Password</InputLabel>
-                <Input id="input-confirm" type="password" aria-describedby="my-helper-text" name="confirm"/>
-              </FormControl>
-              <MuiThemeProvider theme={theme}>
-                <Box m={3}>
-                  <Button type="submit" variant="contained" color="primary">
-                    Sign Up
-                  </Button>
-                </Box>
-              </MuiThemeProvider>
-            </form>
-          </div>
-      );
-    }
-
-    ItemTwo = theme => {
-      return (
         <div>
           <form onSubmit={(e) => this.handleFormSubmit(e, "courseAdmin")}>
             <FormControl style={{minWidth:100}} required={true} margin='normal'>
@@ -297,7 +232,7 @@ class Register extends React.Component {
       );
     }
 
-    ItemThree = theme => {
+    ItemTwo = theme => {
       return (
         <div>
           <form onSubmit={(e) => this.handleFormSubmit(e, "candidate")}>
@@ -349,7 +284,7 @@ class Register extends React.Component {
       );
     }
 
-    ItemFour = theme => {
+    ItemThree = theme => {
       return (
         <div>
           <form onSubmit={(e) => this.handleFormSubmit(e, "employer")}>
@@ -404,7 +339,7 @@ class Register extends React.Component {
                 <MuiThemeProvider theme={theme}>
                   <BrowserRouter>
                     <div className="Page-body">
-                      <AppBar position="static" color="default" width="80%">
+                      <AppBar position="static" color="default" width="30%">
                         <Tabs
                           value={this.state.value}
                           onChange={this.handleChange}
@@ -412,10 +347,9 @@ class Register extends React.Component {
                           textColor="primary"
                           fullWidth
                         >
-                          <Tab label="Site Admin" component={Link} to="/one" />
-                          <Tab label="Course Admin" component={Link} to="/two" />
-                          <Tab label="Student" component={Link} to="/three" />
-                          <Tab label="Employer" component={Link} to="/four" />
+                          <Tab label="Course Admin" component={Link} to="/one" />
+                          <Tab label="Student" component={Link} to="/two" />
+                          <Tab label="Employer" component={Link} to="/three" />
                         </Tabs>
                       </AppBar>
                     </div>
@@ -424,7 +358,6 @@ class Register extends React.Component {
                         <Route path="/one" component={PageShell(this.ItemOne)} />
                         <Route path="/two" component={PageShell(this.ItemTwo)} />
                         <Route path="/three" component={PageShell(this.ItemThree)} />
-                        <Route path="/four" component={PageShell(this.ItemFour)} />
                         <Route path="*"><Redirect to="/one"/></Route>
                       </Switch>
                     </div>
