@@ -98,12 +98,19 @@ class Login extends React.Component {
             console.log(response);
             let status = response["logged_in"];
             let email = response["user"];
-            console.log('status' + status);
+            let name = response["name"];
+            let user_type = response["user_type"];
+            this.setState({
+                email: '',
+                password: '',
+                userType: ''
+            });
             if (!status) {
                 this.state.formError = true;
                 this.forceUpdate();
             } else {
                 SessionDetails.setEmail(email);
+                SessionDetails.setType(user_type);
                 this.state.formSuccess = true;
                 this.forceUpdate();
             }
@@ -120,9 +127,6 @@ class Login extends React.Component {
         } else {
             return (
                 <div className="App">
-                    <header className="App-header">
-                        <h1>Skills Backpack</h1>
-                    </header>
                     <body className="Login-body">
                     <div className="Form-container" style={{marginBottom: "30px"}}>
                         <h3 className="Login-title">Sign In</h3>
@@ -133,7 +137,7 @@ class Login extends React.Component {
                             </div>
                         </div>
                         }
-                        <FormControl variant="outlined" classType="Login-text-field">
+                        {/*<FormControl variant="outlined" classType="Login-text-field">
                             <InputLabel className="Login-label" htmlFor="outlined-age-native-simple">I'm a
                                 ...</InputLabel>
                             <Select
@@ -153,7 +157,7 @@ class Login extends React.Component {
                                 <option value="Student">Student</option>
                                 <option value="Employer">Employer</option>
                             </Select>
-                        </FormControl>
+                            </FormControl>*/}
                     </div>
                     <div className="Form-container">
                         <FormControl>
@@ -163,6 +167,7 @@ class Login extends React.Component {
                                     id="email-input"
                                     name="email"
                                     label="Email Address"
+                                    value={this.state.email}
                                     type="text"
                                     variant="outlined"
                                     size="small"
@@ -177,6 +182,7 @@ class Login extends React.Component {
                                     id="password-input"
                                     name="password"
                                     label="Password"
+                                    value={this.state.password}
                                     type="password"
                                     variant="outlined"
                                     size="small"
@@ -204,9 +210,6 @@ class Login extends React.Component {
                             yet? <a href='./register'>Sign up!</a></p>
                     </div>
                     </body>
-                    <footer className="Home-footer">
-                        <p>Yuppies 2020 </p>
-                    </footer>
                 </div>
             )
         }

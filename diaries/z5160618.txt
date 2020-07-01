@@ -41,4 +41,4 @@ Week 4
 
 25/06/20
 - Finished writing APIs and endpoints for course related functions (get course info, edit course info, add course, delete course)
-
+- Updated DB to reflect new relationships between grad/learning outcomes and the courses
