@@ -7,25 +7,14 @@ api = Namespace('Course', description = 'Course admin operations')
 
 course_details = api.model('course', {
     'code' : fields.String(required = True, description = 'Course code'),
-    'learningOutcomes' :  fields.String(description = 'Learning outcomes gained from the course'),  # assuming for now that we are allowing courses to be registed with no outcomes
+    'learningOutcomes' :  fields.List(fields.String, description = 'Learning outcomes gained from the course'),  # assuming for now that we are allowing courses to be registed with no outcomes
     'university' : fields.String(required = True, description = 'University that the course belongs to'),
     'faculty' : fields.String(required = True, description = 'Faculty that the course belongs to'),
-    'gradOutcomes' : fields.String(description = 'Graduate outcomes gained from the course'),
+    'gradOutcomes' : fields.List(fields.String, description = 'Graduate outcomes gained from the course'),
     'description' : fields.String(description = 'Description of the course'),
     'name' : fields.String(required = True, description = 'Name of the course'),
     'link' : fields.String(description = 'link to course handbook'),
     'admin_email' : fields.String(required = True, description = 'email of the course admin who is submitting the course')
-    })
-
-edited_course_details = api.model('edit_course', {
-    'code' : fields.String(description = 'Course code'),
-    'learningOutcomes' :  fields.String(description = 'Learning outcomes gained from the course'),  # assuming for now that we are allowing courses to be registed with no outcomes
-    'university' : fields.String(description = 'University that the course belongs to'),
-    'faculty' : fields.String(description = 'Faculty that the course belongs to'),
-    'gradOutcomes' : fields.String(description = 'Graduate outcomes gained from the course'),
-    'description' : fields.String(description = 'Description of the course'),
-    'name' : fields.String(description = 'Name of the course'),
-    'link' : fields.String(description = 'link to course handbook')
     })
 
 delete_course_details = api.model('delete_course', {
@@ -33,51 +22,53 @@ delete_course_details = api.model('delete_course', {
     'university' : fields.String(required = True, description = 'University that the course belongs to'),
     })
 
-# getting course info - TODO need to adjust SQL so that it doesnt return a bunch of rows
+# getting course info 
 @api.route('/course/<university>/<code>', methods=['GET']) # specify query parameters using by entering them after a ? in the url (e.g. /course?code=COMP3900&university=UNSW)
 class getcourse(Resource):
     def get(self, code, university):
-        #query_params = request.args
-        #code, university = query_params.get('code'), query_params.get('university')
-        # ensure that code and university have been entered through the url
-        #if not code or not university:
-        #    abort(400, 'Please enter code or univerisity parameters to search for specific course', ok = False)
-        course_query = 'select * from course where c.code = ? and c.university = ?' 
+        if code == None or university == None:
+            api.abort(400, 'Please enter code or univerisity parameters to search for specific course', ok = False)
+        
+        course_query = 'select * from course c where c.code = ? and c.university = ?' 
         learnoutcome_query = 'select cl.l_outcome from course_learnoutcomes cl where cl.code = ? and cl.university = ?'
         gradoutcome_query = 'select gl.g_outcome from course_gradoutcomes gl where gl.code = ? and gl.university = ?'
+        
         code_uni = (code, university)
         learning_outcomes = []
         graduate_outcomes = []
-
+        
         conn = db.get_conn()
         c = conn.cursor()
-        c.execute('PRAGMA foreign_keys = on')
-        c.execute(sql_query, code_uni)
-        course_info = c.fetchone()[0]
-        if res == None:
+        c.execute(learnoutcome_query, code_uni)
+        res = c.fetchall()
+        for l in res:
+            learning_outcomes.append(l[0])
+        c.execute(gradoutcome_query, code_uni)
+        res = c.fetchall()
+        for l in res:
+            graduate_outcomes.append(l[0])
+        c.execute(course_query, code_uni)
+        course_info = c.fetchall()
+        if course_info == None:
             api.abort(400, 'Course with code {} at university {} does not exist'.format(code, university), ok = False)
         else:
             returnVal = {
                     'ok' : True,
-                    'val' : res 
+                    'val' : course_info ,
+                    'gradoutcomes' : graduate_outcomes,
+                    'learnoutcomes' : learning_outcomes
             }
         return returnVal
 
-# adding courses
 @api.route('/course/add')
 class addcourse(Resource):
     @api.expect(course_details) 
     def post(self):
         req = request.get_json()
-        if req['description'] == None:
-            print('none')
-        if req['description'] == '':
-            print('empty string')
         conn = db.get_conn()
         c = conn.cursor()
         c.execute('PRAGMA foreign_keys = on')
         infolist = (req['code'], req['university'], req['faculty'], req['description'], req['name'], req['link'])
-        admin_email = req['admin_email']
 
         # check if the course already exists
         check_sql = 'SELECT * FROM Course WHERE code = ? and university = ?'
@@ -90,18 +81,21 @@ class addcourse(Resource):
             c.execute('INSERT INTO Course(code, university, faculty, description, name, link) VALUES(?, ?, ?, ?, ?, ?)', infolist)
             course = {
                 'code' : req['code'],
-                'learningOutcomes' : req['learningOutcomes'],
                 'university' : req['university'],
                 'faculty' : req['faculty'],
-                'gradOutcomes' : req['gradOutcomes'],
                 'description' : req['description'],
                 'name' : req['name'],
                 'link' : req['name']
             }
+            
+            # inserting outcomes into their respective tables and relationships
+            for learning_outcome in req['learningOutcomes']:
+                c.execute('INSERT OR IGNORE INTO LearningOutcomes(l_outcome) VALUES(?)', (learning_outcome,))
+                c.execute('INSERT INTO Course_LearnOutcomes(l_outcome, code, university) VALUES (?, ?, ?)', (learning_outcome, req['code'], req['university']))
 
-            # inserting learning outcomes and graduate outcomes into relationship tables
-            c.execute('INSERT INTO Course_LearnOutcomes(l_outcome, code, university) VALUES(?, ?, ?)', (req['learningOutcomes'], req['code'], req['university']))
-            c.execute('INSERT INTO Course_GradOutcomes(g_outcome, code, university) VALUES(?, ?, ?)', (req['gradOutcomes'], req['code'], req['university']))
+            for grad_outcome in req['gradOutcomes']:
+               c.execute('INSERT OR IGNORE INTO GraduateOutcomes(g_outcome) VALUES(?)', (grad_outcome,))
+               c.execute('INSERT INTO Course_GradOutcomes(g_outcome, code, university) VALUES (?, ?, ?)', (grad_outcome, req['code'], req['university']))
 
             # inserting course_courseadmin details so we can map the course to the admin who added it (to check editing permissions later)
             c.execute('INSERT INTO Course_CourseAdmin(email, code, university) VALUES(?, ?, ?)', (req['admin_email'], req['code'], req['university']))
@@ -124,7 +118,6 @@ class deletecourse(Resource):
         req = request.json
         conn = db.get_conn()
         c = conn.cursor()
-        c.execute('PRAGMA foreign_keys = on')
  
         # check if course exists
         check_query = 'SELECT * FROM Course WHERE code = ? and university = ?'
@@ -148,28 +141,53 @@ class deletecourse(Resource):
 # expects values for every field in the course table (if the code doesn't change, input the same code as before, not an empty string.)
 @api.route('/course/edit')
 class editcourse(Resource):
-    @api.expect(edited_course_details)
+    @api.expect(course_details)
     def put(self):
         req = request.get_json()
         conn = db.get_conn()
         c = conn.cursor()
-        c.execute('PRAGMA foreign_keys = on')
+        c.execute('PRAGMA foreign_keys = on') 
+        # 1. delete the existing course (which should cascade to delete the outcome/admin relationships)
+        # 2. create a new course with the edited details
+        # 3. add relationships of the edited details
 
-        # check if the course exists 
-        # but to update code/university, we need to ignore this. not sure if we need this atm?? ASSUMING CODE/UNI CANT CHANGE SO WE NEED THIS NOW
-        check_sql = 'SELECT * FROM Course WHERE code = ? and university = ?'
+        # check that the course exists
+        check_query = 'SELECT * FROM Course WHERE code = ? and university = ?'
         code_course = (req['code'], req['university'])
-        c.execute(check_sql, code_course)
+        c.execute(check_query, code_course)
         res = c.fetchone()
-        if res == None: # if user doesn't exist, abort
-            api.abort(400, 'Course {} at {} does not exist.'.format(req['code'], req['university']), ok = False) 
-       
-        # query if we use replace (this doesn't allow you to change either primary key in an existing row, creates a new row instead)
-        query = 'REPLACE INTO Course (code, learningOutcomes, university, faculty, gradOutcomes, description, name, link) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
-        # currently using query 2 since we are ASSUMING CODE/UNIVERSITY CAN'T BE CHANGED
-        query2 = 'UPDATE Course SET code = ?, learningOutcomes = ?, university = ?, faculty = ?, gradOutcomes = ?, description = ?, name = ?, link = ? WHERE code = ? and university = ?'
-        infolist = (req['code'], req['learningOutcomes'], req['university'], req['faculty'], req['gradOutcomes'], req['description'], req['name'], req['link'], req['code'], req['university'])
-        c.execute(query2, infolist)
+        if res == None:
+             api.abort(400, 'Course {} at {} does not exist.'.format(req['code'], req['university']), ok = False) 
+             print('not great')
+        else:
+            delete_query = 'DELETE FROM Course WHERE code = ? and university = ?' # this should cascade to delete all related learn/grad outcome RELATIONSHIPS and course_courseadmin relos
+            c.execute(delete_query, code_course)
+ 
+        infolist = (req['code'], req['university'], req['faculty'], req['description'], req['name'], req['link'])
+
+        # inserting course details into back course table
+        c.execute('INSERT INTO Course(code, university, faculty, description, name, link) VALUES(?, ?, ?, ?, ?, ?)', infolist)
+        course = {
+            'code' : req['code'],
+            'university' : req['university'],
+            'faculty' : req['faculty'],
+            'description' : req['description'],
+            'name' : req['name'],
+            'link' : req['name']
+        }
+        
+        # inserting outcomes into their respective tables and relationships
+        for learning_outcome in req['learningOutcomes']:
+            c.execute('INSERT OR IGNORE INTO LearningOutcomes(l_outcome) VALUES(?)', (learning_outcome,))
+            c.execute('INSERT INTO Course_LearnOutcomes(l_outcome, code, university) VALUES (?, ?, ?)', (learning_outcome, req['code'], req['university']))
+
+        for grad_outcome in req['gradOutcomes']:
+           c.execute('INSERT OR IGNORE INTO GraduateOutcomes(g_outcome) VALUES(?)', (grad_outcome,))
+           c.execute('INSERT INTO Course_GradOutcomes(g_outcome, code, university) VALUES (?, ?, ?)', (grad_outcome, req['code'], req['university']))
+
+        # inserting course_courseadmin details so we can map the course to the admin who added it (to check editing permissions later)
+        c.execute('INSERT INTO Course_CourseAdmin(email, code, university) VALUES(?, ?, ?)', (req['admin_email'], req['code'], req['university']))
+     
         conn.commit()
         conn.close()
         course = {
@@ -189,4 +207,22 @@ class editcourse(Resource):
         return returnVal
 
 
+'''
+        # check if the course exists 
+        # but to update code/university, we need to ignore this. not sure if we need this atm?? ASSUMING CODE/UNI CANT CHANGE SO WE NEED THIS NOW
+        check_sql = 'SELECT * FROM Course WHERE code = ? and university = ?'
+        code_course = (req['code'], req['university'])
+        c.execute(check_sql, code_course)
+        res = c.fetchone()
+        if res == None: # if user doesn't exist, abort
+            api.abort(400, 'Course {} at {} does not exist.'.format(req['code'], req['university']), ok = False) 
+       
+        # query if we use replace (this doesn't allow you to change either primary key in an existing row, creates a new row instead)
+        query = 'REPLACE INTO Course (code, university, faculty, description, name, link) VALUES (?, ?, ?, ?, ?, ?)'
+        # currently using query 2 since we are ASSUMING CODE/UNIVERSITY CAN'T BE CHANGED
+        query2 = 'UPDATE Course SET code = ?, university = ?, faculty = ?, description = ?, name = ?, link = ? WHERE code = ? and university = ?'
+        infolist = (req['code'], req['university'], req['faculty'], req['description'], req['name'], req['link'], req['code'], req['university'])
+        c.execute(query2, infolist)
 
+        # update outcomes and their relationships
+'''
