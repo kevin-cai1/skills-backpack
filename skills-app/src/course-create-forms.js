@@ -9,6 +9,21 @@ import { spacing } from '@material-ui/system';
 import { FormControl, InputLabel, Input, FormHelperText, MenuItem, Select, AppBar, Chip } from '@material-ui/core';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { theme } from './App.js'
+/* eslint-disable no-use-before-define */
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+
+const top100Films = [
+  { title: 'Deep discipline knowledge and intellectual breadth' },
+  { title: 'Creative and critical thinking and problem solving' },
+  { title: 'Teamwork and communication skills' },
+  { title: 'Professionalism and leadership readiness' },
+  { title: 'Intercultural and ethical competency' },
+  { title: 'Digital Capabilities' },
+  { title: 'Self-awareness and emotional intelligence' }
+];
+
 
 class Course_Create extends React.Component {
   render() {
@@ -59,9 +74,20 @@ class Course_Create extends React.Component {
                 <FormHelperText id="my-helper-text">(Optional) max. 200 words</FormHelperText>
               </FormControl>
               <FormControl fullWidth={true} required={true} margin='normal'>
-                <InputLabel htmlFor="input-confirm">Graduate Outcomes</InputLabel>
-                <Input name="outcomes" id="input-outcomes" type="text" aria-describedby="my-helper-text" />
-                <FormHelperText id="my-helper-text">wanna change this to chips</FormHelperText>
+                <Autocomplete
+                  multiple
+                  id="tags-standard"
+                  name="outcomes"
+                  options={top100Films}
+                  getOptionLabel={(option) => option.title}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="standard"
+                      label="Graduate Outcomes"
+                    />
+                  )}
+                />
               </FormControl>
               <div className="buttons">
                 <MuiThemeProvider theme={theme}>

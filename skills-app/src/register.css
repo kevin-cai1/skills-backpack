@@ -16,6 +16,6 @@
   margin: auto;
   align-items: center;
   justify-content: center;
-  width: 44vw;
+  width: 33vw !important;
   font-size: 9px;
 }

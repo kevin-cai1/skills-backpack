@@ -1,7 +1,6 @@
 from flask_restplus import Namespace, Resource, fields
 from flask import request, jsonify
 
-import db
 import os
 
 from sendgrid import SendGridAPIClient
