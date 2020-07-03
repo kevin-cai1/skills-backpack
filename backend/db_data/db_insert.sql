@@ -15,10 +15,10 @@ VALUES
 	--('link3');
 
 -- Inserting data into Employer table
-INSERT INTO Employer (email, name, graduateCriteria, skillsCriteria, password, company)
+INSERT INTO Employer (email, name, graduateCriteria, password, company)
 VALUES
-	('macquariegroup@gmail.com', 'Macquarie HR Rep', 'smart', 'python', 'password', 'Macquarie Group'),
-	('google@gmail.com', 'Google', 'Google HR Rep', 'C', 'password', 'Google');
+	('macquariegroup@gmail.com', 'Macquarie HR Rep', 'smart', 'password', 'Macquarie Group'),
+	('google@gmail.com', 'Google', 'Google HR Rep', 'password', 'Google');
 	--('atlassian@gmail.com', 'Atlassian', 'leadership', 'C++', 'atlassian')
 
 -- Inserting data into CourseAdmin table
@@ -52,10 +52,10 @@ VALUES
 	('leadership');
 
 -- Inserting data into ePortfolio table
-INSERT INTO ePortfolio(id, employabilitySkills, jobSkills)
+INSERT INTO ePortfolio(id, employabilitySkills)
 VALUES
-	(1, 'yuppy', 'yuppy'),
-	(2, 'guppy', 'guppy');
+	(1, 'yuppy'),
+	(2, 'guppy');
 
 -- Inserting data into Employment table
 INSERT INTO Employment(id, description, startDate, endDate, employer)
@@ -100,3 +100,20 @@ INSERT INTO Course_CourseAdmin (email, code, university)
 VALUES
 	('courseadmin1@unsw.edu.au', 'COMP3900', 'UNSW'),
 	('courseadmin2@usyd.edu.au', 'COMP1000', 'USYD');
+
+INSERT INTO Skill (id, name, description)
+VALUES
+	(1, 'Python', 'Basic python programming'),
+	(2, 'C', 'Basic C programming');
+
+INSERT INTO Employer_Skill (employer, skillID)
+VALUES
+	('macquariegroup@gmail.com', 1),
+	('google@gmail.com', 2);
+
+INSERT INTO ePortfolio_Skill (EP_ID, skillID)
+VALUES
+	(1, 1),
+	(2, 2);
+	
+	
