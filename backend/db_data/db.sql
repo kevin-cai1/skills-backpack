@@ -31,7 +31,6 @@ CREATE TABLE Employer (
 	email TEXT PRIMARY KEY,
 	name TEXT NOT NULL,
 	graduateCriteria TEXT,
-	skillsCriteria TEXT,
 	password TEXT NOT NULL,
 	company TEXT NOT NULL
 );
@@ -90,8 +89,7 @@ CREATE TABLE GraduateOutcomes (
 DROP TABLE IF EXISTS ePortfolio;
 CREATE TABLE ePortfolio (
 	id INTEGER PRIMARY KEY,
-	employabilitySkills TEXT, 
-	jobSkills TEXT
+	employabilitySkills TEXT
 );
 
 -- Create Employment table
@@ -211,4 +209,34 @@ CREATE TABLE Course_CourseAdmin (
 		REFERENCES Course (code, university)
 			ON DELETE CASCADE
 			ON UPDATE CASCADE
+);
+
+DROP TABLE IF EXISTS Skill;
+CREATE TABLE Skill (
+	id INTEGER,
+	name TEXT NOT NULL,
+	description TEXT,
+	PRIMARY KEY(id)
+);
+
+DROP TABLE IF EXISTS ePortfolio_Skill;
+CREATE TABLE ePortfolio_Skill (
+	EP_ID INTEGER,
+	skillID INTEGER,
+	FOREIGN KEY (EP_ID)
+		REFERENCES ePortfolio (id),
+	FOREIGN KEY (skillID)
+		REFERENCES Skill (id),
+	PRIMARY KEY (EP_ID, skillID)
+);
+
+DROP TABLE IF EXISTS Employer_Skill;
+CREATE TABLE Employer_Skill (
+	employer TEXT,
+	skillID INTEGER,
+	FOREIGN KEY (employer)
+		REFERENCES Employer (email),
+	FOREIGN KEY (skillID)
+		REFERENCES Skill (id),
+	PRIMARY KEY (employer, skillID)
 );
