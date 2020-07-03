@@ -10,7 +10,7 @@ CREATE TABLE Candidate (
 	password TEXT NOT NULL,
 	degree TEXT,
 	gradYear INTEGER,
-	EP_ID INTEGER,
+	EP_ID INTEGER NOT NULL,
 	FOREIGN KEY(EP_ID) 
 		REFERENCES ePortfolio (id)
 			ON DELETE CASCADE
