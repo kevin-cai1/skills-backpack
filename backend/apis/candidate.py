@@ -2,6 +2,7 @@ from flask_restplus import Namespace, Resource, fields
 from flask import request, jsonify
 
 import db
+from werkzeug.security import generate_password_hash
 
 api = Namespace('Candidate', description='Candidate account operations')
 
@@ -88,7 +89,8 @@ class accountInfo(Resource):
             # grad_edit = req.get('gradYear')
 
             # update 
-            c.execute("UPDATE Candidate SET (password, name, university, degree, gradYear) = (?,?,?,?,?) WHERE email = ?",(req['password'], req['name'], req['university'], req['degree'], req['gradYear'], req['email'],))
+            hashed_password = generate_password_hash(req['password'], "sha256")
+            c.execute("UPDATE Candidate SET (password, name, university, degree, gradYear) = (?,?,?,?,?) WHERE email = ?",(hashed_password, req['name'], req['university'], req['degree'], req['gradYear'], req['email'],))
             conn.commit()
             conn.close()
             new_details = {

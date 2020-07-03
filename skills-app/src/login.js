@@ -111,6 +111,7 @@ class Login extends React.Component {
             } else {
                 SessionDetails.setEmail(email);
                 SessionDetails.setType(user_type);
+                SessionDetails.setName(name);
                 this.state.formSuccess = true;
                 this.forceUpdate();
             }

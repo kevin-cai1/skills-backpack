@@ -147,7 +147,7 @@ CREATE TABLE Course_GradOutcomes (
 DROP TABLE IF EXISTS Employment_ePortfolio;
 CREATE TABLE Employment_ePortfolio (
 	employmentId INTEGER NOT NULL,
-	EP_ID TEXT NOT NULL,
+	EP_ID INTEGER NOT NULL,
 	FOREIGN KEY (employmentId)
 		REFERENCES Employment (id)
 			ON DELETE CASCADE
@@ -164,7 +164,7 @@ CREATE TABLE Employment_ePortfolio (
 -- Maps each EP to each completed course included in it
 DROP TABLE IF EXISTS ePortfolio_Courses;
 CREATE TABLE ePortfolio_Courses (
-	EP_ID TEXT NOT NULL,
+	EP_ID INTEGER NOT NULL,
 	code TEXT NOT NULL,
 	university TEXT NOT NULL,
 	FOREIGN KEY (EP_ID)

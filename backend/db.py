@@ -9,6 +9,7 @@ def get_conn():
     except Error as e:
         print(e)
     
+    conn.execute('PRAGMA foreign_keys = ON')
     return conn
 
 def init_db():
