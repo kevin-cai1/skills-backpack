@@ -3,7 +3,7 @@ from flask import request, jsonify
 
 import db
 
-api = Namespace('Candidate', description='Candidate account operations')
+api = Namespace('Employer', description='Employer user operations')
 
 @api.route('/all')
 class accounts(Resource):
@@ -11,15 +11,13 @@ class accounts(Resource):
         conn = db.get_conn()
         c = conn.cursor()
 
-        c.execute("SELECT * FROM Candidate")
+        c.execute("SELECT * FROM Employer")
         
-candidate_details = api.model('candidate details', {
+employer_details = api.model('employer details', {
     'email' : fields.String(description='university email for account identification', required=True),
     'password'  : fields.String(description='password for account access', required=True),
     'name' : fields.String(description='name of user', required=True),
-    'university' : fields.String(description='university of candidate/course admin'),
-    'degree' : fields.String(description='degree of candidate'),
-    'gradYear' : fields.Integer(description='graduation year')
+    'company' : fields.String(description='company of employer')
 })
 
 
@@ -29,31 +27,40 @@ class accountInfo(Resource):
         conn = db.get_conn()
         c = conn.cursor()
 
-        c.execute("SELECT EXISTS(SELECT email FROM Candidate WHERE email = ?)", (account,))
+        c.execute("SELECT EXISTS(SELECT email FROM Employer WHERE email = ?)", (account,))
         account_check = c.fetchone()[0]
-        
+       
+
+
         if (account_check == 0):
             api.abort(404, "Account '{}' doesn't exist".format(account), ok=False)
-
-        # SELECT STUFF FROM CANDIDATE
-        # FORMAT RESPONS
+        
+        # name = account_details[1]
+        # email = account_details[0]
+        # company = account_details[6]
+        # SELECT STUFF FROM EMPLOYER
+        # FORMAT RESPONSE ????
+        
         return_val = {
-            'email' : account
+             #'user' : name
+             'email' : account
         }
+       
         return return_val
+        
     
     @api.doc(description="Delete specified account")
     def delete(self, account):
         conn = db.get_conn()
         c = conn.cursor()
 
-        c.execute("SELECT EXISTS(SELECT email FROM Candidate WHERE email = ?)", (account,))
+        c.execute("SELECT EXISTS(SELECT email FROM Employer WHERE email = ?)", (account,))
         account_check = c.fetchone()[0]
         
         if (account_check == 0):
             api.abort(404, "Account '{}' doesn't exist".format(account), ok=False)
 
-        c.execute("DELETE FROM Candidate WHERE email = ?)", (account,))
+        c.execute("DELETE FROM Employer WHERE email = ?)", (account,))
         
         conn.commit()
         conn.close()
@@ -62,14 +69,14 @@ class accountInfo(Resource):
         }
         return return_val
 
-    @api.doc(description="Edit user name")
-    @api.expect(candidate_details)
+    @api.doc(description="Edit employer name")
+    @api.expect(employer_details)
     def put(self, account):
         conn = db.get_conn()
         c = conn.cursor()
         req = request.get_json()
         
-        c.execute("SELECT EXISTS(SELECT email FROM Candidate WHERE email = ?)", (account,))
+        c.execute("SELECT EXISTS(SELECT email FROM Employer WHERE email = ?)", (account,))
         account_check = c.fetchone()[0] 
         
         # if account does not exist abort
@@ -88,16 +95,14 @@ class accountInfo(Resource):
             # grad_edit = req.get('gradYear')
 
             # update 
-            c.execute("UPDATE Candidate SET (password, name, university, degree, gradYear) = (?,?,?,?,?) WHERE email = ?",(req['password'], req['name'], req['university'], req['degree'], req['gradYear'], req['email'],))
+            c.execute("UPDATE Employer SET (password, name, company) = (?,?,?) WHERE email = ?",(req['password'], req['name'], req['company'], req['email'],))
             conn.commit()
             conn.close()
             new_details = {
                 'email' : req['email'],
                 'password' : req['password'],
                 'name' : req['name'],
-                'university' : req['university'],
-                'degree' : req['degree'],
-                'gradYear' : req['gradYear']
+                'company' : req['company'],
             }
 
         else: 
