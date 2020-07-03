@@ -111,6 +111,7 @@ class Home extends React.Component {
             }
             else{
               this.setState({change_password: false});
+              
               alert("Password successfully updated.");
             }
 
