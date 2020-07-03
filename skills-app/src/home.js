@@ -31,6 +31,7 @@ class Home extends React.Component {
         this.handleDetailsOpen = this.handleDetailsOpen.bind(this);
         this.handleDetailsClose = this.handleDetailsClose.bind(this);
         this.handleSkillsAdminLoad = this.handleSkillsAdminLoad.bind(this);
+        this.handleInviteSend = this.handleInviteSend.bind(this);
     }
 
     componentDidMount() {
@@ -71,6 +72,26 @@ class Home extends React.Component {
         this.setState({change_password: true});
     }
 
+    handleInviteSend = (e) => {
+        let url = 'http://localhost:5000/course_admin/invite';
+        let data = JSON.stringify({
+            "skills_email": SessionDetails.getEmail(),
+            "course_email": e.target.email.value
+        });
+        console.log('Sending to ' + url + ': ' + data);
+        return fetch(url, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: data
+        }).then(response => {
+            console.log('Hello?: ' + response.ok && response.json())
+        })
+            .catch(err => console.log('Error:', err));
+    }
+
     validatePassword = (password) => {
         const errors = [];
         if(!password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/)){
@@ -101,7 +122,7 @@ class Home extends React.Component {
 
     handleSkillsAdminLoad() {
       return this.sendSkillsAdminLogin().then( (response) => {
-          console.log(response);
+          console.log("response" + response);
           if(response.message == "Password needs to be updated") {
               this.handleChangePassword();
               alert("Change password before proceeding");
@@ -249,28 +270,28 @@ class Home extends React.Component {
                   onClose={this.handleCourseAdminModalClose}
                 >
                   <DialogContent>
-                    <DialogContentText type="title" id="modal-title">
-                      Send invite link to course admin email
-                    </DialogContentText>
-                    <TextField
-                      autoFocus
-                      required
-                      margin="dense"
-                      id="email"
-                      name="email"
-                      label="Email Address"
-                      type="email"
-                      fullWidth
-                    />
+                    <form onSubmit={(e) => this.handleInviteSend(e)}>
+                      <DialogContentText type="title" id="modal-title">
+                        Send invite link to course admin email
+                      </DialogContentText>
+                      <TextField
+                        autoFocus
+                        required
+                        margin="dense"
+                        id="email"
+                        name="email"
+                        label="Email Address"
+                        type="email"
+                        fullWidth
+                      />
+                      <Button onClick={this.handleCourseAdminModalClose} color="primary">
+                        Cancel
+                      </Button>
+                      <Button type="submit" color="primary">
+                        Send
+                      </Button>
+                    </form>
                   </DialogContent>
-                  <DialogActions>
-                    <Button onClick={this.handleCourseAdminModalClose} color="primary">
-                      Cancel
-                    </Button>
-                    <Button color="primary">
-                      Send
-                    </Button>
-                  </DialogActions>
                 </Dialog>
               </MuiThemeProvider>
               <MuiThemeProvider theme={theme}>
