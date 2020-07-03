@@ -34,12 +34,6 @@ class Home extends React.Component {
         this.handleInviteSend = this.handleInviteSend.bind(this);
     }
 
-    componentDidMount() {
-        if(SessionDetails.getType() == "skillsAdmin"){
-            this.handleSkillsAdminLoad()
-        }
-    }
-
     handleLogout() {
         SessionDetails.removeEmail();
     }
@@ -92,6 +86,26 @@ class Home extends React.Component {
             .catch(err => console.log('Error:', err));
     }
 
+    sendSiteAdminPassword(e) {
+        let data = JSON.stringify({
+            "new_password": e.target.password.value
+        });
+        let url = 'http://localhost:5000/skills_admin/' + SessionDetails.getEmail();
+        console.log('Sending to ' + url + ': ' + data);
+
+        return fetch(url, {
+            method: 'PUT',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: data
+        }).then(response => {
+            return response.ok && response.json();
+        })
+            .catch(err => console.log('Error:', err));
+    }
+
     validatePassword = (password) => {
         const errors = [];
         if(!password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/)){
@@ -105,13 +119,15 @@ class Home extends React.Component {
         const password = e.target.password.value;
         const errors = this.validatePassword(password);
         if (errors.length == 0) {
-            const response = this.sendSiteAdmin(e);
+            console.log("sendSiteAdminPassword");
+            const response = this.sendSiteAdminPassword(e).then( (response) => {
+                console.log("Update password response: " + response.status)
+            });
             if (response === false) {
               alert("Something went wrong. Try again later.");
             }
             else{
               this.setState({change_password: false});
-              
               alert("Password successfully updated.");
             }
 
@@ -122,8 +138,8 @@ class Home extends React.Component {
     }
 
     handleSkillsAdminLoad() {
-      return this.sendSkillsAdminLogin().then( (response) => {
-          console.log("response" + response);
+      this.sendSkillsAdminLogin().then( (response) => {
+          console.log("Login response: " + response.message);
           if(response.message == "Password needs to be updated") {
               this.handleChangePassword();
               alert("Change password before proceeding");
@@ -362,33 +378,6 @@ class Home extends React.Component {
                       <Button onClick={this.handleDetailsClose} color="primary">
                         OK
                       </Button>
-                    </DialogContent>
-                  </Dialog>
-              </MuiThemeProvider>
-              <MuiThemeProvider theme={theme}>
-                  <Dialog
-                    aria-labelledby="form-dialog-title"
-                    open={this.state.change_password}
-                  >
-                    <DialogContent>
-                      <DialogContentText type="title" id="modal-title">
-                        Set new permanent password:
-                      </DialogContentText>
-                      <form onSubmit={(e) => this.handleChangePasswordSubmit(e)}>
-                        <TextField
-                          autoFocus
-                          required
-                          margin="normal"
-                          id="password"
-                          name="name"
-                          label="New Password"
-                          type="password"
-                          fullWidth
-                        />
-                        <Button type="submit" color="primary">
-                          Set Password
-                        </Button>
-                      </form>
                     </DialogContent>
                   </Dialog>
               </MuiThemeProvider>
