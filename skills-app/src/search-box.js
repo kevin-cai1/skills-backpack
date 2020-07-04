@@ -29,6 +29,7 @@ export default function SearchBox(props) {
                 } else {
                     setValue(newValue);
                 }
+                props.parentCallback(newValue);
             }}
             filterOptions={(options, params) => {
                 const filtered = filter(options, params);

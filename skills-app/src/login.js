@@ -138,27 +138,6 @@ class Login extends React.Component {
                             </div>
                         </div>
                         }
-                        {/*<FormControl variant="outlined" classType="Login-text-field">
-                            <InputLabel className="Login-label" htmlFor="outlined-age-native-simple">I'm a
-                                ...</InputLabel>
-                            <Select
-                                className="Login-select"
-                                native
-                                value={this.state.userType}
-                                onChange={this.handleChange}
-                                label="Age"
-                                inputProps={{
-                                    name: 'userType',
-                                    id: 'outlined-userType-native-simple',
-                                }}
-                            >
-                                <option aria-label="None" value=""/>
-                                <option value="Skills Backpack Admin">Skills Backpack Admin</option>
-                                <option value="Course Admin">Course Admin</option>
-                                <option value="Student">Student</option>
-                                <option value="Employer">Employer</option>
-                            </Select>
-                            </FormControl>*/}
                     </div>
                     <div className="Form-container">
                         <FormControl>

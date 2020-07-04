@@ -5,52 +5,56 @@ import {theme} from "./App";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import SearchBox from './search-box';
+import {Alert} from "@material-ui/lab";
 
 class Candidate_EPortfolio extends React.Component{
     constructor(props) {
         super(props);
         this.state = {
-            course_admin_open: false,
-            site_admin_open: false,
-            details_open: false,
-            change_password: false,
-            name_details: '',
-            email_details: '',
-            password_details: ''
+            search_skills_open: false,
+            newSkill: '',
+            addSkillSuccess: false,
+            addSkillSuccessMessage: '',
         };
-        // this.handleFormSubmit = this.handleFormSubmit.bind(this);
-        this.handleCourseAdminModal = this.handleCourseAdminModal.bind(this);
-        this.handleSiteAdminModal = this.handleSiteAdminModal.bind(this);
-        this.handleCourseAdminModalClose = this.handleCourseAdminModalClose.bind(this);
-        this.handleSiteAdminModalClose = this.handleSiteAdminModalClose.bind(this);
-        this.handleDetailsOpen = this.handleDetailsOpen.bind(this);
-        this.handleDetailsClose = this.handleDetailsClose.bind(this);
+        this.handleSearchSkillsModal = this.handleSearchSkillsModal.bind(this);
+        this.handleSearchSkillsModalClose = this.handleSearchSkillsModalClose.bind(this);
+        this.handleAddSkill = this.handleAddSkill.bind(this);
+        this.handleClearStatus = this.handleClearStatus.bind(this);
     }
 
-    handleCourseAdminModal() {
-        this.setState({course_admin_open: true});
+    handleSearchSkillsModal() {
+        this.setState({search_skills_open: true});
     }
 
-    handleSiteAdminModal() {
-        this.setState({site_admin_open: true});
+    handleSearchSkillsModalClose() {
+        this.setState({search_skills_open: false});
+        this.handleClearStatus();
     }
 
-    handleCourseAdminModalClose() {
-        this.setState({course_admin_open: false});
+    handleAddSkill() {
+        //API call
+        let result = true;
+        this.setState({addSkillSuccessMessage: 'Successfully added \'' + this.state.newSkill + '\'.'});
+        this.state.addSkillSuccess = true;
+        this.forceUpdate();
     }
 
-    handleSiteAdminModalClose() {
-        this.setState({site_admin_open: false});
+    handleClearStatus() {
+        this.state.addSkillSuccess = false;
+        this.state.newSkill = '';
+        this.forceUpdate();
     }
 
-    handleDetailsOpen() {
-        this.setState({details_open: true});
+    callbackFunction = (childData) => {
+        if (! (childData == null)) {
+            if (childData.hasOwnProperty('inputValue')) {
+                this.setState({newSkill: childData.inputValue});
+            }
+            else {
+                this.setState({newSkill: childData.title});
+            }
+        }
     }
-
-    handleDetailsClose() {
-        this.setState({details_open: false});
-    }
-
 
     render() {
         return (
@@ -60,7 +64,7 @@ class Candidate_EPortfolio extends React.Component{
                 <div className="A-buttons">
                     <MuiThemeProvider theme={theme}>
                         <Box m={3}>
-                            <Button variant="contained" color="primary" onClick={this.handleCourseAdminModal}>
+                            <Button variant="contained" color="primary" onClick={this.handleSearchSkillsModal}>
                                 Add skill
                             </Button>
                         </Box>
@@ -70,95 +74,34 @@ class Candidate_EPortfolio extends React.Component{
                 <MuiThemeProvider theme={theme}>
                     <Dialog
                         aria-labelledby="form-dialog-title"
-                        open={this.state.course_admin_open}
-                        onClose={this.handleCourseAdminModalClose}
+                        open={this.state.search_skills_open}
+                        onClose={this.handleSearchSkillsModalClose}
                     >
                         <DialogContent>
                             <DialogContentText type="title" id="modal-title">
-                                Search Skills
+                                Add Skill
                             </DialogContentText>
+                            { (this.state.addSkillSuccess) &&
+                            <Alert className="Login-alert" severity="success" style={{"margin-bottom":"8px"}}>
+                                {this.state.addSkillSuccessMessage}
+                            </Alert>
+
+                            }
                             <SearchBox
-                                data={"skills"}/>
+                                data={"skills"}
+                                id="skillName"
+                                parentCallback = {this.callbackFunction}
+                                onClick={this.handleClearStatus}
+                            />
                         </DialogContent>
                         <DialogActions>
-                            <Button onClick={this.handleCourseAdminModalClose} color="primary">
+                            <Button onClick={this.handleSearchSkillsModalClose} color="primary">
                                 Cancel
                             </Button>
-                            <Button color="primary">
+                            <Button color="primary" onClick={this.handleAddSkill}>
                                 Add
                             </Button>
                         </DialogActions>
-                    </Dialog>
-                </MuiThemeProvider>
-                <MuiThemeProvider theme={theme}>
-                    <Dialog
-                        aria-labelledby="form-dialog-title"
-                        open={this.state.site_admin_open}
-                        onClose={this.handleSiteAdminModalClose}
-                    >
-                        <DialogContent>
-                            <form>
-                            {/*<form onSubmit={(e) => this.handleFormSubmit(e)}>*/}
-                                <DialogContentText type="title" id="modal-title">
-                                    New Skills Backpack admin details
-                                </DialogContentText>
-                                <TextField
-                                    autoFocus
-                                    required
-                                    margin="normal"
-                                    id="name"
-                                    name="name"
-                                    label="Full Name"
-                                    type="text"
-                                    fullWidth
-                                />
-                                <TextField
-                                    required
-                                    margin="normal"
-                                    id="email"
-                                    name="email"
-                                    label="Email Address"
-                                    type="email"
-                                    fullWidth
-                                />
-                                <Button onClick={this.handleSiteAdminModalClose} color="primary">
-                                    Cancel
-                                </Button>
-                                <Button type="submit" color="primary">
-                                    Create
-                                </Button>
-                            </form>
-                        </DialogContent>
-                    </Dialog>
-                </MuiThemeProvider>
-                <MuiThemeProvider theme={theme}>
-                    <Dialog
-                        aria-labelledby="form-dialog-title"
-                        open={this.state.details_open}
-                        onClose={this.handleDetailsClose}
-                    >
-                        <DialogContent>
-                            <DialogContentText type="title" id="modal-title">
-                                Admin account has been created!
-                            </DialogContentText>
-                            <DialogContentText type="title" id="modal-title">
-                                Copy below details to login and change password
-                            </DialogContentText>
-                            <DialogContent>
-                                <p>
-                                    Name: {this.state.name_details}
-                                </p>
-                                <p>
-                                    Email: {this.state.email_details}
-                                </p>
-                                <p>
-                                    Temporary Password: {this.state.password_details}
-                                </p>
-                            </DialogContent>
-                            <Button onClick={this.handleDetailsClose} color="primary">
-                                OK
-                            </Button>
-                        </DialogContent>
                     </Dialog>
                 </MuiThemeProvider>
             </div>
