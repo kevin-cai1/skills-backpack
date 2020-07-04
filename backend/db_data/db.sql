@@ -66,6 +66,11 @@ CREATE TABLE Course (
 	description TEXT,
 	name TEXT NOT NULL,
 	link TEXT,
+	courseAdminEmail TEXT NOT NULL,
+	FOREIGN KEY (courseAdminEmail)
+		REFERENCES CourseAdmin (email)
+			ON DELETE CASCADE
+			ON UPDATE CASCADE,
 	PRIMARY KEY (code, university)
 );
 
@@ -194,21 +199,4 @@ CREATE TABLE Candidate_Links (
 			ON DELETE CASCADE
 			ON UPDATE CASCADE,
 	PRIMARY KEY (link, email)
-);
-
--- Create Course_CourseAdmin table
--- Maps each course to the course admin who submitted it
-DROP TABLE IF EXISTS Course_CourseAdmin;
-CREATE TABLE Course_CourseAdmin (
-	email TEXT NOT NULL,
-	code TEXT NOT NULL,
-	university TEXT NOT NULL,
-	FOREIGN KEY (email)
-		REFERENCES CourseAdmin (email)
-			ON DELETE CASCADE
-			ON UPDATE CASCADE,
-	FOREIGN KEY (code, university)
-		REFERENCES Course (code, university)
-			ON DELETE CASCADE
-			ON UPDATE CASCADE
 );

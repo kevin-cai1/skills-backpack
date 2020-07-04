@@ -128,7 +128,7 @@ class deletecourse(Resource):
              api.abort(400, 'Course {} at {} does not exist.'.format(req['code'], req['university']), ok = False) 
              print('not great')
         else:
-            delete_query = 'DELETE FROM Course WHERE code = ? and university = ?'
+            delete_query = 'DELETE FROM Course WHERE code = ? and university = ?' # this delete query should cascade to delete all relevant relos
             c.execute(delete_query, code_course)
             conn.commit()
             conn.close()
@@ -138,7 +138,7 @@ class deletecourse(Resource):
         return returnVal
     
 # editing existing courses, assuming that the code and university can't be changed
-# expects values for every field in the course table (if the code doesn't change, input the same code as before, not an empty string.)
+# expects values for every field in the course table (if the value doesn't change, input the same value as before, not an empty string.)
 @api.route('/course/edit')
 class editcourse(Resource):
     @api.expect(course_details)
@@ -185,6 +185,8 @@ class editcourse(Resource):
            c.execute('INSERT OR IGNORE INTO GraduateOutcomes(g_outcome) VALUES(?)', (grad_outcome,))
            c.execute('INSERT INTO Course_GradOutcomes(g_outcome, code, university) VALUES (?, ?, ?)', (grad_outcome, req['code'], req['university']))
 
+        # inserting outcomes into EP skills sections
+
         # inserting course_courseadmin details so we can map the course to the admin who added it (to check editing permissions later)
         c.execute('INSERT INTO Course_CourseAdmin(email, code, university) VALUES(?, ?, ?)', (req['admin_email'], req['code'], req['university']))
      
@@ -205,24 +207,3 @@ class editcourse(Resource):
             'course' : course
         }
         return returnVal
-
-
-'''
-        # check if the course exists 
-        # but to update code/university, we need to ignore this. not sure if we need this atm?? ASSUMING CODE/UNI CANT CHANGE SO WE NEED THIS NOW
-        check_sql = 'SELECT * FROM Course WHERE code = ? and university = ?'
-        code_course = (req['code'], req['university'])
-        c.execute(check_sql, code_course)
-        res = c.fetchone()
-        if res == None: # if user doesn't exist, abort
-            api.abort(400, 'Course {} at {} does not exist.'.format(req['code'], req['university']), ok = False) 
-       
-        # query if we use replace (this doesn't allow you to change either primary key in an existing row, creates a new row instead)
-        query = 'REPLACE INTO Course (code, university, faculty, description, name, link) VALUES (?, ?, ?, ?, ?, ?)'
-        # currently using query 2 since we are ASSUMING CODE/UNIVERSITY CAN'T BE CHANGED
-        query2 = 'UPDATE Course SET code = ?, university = ?, faculty = ?, description = ?, name = ?, link = ? WHERE code = ? and university = ?'
-        infolist = (req['code'], req['university'], req['faculty'], req['description'], req['name'], req['link'], req['code'], req['university'])
-        c.execute(query2, infolist)
-
-        # update outcomes and their relationships
-'''

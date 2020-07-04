@@ -34,10 +34,10 @@ VALUES
 	('sbadmin2@gmail.com', 'sbadmin2');
 
 -- Inserting data into Course table
-INSERT INTO Course (code, university, faculty, description, name, link)
+INSERT INTO Course (code, university, faculty, description, name, link, courseAdminEmail)
 VALUES
-	('COMP3900', 'UNSW', 'Computer Science and Engineering', 'build a project in a team', 'Computer Science Project', 'COMP3900.com'),
-	('COMP1000', 'USYD', 'Computer Science', 'hack the system', 'Hackerman 101', 'COMP1000.com');
+	('COMP3900', 'UNSW', 'Computer Science and Engineering', 'build a project in a team', 'Computer Science Project', 'COMP3900.com', 'courseadmin1@unsw.edu.au'),
+	('COMP1000', 'USYD', 'Computer Science', 'hack the system', 'Hackerman 101', 'COMP1000.com', 'courseadmin2@usyd.edu.au');
 
 -- Inserting data into LearningOutcomes table
 INSERT INTO LearningOutcomes(l_outcome)
@@ -94,9 +94,3 @@ INSERT INTO Candidate_Links (link, email)
 VALUES
 	('link1', 'charmaineleung@unsw.edu.au'),
 	('link2', 'mirannakamura@usyd.edu.au');
-
--- Inserting data into Course_CourseAdmin table
-INSERT INTO Course_CourseAdmin (email, code, university)
-VALUES
-	('courseadmin1@unsw.edu.au', 'COMP3900', 'UNSW'),
-	('courseadmin2@usyd.edu.au', 'COMP1000', 'USYD');
