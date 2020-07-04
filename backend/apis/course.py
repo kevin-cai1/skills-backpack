@@ -67,7 +67,6 @@ class addcourse(Resource):
         req = request.get_json()
         conn = db.get_conn()
         c = conn.cursor()
-        c.execute('PRAGMA foreign_keys = on')
         infolist = (req['code'], req['university'], req['faculty'], req['description'], req['name'], req['link'])
 
         # check if the course already exists
