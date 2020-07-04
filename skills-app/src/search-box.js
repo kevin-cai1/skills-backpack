@@ -2,16 +2,11 @@
 import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
-import * as constants from './constants';
 
 const filter = createFilterOptions();
 
 export default function SearchBox(props) {
     const [value, setValue] = React.useState(null);
-    let data = '';
-    if (props.data == "skills") {
-        data = constants.skills;
-    }
 
     return (
         <Autocomplete
@@ -19,12 +14,12 @@ export default function SearchBox(props) {
             onChange={(event, newValue) => {
                 if (typeof newValue === 'string') {
                     setValue({
-                        title: newValue,
+                        name: newValue,
                     });
                 } else if (newValue && newValue.inputValue) {
                     // Create a new value from the user input
                     setValue({
-                        title: newValue.inputValue,
+                        name: newValue.inputValue,
                     });
                 } else {
                     setValue(newValue);
@@ -38,7 +33,7 @@ export default function SearchBox(props) {
                 if (params.inputValue !== '') {
                     filtered.push({
                         inputValue: params.inputValue,
-                        title: `Add "${params.inputValue}"`,
+                        name: `Add "${params.inputValue}"`,
                     });
                 }
 
@@ -48,7 +43,7 @@ export default function SearchBox(props) {
             clearOnBlur
             handleHomeEndKeys
             id="free-solo-with-text-demo"
-            options={data}
+            options={props.data}
             getOptionLabel={(option) => {
                 // Value selected with enter, right from the input
                 if (typeof option === 'string') {
@@ -59,13 +54,13 @@ export default function SearchBox(props) {
                     return option.inputValue;
                 }
                 // Regular option
-                return option.title;
+                return option.name;
             }}
-            renderOption={(option) => option.title}
+            renderOption={(option) => option.name}
             style={{ width: 300 }}
             freeSolo
             renderInput={(params) => (
-                <TextField {...params} label="Search.." variant="outlined" />
+                <TextField {...params} label="Search.." variant="standard" />
             )}
         />
     );
