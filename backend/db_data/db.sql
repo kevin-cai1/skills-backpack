@@ -179,7 +179,6 @@ DROP TABLE IF EXISTS Skill;
 CREATE TABLE Skill (
 	id INTEGER,
 	name TEXT NOT NULL,
-	description TEXT,
 	PRIMARY KEY(id)
 );
 

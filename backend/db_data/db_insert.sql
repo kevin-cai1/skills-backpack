@@ -83,10 +83,10 @@ VALUES
 	('link1', 'charmaineleung@unsw.edu.au'),
 	('link2', 'mirannakamura@usyd.edu.au');
 
-INSERT INTO Skill (id, name, description)
+INSERT INTO Skill (id, name)
 VALUES
-	(1, 'Python', 'Basic python programming'),
-	(2, 'C', 'Basic C programming');
+	(1, 'Python'),
+	(2, 'C Programming');
 
 INSERT INTO Employer_Skill (employer, skillID)
 VALUES
@@ -95,5 +95,5 @@ VALUES
 
 INSERT INTO ePortfolio_Skill (candidate, skillID)
 VALUES
-	(1, 1),
-	(2, 2);
+	('charmaineleung@unsw.edu.au', 1),
+	('mirannakamura@usyd.edu.au', 2);
