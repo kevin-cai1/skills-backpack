@@ -12,6 +12,7 @@ import Home from './home'
 import Course_Create from './course-create-forms';
 import Manage_Courses from './manage_courses';
 import AdminInvite from './AdminInvite';
+import Candidate_EPortfolio from './candidate-eportfolio';
 
 const allRoutes = () => (
     <Router>
@@ -24,6 +25,7 @@ const allRoutes = () => (
         <PrivateRoute path="/changePassword" component={ChangePassword} />
         <PrivateRoute exact path="/course_create" component={Course_Create}/>
         <PrivateRoute exact path="/manage_courses" component={Manage_Courses}/>
+        <PrivateRoute exact path="/my-eportfolio" component={Candidate_EPortfolio}/>
     </Router>
 );
 
