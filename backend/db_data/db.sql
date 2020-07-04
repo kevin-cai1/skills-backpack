@@ -9,12 +9,7 @@ CREATE TABLE Candidate (
 	university TEXT,
 	password TEXT NOT NULL,
 	degree TEXT,
-	gradYear INTEGER,
-	EP_ID INTEGER,
-	FOREIGN KEY(EP_ID) 
-		REFERENCES ePortfolio (id)
-			ON DELETE CASCADE
-			ON UPDATE CASCADE
+	gradYear INTEGER
 );
 
 -- Create ePortfolioLink table
@@ -65,6 +60,11 @@ CREATE TABLE Course (
 	description TEXT,
 	name TEXT NOT NULL,
 	link TEXT,
+	courseAdminEmail TEXT NOT NULL,
+	FOREIGN KEY (courseAdminEmail)
+		REFERENCES CourseAdmin (email)
+			ON DELETE CASCADE
+			ON UPDATE CASCADE,
 	PRIMARY KEY (code, university)
 );
 
@@ -72,7 +72,8 @@ CREATE TABLE Course (
 -- Contains unique rows of learning outcomes
 DROP TABLE IF EXISTS LearningOutcomes;
 CREATE TABLE LearningOutcomes (
-	l_outcome TEXT PRIMARY KEY NOT NULL,
+	id INTEGER PRIMARY KEY ,
+	l_outcome TEXT,
 	UNIQUE (l_outcome COLLATE NOCASE)
 );
 
@@ -80,38 +81,35 @@ CREATE TABLE LearningOutcomes (
 -- Contains unique rows of graduate outcomes
 DROP TABLE IF EXISTS GraduateOutcomes;
 CREATE TABLE GraduateOutcomes ( 
-	g_outcome TEXT PRIMARY KEY NOT NULL, 
-	UNIQUE (g_outcome COLLATE NOCASE)
-);
-
--- Create ePortfolio table
--- Contains info regarding each EP, mapping the name to the name of the candidate who created it
-DROP TABLE IF EXISTS ePortfolio;
-CREATE TABLE ePortfolio (
 	id INTEGER PRIMARY KEY,
-	employabilitySkills TEXT
+	g_outcome TEXT, 
+	UNIQUE (g_outcome COLLATE NOCASE)
 );
 
 -- Create Employment table
 -- Represents an instance of past employment done by a candidate
 DROP TABLE IF EXISTS Employment;
 CREATE TABLE Employment (
-	id INTEGER PRIMARY KEY,
+	candidate_email TEXT PRIMARY KEY NOT NULL,
 	description TEXT,
 	startDate TEXT NOT NULL,
 	endDate TEXT NOT NULL,
-	employer TEXT NOT NULL
+	employer TEXT NOT NULL,
+	FOREIGN KEY (candidate_email)
+		REFERENCES Candidate (email)
+			ON DELETE CASCADE
+			ON UPDATE CASCADE
 );
 
 -- Create Course_LearnOutcomes table
 -- Maps each learning outcome to the courses it belongs in
 DROP TABLE IF EXISTS Course_LearnOutcomes;
 CREATE TABLE Course_LearnOutcomes (
-	l_outcome TEXT NOT NULL, 
+	l_outcome INTEGER NOT NULL, 
 	code TEXT NOT NULL,
 	university TEXT NOT NULL,
 	FOREIGN KEY (l_outcome)
-		REFERENCES LearningOutcomes (l_outcome)
+		REFERENCES LearningOutcomes (id)
 			ON DELETE CASCADE
 			ON UPDATE CASCADE,
 	FOREIGN KEY (code, university)
@@ -125,11 +123,11 @@ CREATE TABLE Course_LearnOutcomes (
 -- Maps each grad outcome to the courses it belongs in
 DROP TABLE IF EXISTS Course_GradOutcomes;
 CREATE TABLE Course_GradOutcomes (
-	g_outcome TEXT NOT NULL, 
+	g_outcome INTEGER NOT NULL, 
 	code TEXT NOT NULL,
 	university TEXT NOT NULL,
 	FOREIGN KEY (g_outcome)
-		REFERENCES GraduateOutcomes (g_outcome)
+		REFERENCES GraduateOutcomes (id)
 			ON DELETE CASCADE
 			ON UPDATE CASCADE,
 	FOREIGN KEY (code, university)
@@ -140,33 +138,16 @@ CREATE TABLE Course_GradOutcomes (
 );
 
 
--- Create Employment_ePortfolio table
--- Maps each EP to each instance of past employment info
-DROP TABLE IF EXISTS Employment_ePortfolio;
-CREATE TABLE Employment_ePortfolio (
-	employmentId INTEGER NOT NULL,
-	EP_ID INTEGER NOT NULL,
-	FOREIGN KEY (employmentId)
-		REFERENCES Employment (id)
-			ON DELETE CASCADE
-			ON UPDATE CASCADE,
-	FOREIGN KEY (EP_ID)
-		REFERENCES ePortfolio (id)
-			ON DELETE CASCADE
-			ON UPDATE CASCADE,
-	PRIMARY KEY (employmentId, EP_ID)
-);
-
-
--- Create ePortfolio_Courses table
+-- Create ePortfolio_Courses table 
+-- THIS IS THE EQUIVALENT OF Candidate_Courses (deleted ePortfolio table)
 -- Maps each EP to each completed course included in it
 DROP TABLE IF EXISTS ePortfolio_Courses;
 CREATE TABLE ePortfolio_Courses (
-	EP_ID INTEGER NOT NULL,
+	EP_ID TEXT NOT NULL, -- AKA candidate email
 	code TEXT NOT NULL,
 	university TEXT NOT NULL,
 	FOREIGN KEY (EP_ID)
-		REFERENCES ePortfolio (id)
+		REFERENCES Candidate(email)
 			ON DELETE CASCADE
 			ON UPDATE CASCADE,
 	FOREIGN KEY (code, university)
@@ -175,7 +156,6 @@ CREATE TABLE ePortfolio_Courses (
 			ON UPDATE CASCADE,
 	PRIMARY KEY (EP_ID, code, university)
 );
-
 
 -- Create Candidate_Links table
 -- Maps each link to the candidate that generated it
@@ -192,23 +172,6 @@ CREATE TABLE Candidate_Links (
 			ON DELETE CASCADE
 			ON UPDATE CASCADE,
 	PRIMARY KEY (link, email)
-);
-
--- Create Course_CourseAdmin table
--- Maps each course to the course admin who submitted it
-DROP TABLE IF EXISTS Course_CourseAdmin;
-CREATE TABLE Course_CourseAdmin (
-	email TEXT NOT NULL,
-	code TEXT NOT NULL,
-	university TEXT NOT NULL,
-	FOREIGN KEY (email)
-		REFERENCES CourseAdmin (email)
-			ON DELETE CASCADE
-			ON UPDATE CASCADE,
-	FOREIGN KEY (code, university)
-		REFERENCES Course (code, university)
-			ON DELETE CASCADE
-			ON UPDATE CASCADE
 );
 
 DROP TABLE IF EXISTS Skill;

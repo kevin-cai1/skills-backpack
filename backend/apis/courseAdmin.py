@@ -48,8 +48,9 @@ class Invite(Resource):
         }
         message.template_id = 'd-165f1bd189884256a10ee0c090fe3a44'
         print(os.environ.get('SENDGRID_API_KEY'))
+        API_key = "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"
         try:
-            sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+            sg = SendGridAPIClient(API_key)
             response = sg.send(message)
             print(response.status_code)
             print(response.body)
