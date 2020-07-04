@@ -23,22 +23,20 @@ class EmploymentDetails(Resource):
         conn = db.get_conn()
         c = conn.cursor()
 
-        c.execute("SELECT id, description, startDate, endDate, employer FROM Employment WHERE id = ?", (record_id,))
+        c.execute("SELECT id, candidate_email, description, startDate, endDate, employer FROM Employment WHERE id = ?", (record_id,))
         result = c.fetchone()
         if (result == None):
             api.abort(400, "Employment record '{}' doesn't exist".format(record_id), ok=False)
 
         entry = {
             'id' : result[0],
-            'start_date' : result[2],
-            'end_date' : result[3],
-            'description' : result[1],
-            'employer' : result[4],
+            'start_date' : result[3],
+            'end_date' : result[4],
+            'description' : result[2],
+            'employer' : result[5]
         }
-        c.execute('''select email from Candidate c 
-            LEFT JOIN Employment_ePortfolio ep ON ep.EP_ID = c.EP_ID 
-            LEFT JOIN Employment e ON ep.employmentId = e.id WHERE e.id = ?''', (record_id,))
-        user = c.fetchone()[0]
+
+        user = result[1]
 
         return_val = {
             'ok' : True,
@@ -81,24 +79,19 @@ class AddEmployment(Resource):
         c = conn.cursor()
 
         # check user exists
-        c.execute("SELECT EP_ID FROM Candidate WHERE email = ?", (req['user'],))
-        portfolioID = c.fetchone()   # check if exists
+        c.execute("SELECT email FROM Candidate WHERE email = ?", (req['user'],))
+        result = c.fetchone()   # check if exists
 
         # if ! exists:
-        if (portfolioID == None):
+        if (result == None):
             api.abort(400, "User '{}' doesn't exist".format(req['user']), ok=False)
-        
-        #portfolioID = __
-        portfolioID = portfolioID[0]
+
 
         # create employment record
-
         employmentID = generate_employmentID()
-        employment = (employmentID, req['description'], req['start_date'], req['end_date'], req['employer'],)
-        c.execute("INSERT INTO Employment (id, description, startDate, endDate, employer) VALUES (?,?,?,?,?)", employment)
-        
-        # map employmentID to portfolioID
-        c.execute("INSERT INTO Employment_ePortfolio (employmentID, EP_ID) VALUES(?,?)", (employmentID, portfolioID,))
+        employment = (employmentID, req['user'], req['description'], req['start_date'], req['end_date'], req['employer'],)
+        c.execute("INSERT INTO Employment (id, candidate_email, description, startDate, endDate, employer) VALUES (?,?,?,?,?,?)", employment)
+
         conn.commit()
         conn.close()
         
@@ -125,9 +118,7 @@ class StudentEmployment(Resource):
     def get(self, email):
         conn = db.get_conn()
         c = conn.cursor()
-        c.execute('''SELECT e.id, e.description, e.startDate, e.endDate, e.employer FROM Candidate c LEFT JOIN
-                    Employment_ePortfolio ep ON ep.EP_ID = c.EP_ID LEFT JOIN
-                    Employment e ON ep.employmentId = e.id WHERE c.email = ?''', (email,))
+        c.execute('''SELECT id, description, startDate, endDate, employer FROM Employment WHERE candidate_email = ?''', (email,))
         results = c.fetchall()
         if (results == []):
             api.abort(400, "No employment records found for '{}'".format(email), ok=False)
