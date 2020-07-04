@@ -50,8 +50,9 @@ class SkillInfo(Resource):
         c = conn.cursor()
 
         c.execute("SELECT id, name FROM Skill WHERE id = ?", (id,))
-        conn.close()
         result = c.fetchone()
+
+        conn.close()
 
         if (result == None):
             api.abort(400, "No skill with id '{}' found".format(id), ok=False)

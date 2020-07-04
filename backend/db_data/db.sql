@@ -187,9 +187,11 @@ CREATE TABLE ePortfolio_Skill (
 	candidate TEXT,
 	skillID INTEGER,
 	FOREIGN KEY (candidate)
-		REFERENCES Candidate (email),
+		REFERENCES Candidate (email)
+		ON DELETE CASCADE,
 	FOREIGN KEY (skillID)
-		REFERENCES Skill (id),
+		REFERENCES Skill (id)
+		ON DELETE CASCADE,
 	PRIMARY KEY (candidate, skillID)
 );
 
@@ -198,8 +200,10 @@ CREATE TABLE Employer_Skill (
 	employer TEXT,
 	skillID INTEGER,
 	FOREIGN KEY (employer)
-		REFERENCES Employer (email),
+		REFERENCES Employer (email)
+		ON DELETE CASCADE,
 	FOREIGN KEY (skillID)
-		REFERENCES Skill (id),
+		REFERENCES Skill (id)
+		ON DELETE CASCADE,
 	PRIMARY KEY (employer, skillID)
 );
