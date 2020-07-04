@@ -90,7 +90,8 @@ CREATE TABLE GraduateOutcomes (
 -- Represents an instance of past employment done by a candidate
 DROP TABLE IF EXISTS Employment;
 CREATE TABLE Employment (
-	candidate_email TEXT PRIMARY KEY NOT NULL,
+	id INTEGER PRIMARY KEY,
+	candidate_email TEXT,
 	description TEXT,
 	startDate TEXT NOT NULL,
 	endDate TEXT NOT NULL,
@@ -184,13 +185,13 @@ CREATE TABLE Skill (
 
 DROP TABLE IF EXISTS ePortfolio_Skill;
 CREATE TABLE ePortfolio_Skill (
-	EP_ID INTEGER,
+	candidate TEXT,
 	skillID INTEGER,
-	FOREIGN KEY (EP_ID)
-		REFERENCES ePortfolio (id),
+	FOREIGN KEY (candidate)
+		REFERENCES Candidate (email),
 	FOREIGN KEY (skillID)
 		REFERENCES Skill (id),
-	PRIMARY KEY (EP_ID, skillID)
+	PRIMARY KEY (candidate, skillID)
 );
 
 DROP TABLE IF EXISTS Employer_Skill;
