@@ -8,6 +8,7 @@ import {
     InputLabel, MenuItem,
     MuiThemeProvider, Select,
     TextField,
+    Chip
 } from "@material-ui/core";
 import {theme} from "./App";
 import Box from "@material-ui/core/Box";
@@ -17,7 +18,18 @@ import SearchBox from './search-box';
 import {Alert} from "@material-ui/lab";
 import Autocomplete from "@material-ui/lab/Autocomplete/Autocomplete";
 import {Link} from "react-router-dom";
+import InsertPhotoIcon from '@material-ui/icons/InsertPhoto';
+import SchoolIcon from '@material-ui/icons/School';
+import EmailIcon from '@material-ui/icons/Email';
+import AddCircleIcon from '@material-ui/icons/AddCircle';
 
+const chipNames = [
+    {name: 'css'},
+    {name: 'html'},
+    {name: 'reactjs'},
+    {name: 'python'},
+    {name: 'communication'},
+]
 
 class Candidate_EPortfolio extends React.Component{
     constructor(props) {
@@ -215,19 +227,59 @@ class Candidate_EPortfolio extends React.Component{
 
     render() {
         return (
-            <div className="A-page">
-                <body className="A-body">
-                <p>Logged in as: Candidate</p>
-                <div className="A-buttons">
+            <div>
+                <body className="column-container">
+                <div className="center-align-container">
+                    <div style={{'display': 'inline-block', 'padding-top':'50px'}}>
+                        <div><InsertPhotoIcon style={{ fontSize: 100 }}/></div>
+                        <div style={{color: 'dimgrey'}}><h2>{SessionDetails.getName()}</h2></div>
+                        <div className="row-container">
+                            <div className="user-profile-details-row">
+                                <SchoolIcon className="sm-icon-padded"/>
+                                <h5>University of New South Wales</h5>
+                            </div>
+                            <div className="user-profile-details-row">
+                                <EmailIcon className="sm-icon-padded"/>
+                                <h5>{SessionDetails.getEmail()}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="ep-container">
                     <MuiThemeProvider theme={theme}>
-                        <Box m={3}>
-                            <Button variant="contained" color="primary" onClick={this.handleSearchSkillsModal}>
-                                Add skill
-                            </Button>
-                            <Button variant="contained" color="primary" onClick={this.handleAddEmploymentModal}>
-                                Add Employment
-                            </Button>
-                        </Box>
+                        <div className="row-container">
+                            <h3 className="ep-h3-text">Completed Courses</h3>
+                            <AddCircleIcon className="add-circle-button"/>
+                        </div>
+                        <div>
+                            {chipNames.map(i => {
+                                return <Chip label={i.name} className="skills-chip"/>
+                            })}
+                        </div>
+                        <h3 className="ep-h3-text">Employability Skills</h3>
+                        <div>
+                            {chipNames.map(i => {
+                                return <Chip label={i.name} className="skills-chip"/>
+                            })}
+                        </div>
+                        <div className="row-container">
+                            <h3 className="ep-h3-text">Work Experience</h3>
+                            <AddCircleIcon className="add-circle-button" onClick={this.handleAddEmploymentModal}/>
+                        </div>
+                        <div>
+                            <h5>Deloitte</h5>
+                            <h5>2019/01/10 - Present</h5>
+                            <h5>Worked as a full stack developer on five different client project across industries such as banking, technology, government and education. </h5>
+                        </div>
+                        <div className="row-container">
+                            <h3 className="ep-h3-text">Job-Specific Skills</h3>
+                            <AddCircleIcon className="add-circle-button" onClick={this.handleSearchSkillsModal}/>
+                        </div>
+                        <div>
+                            {chipNames.map(i => {
+                                return <Chip label={i.name} className="skills-chip"/>
+                            })}
+                        </div>
                     </MuiThemeProvider>
                 </div>
                 </body>
@@ -268,7 +320,7 @@ class Candidate_EPortfolio extends React.Component{
                         open={this.state.add_employment_open}
                         onClose={this.handleAddEmploymentModalClose}
                     >
-                        <DialogContent style={{"min-width": "300px"}}>
+                        <DialogContent style={{"minWidth": "300px"}}>
                             <DialogContentText type="title" id="modal-title">
                                 Add Employment
                             </DialogContentText>
@@ -277,7 +329,7 @@ class Candidate_EPortfolio extends React.Component{
                                 <Alert className="Login-alert" severity="success">Successfully added new job.</Alert>
                             }
                             <div className="Course-form-body">
-                                <form style={{"min-width": "300px"}}>
+                                <form style={{"minWidth": "300px"}}>
                                     <FormControl fullWidth={true} required={true} margin='normal'>
                                         <TextField required label="Employer"
                                                    name="employerName"
