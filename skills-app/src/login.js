@@ -141,7 +141,6 @@ class Login extends React.Component {
                     </div>
                     <div className="Form-container">
                         <FormControl>
-                            {/*<h5 className="Login-field-title">Email Address</h5>*/}
                             <div className="Login-text-field">
                                 <TextField
                                     id="email-input"
@@ -156,7 +155,6 @@ class Login extends React.Component {
                                     helperText={this.state.emailValid ? '' : this.state.emailError}
                                 />
                             </div>
-                            {/*<h5 className="Login-field-title">Password</h5>*/}
                             <div className="Login-text-field">
                                 <TextField
                                     id="password-input"
