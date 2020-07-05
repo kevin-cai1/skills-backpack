@@ -129,7 +129,9 @@ class UserSkills(Resource):
         if (req['id'] == -1):
             # create new skill record
             # check if similar record already exists?
-            c.execute('SELECT id, name FROM Skill WHERE editdist3(name, ?) < 600', (req['name'],))
+            #c.execute('SELECT id, name FROM Skill WHERE editdist3(name, ?) < 600', (req['name'],))
+            c.execute('SELECT id, name FROM Skill WHERE LOWER(name) = LOWER(?)', (req['name'],))
+
             match = c.fetchone()
 
             if (match == None):
