@@ -10,6 +10,7 @@ from .employment import api as ns7
 from .skills import api as ns8
 from .employer import api as ns9
 
+from .ePortfolio import api as ns10
 
 api = Api(
         title="Skills Backpack",
@@ -26,3 +27,4 @@ api.add_namespace(ns6, path='/course_admin')
 api.add_namespace(ns7, path='/employment')
 api.add_namespace(ns8, path='/skills')
 api.add_namespace(ns9, path='/employer')
+api.add_namespace(ns10, path='/ePortfolio')
