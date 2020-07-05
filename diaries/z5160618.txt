@@ -42,3 +42,10 @@ Week 4
 25/06/20
 - Finished writing APIs and endpoints for course related functions (get course info, edit course info, add course, delete course)
 - Updated DB to reflect new relationships between grad/learning outcomes and the courses
+
+Week 5
+- Did demo, did retro
+- discussed things to improve, what went well, what didnt go well
+- Redesigned the database so that EP table was removed
+- Redid the APIs for course getting/adding/editing to reflect changes in database
+- accounted for EP relationships so that when admins changed courses they would be reflected in candidate EPs
