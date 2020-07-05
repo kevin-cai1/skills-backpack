@@ -17,6 +17,19 @@ course_details = api.model('course', {
     'admin_email' : fields.String(required = True, description = 'email of the course admin who is submitting the course')
     })
 
+edited_course_details = api.model('course', {
+    'code' : fields.String(required = True, description = 'Course code'),
+    'learningOutcomes' :  fields.List(fields.String, description = 'Learning outcomes gained from the course'),  # assuming for now that we are allowing courses to be registed with no outcomes
+    'university' : fields.String(required = True, description = 'University that the course belongs to'),
+    'faculty' : fields.String(description = 'Faculty that the course belongs to'),
+    'gradOutcomes' : fields.List(fields.String, description = 'Graduate outcomes gained from the course'),
+    'description' : fields.String(description = 'Description of the course'),
+    'name' : fields.String(description = 'Name of the course'),
+    'link' : fields.String(description = 'link to course handbook'),
+    'admin_email' : fields.String(description = 'email of the course admin who is submitting the course')
+    })
+
+
 delete_course_details = api.model('delete_course', {
     'code' : fields.String(required = True, description = 'Course code'),
     'university' : fields.String(required = True, description = 'University that the course belongs to'),
@@ -28,17 +41,28 @@ class getcourse(Resource):
     def get(self, code, university):
         if code == None or university == None:
             api.abort(400, 'Please enter code or univerisity parameters to search for specific course', ok = False)
-        
+       
+        # when searching for a course theres 3 main pieces of info we need to display
+        # 1. the general course info (name, description, code etc)
+        # 2. learning outcomes
+        # 3. grad outcomes
+
         course_query = 'select * from course c where c.code = ? and c.university = ?' 
-        learnoutcome_query = 'select cl.l_outcome from course_learnoutcomes cl where cl.code = ? and cl.university = ?'
-        gradoutcome_query = 'select gl.g_outcome from course_gradoutcomes gl where gl.code = ? and gl.university = ?'
+        learnoutcome_query = 'select l.l_outcome from course_learnoutcomes cl, learningoutcomes l where cl.l_outcome = l.id and cl.code = ? and cl.university = ?'
+        gradoutcome_query = 'select g.g_outcome from graduateoutcomes g, course_gradoutcomes cg where cg.g_outcome = g.id and cg.code = ? and cg.university = ?'
         
         code_uni = (code, university)
         learning_outcomes = []
         graduate_outcomes = []
-        
+
         conn = db.get_conn()
         c = conn.cursor()
+
+        c.execute(course_query, code_uni)
+        course_info = c.fetchall()
+        if course_info == None: # check if the course exists
+            api.abort(400, 'Course with code {} at university {} does not exist'.format(code, university), ok = False)
+         
         c.execute(learnoutcome_query, code_uni)
         res = c.fetchall()
         for l in res:
@@ -47,14 +71,10 @@ class getcourse(Resource):
         res = c.fetchall()
         for l in res:
             graduate_outcomes.append(l[0])
-        c.execute(course_query, code_uni)
-        course_info = c.fetchall()
-        if course_info == None:
-            api.abort(400, 'Course with code {} at university {} does not exist'.format(code, university), ok = False)
         else:
             returnVal = {
                     'ok' : True,
-                    'val' : course_info ,
+                    'general_course_info' : course_info,
                     'gradoutcomes' : graduate_outcomes,
                     'learnoutcomes' : learning_outcomes
             }
@@ -67,7 +87,7 @@ class addcourse(Resource):
         req = request.get_json()
         conn = db.get_conn()
         c = conn.cursor()
-        infolist = (req['code'], req['university'], req['faculty'], req['description'], req['name'], req['link'])
+        infolist = (req['code'], req['university'], req['faculty'], req['description'], req['name'], req['link'], req['admin_email'])
 
         # check if the course already exists
         check_sql = 'SELECT * FROM Course WHERE code = ? and university = ?'
@@ -77,27 +97,26 @@ class addcourse(Resource):
 
         if res == None: # course doesn't already exist so we can insert this one into the db
             # inserting course details into course table
-            c.execute('INSERT INTO Course(code, university, faculty, description, name, link) VALUES(?, ?, ?, ?, ?, ?)', infolist)
+            c.execute('INSERT INTO Course(code, university, faculty, description, name, link, courseAdminEmail) VALUES(?, ?, ?, ?, ?, ?, ?)', infolist)
             course = {
                 'code' : req['code'],
                 'university' : req['university'],
                 'faculty' : req['faculty'],
                 'description' : req['description'],
                 'name' : req['name'],
-                'link' : req['name']
+                'link' : req['link'],
+                'courseAdminEmail' : req['admin_email']
             }
             
             # inserting outcomes into their respective tables and relationships
             for learning_outcome in req['learningOutcomes']:
                 c.execute('INSERT OR IGNORE INTO LearningOutcomes(l_outcome) VALUES(?)', (learning_outcome,))
-                c.execute('INSERT INTO Course_LearnOutcomes(l_outcome, code, university) VALUES (?, ?, ?)', (learning_outcome, req['code'], req['university']))
+                c.execute('INSERT INTO Course_LearnOutcomes(l_outcome, code, university) VALUES ((SELECT last_insert_rowid()), ?, ?)', (req['code'], req['university']))
 
             for grad_outcome in req['gradOutcomes']:
-               c.execute('INSERT OR IGNORE INTO GraduateOutcomes(g_outcome) VALUES(?)', (grad_outcome,))
-               c.execute('INSERT INTO Course_GradOutcomes(g_outcome, code, university) VALUES (?, ?, ?)', (grad_outcome, req['code'], req['university']))
+               c.execute('INSERT OR IGNORE INTO GraduateOutcomes(g_outcome, university) VALUES(?, ?)', (grad_outcome, req['university']))
+               c.execute('INSERT INTO Course_GradOutcomes(g_outcome, code, university) VALUES ((SELECT last_insert_rowid()), ?, ?)', (req['code'], req['university']))
 
-            # inserting course_courseadmin details so we can map the course to the admin who added it (to check editing permissions later)
-            c.execute('INSERT INTO Course_CourseAdmin(email, code, university) VALUES(?, ?, ?)', (req['admin_email'], req['code'], req['university']))
             conn.commit()
             conn.close()
             returnVal = {
@@ -145,12 +164,84 @@ class editcourse(Resource):
         req = request.get_json()
         conn = db.get_conn()
         c = conn.cursor()
-        c.execute('PRAGMA foreign_keys = on') 
-        # 1. delete the existing course (which should cascade to delete the outcome/admin relationships)
+        # NEW PLAN: just run an update statement with all the new details since we assuming primary keys cant be changed (admin will have to delete and add course again to do that)
+        # update statement should cascade to relationships, keeping the eportfolios/candidates happy because we just query through the relationships to find list of outcomes/courses
+
+        # OLD PLAN: 1. delete the existing course (which should cascade to delete the outcome/admin relationships)
         # 2. create a new course with the edited details
         # 3. add relationships of the edited details
 
         # check that the course exists
+        check_query = 'SELECT * FROM Course WHERE code = ? and university = ?'
+        code_course = (req['code'], req['university'])
+        c.execute(check_query, code_course)
+        res = c.fetchone()
+        if res == None:
+             api.abort(400, 'Course {} at {} does not exist.'.format(req['code'], req['university']), ok = False) 
+
+        # check that the admin is legit
+        check_admin_query = 'SELECT * FROM CourseAdmin WHERE email = ?'
+        c.execute(check_admin_query, (req['admin_email'],))
+        res = c.fetchone()
+        if res == None:
+            api.abort(400, 'Course Admin email ? does not exist.'.format(req['admin_email']), ok = False) 
+       
+        # if the course admin has removed some outcomes, we must first delete those outcomes and their relos
+        c.execute('SELECT l_outcome FROM Course_LearnOutcomes WHERE code = ? and university = ?', (req['code'], req['university']))
+        ids = c.fetchall() # get all the ids of the existing learning outcomes for the particular course
+        for i in ids:
+            c.execute('SELECT l_outcome, id FROM LearningOutcomes WHERE id = ?', i) 
+            l = c.fetchone()
+            if l[0] not in req['learningOutcomes']: # if the learning outcome is not in the new (edited) list of outcomes, delete it
+                c.execute('DELETE FROM LearningOutcomes WHERE id = ?', (l[1],)) # this should cascade to delete course_learnoutcome relo
+
+        # since grad outcomes are tied to the uni, not the course, all we have to do is remove the course_gradoutcome relo. The outcome can stay. 
+        c.execute('SELECT g_outcome FROM Course_GradOutcomes WHERE code = ? and university = ?', (req['code'], req['university']))
+        ids = c.fetchall() # get all the ids of the existing graduate outcomes for the particular course
+        for i in ids:
+            c.execute('SELECT g_outcome, id FROM GraduateOutcomes WHERE id = ?', i) 
+            l = c.fetchone()
+            if l[0] not in req['gradOutcomes']: # if the gradoutcome is not in the new (edited) list of outcomes, delete it
+                c.execute('DELETE FROM Course_GradOutcomes WHERE g_outcome = ?', (l[1],)) 
+
+
+        # add all the learning/grad outcomes to their respective tables. Should automatically filter out duplicates.
+        # inserting outcomes into their respective tables and relationships
+#        for learning_outcome in req['learningOutcomes']:
+#            c.execute('INSERT OR IGNORE INTO LearningOutcomes(l_outcome) VALUES(?)', (learning_outcome,))
+#            c.execute('INSERT OR IGNORE INTO Course_LearnOutcomes(l_outcome, code, university) VALUES (?, ?, ?)', (learning_outcome, req['code'], req['university']))
+
+ #       for grad_outcome in req['gradOutcomes']:
+#           c.execute('INSERT OR IGNORE INTO GraduateOutcomes(g_outcome, university) VALUES(?, ?)', (grad_outcome, req['university']))
+#           c.execute('INSERT INTO Course_GradOutcomes(g_outcome, code, university) VALUES (?, ?, ?)', (grad_outcome, req['code'], req['university'])) 
+        
+#        update_query = 'UPDATE Course SET faculty = ?, description = ?, name = ?, link = ?, admin_email = ? WHERE code = ? and university = ?'
+#        infolist = (req['faculty'], req['description'], req['name'], req['link'], req['admin_email'], req['code'], req['university']) 
+#        c.execute(update_query, infolist)
+        
+        # inserting outcomes into EP skills sections
+
+        # inserting course_courseadmin details so we can map the course to the admin who added it (to check editing permissions later)
+#        c.execute('INSERT INTO Course_CourseAdmin(email, code, university) VALUES(?, ?, ?)', (req['admin_email'], req['code'], req['university']))     
+        conn.commit()
+        conn.close()
+        course = {
+            'code' : req['code'],
+            'learningOutcomes' : req['learningOutcomes'],
+            'university' : req['university'],
+            'faculty' : req['faculty'],
+            'gradOutcomes' : req['gradOutcomes'],
+            'description' : req['description'],
+            'name' : req['name'],
+            'link' : req['name']
+        }
+        returnVal = {
+            'ok' : True,
+            'course' : course
+        }
+        return returnVal
+        
+        '''
         check_query = 'SELECT * FROM Course WHERE code = ? and university = ?'
         code_course = (req['code'], req['university'])
         c.execute(check_query, code_course)
@@ -206,3 +297,4 @@ class editcourse(Resource):
             'course' : course
         }
         return returnVal
+        '''
