@@ -14,7 +14,7 @@ class accounts(Resource):
 
         c.execute("SELECT * FROM Candidate")
         
-update_details = api.model('create', {
+candidate_details = api.model('candidate details', {
     'email' : fields.String(description='university email for account identification', required=True),
     'password'  : fields.String(description='password for account access', required=True),
     'name' : fields.String(description='name of user', required=True),
@@ -43,7 +43,7 @@ class accountInfo(Resource):
         # SELECT STUFF FROM CANDIDATE
         # FORMAT RESPONS
         return_val = {
-
+            'email' : account
         }
         return return_val
     
@@ -68,7 +68,7 @@ class accountInfo(Resource):
         return return_val
 
     @api.doc(description="Edit user name")
-    @api.expect(update_details)
+    @api.expect(candidate_details)
     def put(self, account):
         conn = db.get_conn()
         c = conn.cursor()
