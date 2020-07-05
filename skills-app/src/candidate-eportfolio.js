@@ -30,6 +30,12 @@ class Candidate_EPortfolio extends React.Component{
             addSkillSuccessMessage: '',
             allSkills: '',
             skillID: 0,
+            presentDate: false,
+            employerName: '',
+            startDate: '',
+            endDate: '',
+            jobDescription: '',
+            jobAdded: false,
         };
         this.handleSearchSkillsModal = this.handleSearchSkillsModal.bind(this);
         this.handleSearchSkillsModalClose = this.handleSearchSkillsModalClose.bind(this);
@@ -37,6 +43,9 @@ class Candidate_EPortfolio extends React.Component{
         this.handleClearStatus = this.handleClearStatus.bind(this);
         this.handleAddEmploymentModal = this.handleAddEmploymentModal.bind(this);
         this.handleAddEmploymentModalClose = this.handleAddEmploymentModalClose.bind(this);
+        this.handleEmploymentCheckbox = this.handleEmploymentCheckbox.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.handleAddJob = this.handleAddJob.bind(this);
     }
 
     componentDidMount() {
@@ -58,7 +67,70 @@ class Candidate_EPortfolio extends React.Component{
 
     handleAddEmploymentModalClose() {
         this.setState({add_employment_open: false});
-        this.handleClearStatus();
+        this.clearEmploymentFields();
+        this.setState({jobAdded: false});
+    }
+
+    handleEmploymentCheckbox() {
+        if (this.state.presentDate) {
+            this.setState({presentDate: false});
+            this.setState({endDate: ''});
+        }
+        else {
+            this.setState({presentDate: true});
+            this.setState({endDate: 'Present'});
+        }
+    }
+
+    handleChange(event) {
+        const fieldName = event.target.name;
+        const fieldValue = event.target.value;
+        this.setState({[fieldName]: fieldValue});
+    }
+
+    handleAddJob() {
+        return this.postNewEmployment().then( (response) => {
+            console.log(response);
+            let status = response["ok"];
+            if (status) {
+                this.setState({jobAdded: true});
+                this.clearEmploymentFields();
+            }
+        });
+    }
+
+    clearEmploymentFields() {
+        this.setState({employerName: ''});
+        this.setState({presentDate: false});
+        this.setState({startDate: ''});
+        this.setState({endDate: ''});
+        this.setState({jobDescription: ''});
+    }
+
+    postNewEmployment() {
+        let data = JSON.stringify({
+            "user": SessionDetails.getEmail(),
+            "employer": this.state.employerName,
+            "start_date": this.state.startDate,
+            "end_date": (this.state.endDate === 'Present') ? '' : this.state.endDate,
+            "description": this.state.jobDescription
+        });
+        let url = 'http://localhost:5000/employment/add';
+        console.log('Sending to ' + url + ': ' + data);
+
+        return fetch(url, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: data
+        }).then(response => {
+            console.log(response)
+            console.log('response ' + response.status)
+            return response.ok && response.json();
+        })
+            .catch(err => console.log('Error:', err));
     }
 
     handleAddSkill() {
@@ -113,8 +185,6 @@ class Candidate_EPortfolio extends React.Component{
                 'Content-Type': 'application/json',
             }
         }).then(response => {
-            console.log(response)
-            console.log('response ' + response.status)
             return response.ok && response.json();
         })
             .catch(err => console.log('Error:', err));
@@ -202,17 +272,25 @@ class Candidate_EPortfolio extends React.Component{
                             <DialogContentText type="title" id="modal-title">
                                 Add Employment
                             </DialogContentText>
+                            {
+                                (this.state.jobAdded) &&
+                                <Alert className="Login-alert" severity="success">Successfully added new job.</Alert>
+                            }
                             <div className="Course-form-body">
                                 <form style={{"min-width": "300px"}}>
                                     <FormControl fullWidth={true} required={true} margin='normal'>
-                                        <TextField required id="standard-required" label="Employer"/>
+                                        <TextField required label="Employer"
+                                                   name="employerName"
+                                                   onChange={this.handleChange}
+                                                   value={this.state.employerName}
+                                        />
                                     </FormControl>
                                     <FormControl fullWidth={true} required={true} margin='normal'>
                                         <FormControlLabel
                                             control={
-                                                <Checkbox
-                                                    name="checkedB"
-                                                    color="primary"
+                                                <Checkbox color="primary"
+                                                      onClick={this.handleEmploymentCheckbox}
+                                                      checked={this.state.presentDate}
                                                 />
                                             }
                                             label="I currently work here"
@@ -220,18 +298,30 @@ class Candidate_EPortfolio extends React.Component{
                                     </FormControl>
                                     <FormControl fullWidth={true} required={true} margin='normal'>
                                         <InputLabel htmlFor="start-date" shrink={true}>Start Date</InputLabel>
-                                        <Input name="graduation" type="date" id="input-graduation" aria-describedby="my-helper-text" />
+                                        <Input name="startDate" type="date" id="input-start-date" aria-describedby="my-helper-text"
+                                               onChange={this.handleChange}
+                                               value={this.state.startDate}
+                                        />
                                     </FormControl>
                                     <FormControl fullWidth={true} required={true} margin='normal'>
                                         <InputLabel htmlFor="end-date" shrink={true}>End Date</InputLabel>
-                                        <Input name="graduation" type="date" id="input-graduation" aria-describedby="my-helper-text" />
+                                        <Input
+                                            name="endDate"
+                                            type={this.state.presentDate ? "text" : "date"}
+                                            id="input-end-date"
+                                            aria-describedby="my-helper-text"
+                                            value={this.state.endDate}
+                                            onChange={this.handleChange}
+                                        />
                                     </FormControl>
                                     <FormControl fullWidth={true} required={true} margin='normal'>
                                         <TextField
-                                            id="standard-multiline-flexible"
+                                            name="jobDescription"
                                             label="Description"
                                             multiline
                                             rowsMax={3}
+                                            onChange={this.handleChange}
+                                            value={this.state.jobDescription}
                                         />
                                     </FormControl>
                                 </form>
@@ -241,7 +331,7 @@ class Candidate_EPortfolio extends React.Component{
                             <Button onClick={this.handleAddEmploymentModalClose} color="primary">
                                 Cancel
                             </Button>
-                            <Button color="primary">
+                            <Button color="primary" onClick={this.handleAddJob}>
                                 Add
                             </Button>
                         </DialogActions>
