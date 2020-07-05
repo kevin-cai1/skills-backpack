@@ -17,5 +17,12 @@ in a few new sections such as the differentiating features of our system. I also
 to enable them to change their account details, passwords, delete account, etc.
 
 Week 4
-This week I am continuing to look at the account details and specifically the editing of account details across all different
-users as well as the ability for all users to change their password and verify these changes. 
+This week I am looking at the account details and specifically the editing of account details across all different users as 
+well as the ability for all users to change their password and verify these changes. This will allow the users to go into 
+their account and change any of this information once their account has already been created.
+
+Week 5
+This week I finished off updating user data so now all users can change their account details such as their name, university,
+graduation year, company, etc. Users are also able to change their password which also requires verification before they are 
+able to do so. Also, following this weeks meeting, we have decided to change up our sprint plan to fit the guideline a bit 
+better so I have been making those chages in our Jira. 

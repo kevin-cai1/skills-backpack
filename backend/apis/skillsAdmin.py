@@ -88,3 +88,102 @@ class SkillsAdminInfo(Resource):
                 'ok' : 'False',
                 'message' : 'Account is all good'
             }
+
+# account stuff       
+@api.route('/all')
+class accounts(Resource):
+    def get(self):
+        conn = db.get_conn()
+        c = conn.cursor()
+
+        c.execute("SELECT * FROM SkillsBackpackAdmin")
+        
+skills_admin_details = api.model('skills admin details', {
+    'email' : fields.String(description='university email for account identification', required=True),
+    'password'  : fields.String(description='password for account access', required=True),
+    'name' : fields.String(description='name of user', required=True),
+})
+
+
+@api.route('/<string:account>')
+class accountInfo(Resource):
+    def get(self, account):
+        conn = db.get_conn()
+        c = conn.cursor()
+        
+
+        c.execute("SELECT EXISTS(SELECT email FROM SkillsBackpackAdmin WHERE email = ?)", (account,))
+        account_check = c.fetchone()[0]
+        
+        if (account_check == 0):
+            api.abort(404, "Account '{}' doesn't exist".format(account), ok=False)
+
+        # SELECT STUFF FROM SKILLS ADMIN
+        # FORMAT RESPONSE
+        return_val = {
+            'email' : account
+        }
+        return return_val
+        
+    
+    @api.doc(description="Delete specified account")
+    def delete(self, account):
+        conn = db.get_conn()
+        c = conn.cursor()
+
+        c.execute("SELECT EXISTS(SELECT email FROM SkillsBackpackAdmin WHERE email = ?)", (account,))
+        account_check = c.fetchone()[0]
+        
+        if (account_check == 0):
+            api.abort(404, "Account '{}' doesn't exist".format(account), ok=False)
+
+        c.execute("DELETE FROM SkillsBackpackAdmin WHERE email = ?)", (account,))
+        
+        conn.commit()
+        conn.close()
+        return_val = {
+            'ok': True
+        }
+        return return_val
+
+    @api.doc(description="Edit user name")
+    @api.expect(skills_admin_details)
+    def put(self, account):
+        conn = db.get_conn()
+        c = conn.cursor()
+        req = request.get_json()
+        
+        c.execute("SELECT EXISTS(SELECT email FROM SkillsBackpackAdmin WHERE email = ?)", (account,))
+        account_check = c.fetchone()[0] 
+        
+        # if account does not exist abort
+        if (account_check == 0):
+            api.abort(404, "Account '{}' doesn't exist".format(account), ok=False)
+        
+        # change account details if account exists
+        elif (account_check == 1):  
+            
+            # getting api input
+            # edit_details = request.get_json()
+            # pw_edit = req.get('password')
+            # name_edit = req.get('name')
+            # uni_edit = req.get('university')
+
+            # update 
+            c.execute("UPDATE SkillsBackpackAdmin SET (password, name) = (?,?) WHERE email = ?",(req['password'], req['name'], req['email'],))
+            conn.commit()
+            conn.close()
+            new_details = {
+                'email' : req['email'],
+                'password' : req['password'],
+                'name' : req['name'],
+            }
+
+        else: 
+            api.abort(400, "Update Error")
+            conn.close()
+        return_val = {
+            'ok' : True,
+            'new' : new_details
+        }
+        return return_val
