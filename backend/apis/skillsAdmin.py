@@ -53,7 +53,7 @@ class SkillsAdminAccount(Resource):
         password = query[0]
         #(check_password_hash(password, req['password'])
         hashed_password = generate_password_hash(req['new_password'], "sha256")
-        c.execute("UPDATE SkillsBackpackAdmin SET password = ? WHERE email = ?", (hashed_password, email,))
+        c.execute("UPDATE SkillsBackpackAdmin SET password = ?, newAccount = 0 WHERE email = ?", (hashed_password, email,))
         conn.commit()
             #api.abort(400, "Password incorrect", ok=False)
         conn.close()
@@ -65,7 +65,7 @@ class SkillsAdminAccount(Resource):
 @api.route('/new/<string:email>')
 @api.doc(params={'email': 'the email of the skillsBackpack admin account'})
 class SkillsAdminInfo(Resource):
-    @api.doc(description="Gets if the admin is new or not (needs to change password)")
+    @api.doc(description="Gets if the admin is new or not (needs to change password). Returns True if new account")
     def get(self, email):
         conn = db.get_conn()
         c = conn.cursor()
@@ -76,13 +76,15 @@ class SkillsAdminInfo(Resource):
         conn.close()
         if newAccount == None:
             api.abort(400, "User '{}' not found".format(email), ok=False)
+
+        newAccount = newAccount[0]
         if newAccount == 1:
-            return {
-                'ok' : 'False',
-                'message' : 'Account is all good'
-            }
-        else:
             return {
                 'ok' : 'True',
                 'message' : 'Password needs to be updated'
+            }
+        else:
+            return {
+                'ok' : 'False',
+                'message' : 'Account is all good'
             }
