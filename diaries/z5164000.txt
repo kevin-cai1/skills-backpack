@@ -21,3 +21,11 @@ Week 4
 Tabs to redirect different user types to different forms working.
 Form input (email, password, confirm password) validation working.
 Worked with Charmaine and Kevin on connecting back-end APIs to the front-end form UIs we have created.
+
+Week 5
+Added front-end components (buttons, text, routes, etc) for all home landing pages after skillsbackpack admin and course admin logins. 
+For course admins, added front-end to enable creation of new courses! Took a bit to get the "Graduate Outcomes" form to render correctly. 
+For skillsbackpack admins, linked the back-end that Kevin wrote to email invite links to course admins to a front-end modal form.
+Further for skillsbackpack admins, created a form for them to register an additional skillsbackpack admin with a temporary password + prompt for this new admin to change password on initial login.
+Something got broken in the registration form over the week but quickly fixed.
+Finished this week by refactoring the homepage file home.js for better edit-ability.
