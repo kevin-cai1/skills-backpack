@@ -154,6 +154,8 @@ def generate_employmentID():
     return val+1
 
 def checkFormat(date):
+    if (date == ""):
+        return True
     val = re.match("^\d{4}-\d{2}-\d{2}$",date)
     print(val)
     if (val != None):
