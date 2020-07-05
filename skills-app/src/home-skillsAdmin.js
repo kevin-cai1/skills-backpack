@@ -41,7 +41,7 @@ class Home_skillsAdmin extends React.Component {
 
   componentDidMount() {
       this.sleep(2000).then(()=>{
-        console.log('you can see me after 2000 milliseconds');
+        console.log('you can see me after 1000 milliseconds');
         this.handleSkillsAdminLoad();
       });
   }
@@ -113,7 +113,6 @@ class Home_skillsAdmin extends React.Component {
           },
           body: data
       }).then(response => {
-          alert(response.ok);
           return response.ok;
       })
           .catch(err => console.log('Error:', err));
@@ -136,15 +135,14 @@ class Home_skillsAdmin extends React.Component {
       if (errors.length == 0) {
           console.log("sendSiteAdminPassword");
           const response = this.sendSiteAdminPassword(e).then( (response) => {
-              alert(response);
+              console.log(response);
+              if (response !== true) {
+                alert("Something went wrong. Contact technical support: kevin@skillsbackpack.com.");
+              }
+              else{
+                alert("Password successfully updated.");
+              }
           });
-          if (response.ok !== true) {
-            alert("Something went wrong. Try again later." + response);
-          }
-          else{
-            alert("Password successfully updated.");
-          }
-
       }
       else {
           alert(errors);
@@ -270,9 +268,9 @@ class Home_skillsAdmin extends React.Component {
           >
             <DialogContent>
               <form onSubmit={(e) => this.handleChangePasswordSubmit(e)}>
-                <DialogContentText type="title" id="modal-title">
-                  Set your new permanent password
-                </DialogContentText>
+                <Alert severity="warning">
+                  Update password to validate your admin account
+                </Alert>
                 <TextField
                   autoFocus
                   required
