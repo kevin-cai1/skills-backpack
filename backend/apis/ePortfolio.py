@@ -40,6 +40,17 @@ class ePortfolio(Resource):
                 job_skills.append(entry)
 
         employability_skills = []   # get function from gordon
+        c.execute('''select o.id, o.g_outcome from Course c JOIN Course_GradOutcomes g ON c.code = g.code 
+                JOIN ePortfolio_Courses e ON e.code = c.code 
+                JOIN GraduateOutcomes o ON g.g_outcome = o.id WHERE e.EP_ID = ?''', (email,))
+
+        grad_skills = c.fetchall()
+        for r in grad_skills:
+            entry = {
+                'id': r[0],
+                'grad_outcome': r[1]
+            }
+            employability_skills.append(entry)
 
         courses = []
         c.execute('''SELECT c.code, c.university, c.faculty, c.description, c.name, c.link, c.courseAdminEmail 
