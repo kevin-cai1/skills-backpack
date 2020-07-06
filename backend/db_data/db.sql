@@ -83,7 +83,8 @@ DROP TABLE IF EXISTS GraduateOutcomes;
 CREATE TABLE GraduateOutcomes ( 
 	id INTEGER PRIMARY KEY,
 	g_outcome TEXT,
-	university TEXT NOT NULL
+	university TEXT NOT NULL,
+	UNIQUE (university, g_outcome)
 );
 
 -- Create Employment table

@@ -144,8 +144,12 @@ class deletecourse(Resource):
         res = c.fetchone()
         if res == None:
              api.abort(400, 'Course {} at {} does not exist.'.format(req['code'], req['university']), ok = False) 
-             print('not great')
         else:
+             # THIS IS FOR IF WE DECIDE TO DELETE LEARNINGOUTCOMES ASSOCIATED WITH THE COURSE (need to account for when 2 courses share learningoutcomes though)
+         #   c.execute('SELECT l_outcome FROM course_learnoutcomes WHERE code = ? AND university = ?', (req['code'], req['university']))
+         #   outcome_ids = c.fetchall()
+         #   for i in outcome_ids:
+         #       c.execute('DELETE FROM learningOutcomes WHERE id = ?', i[0])
             delete_query = 'DELETE FROM Course WHERE code = ? and university = ?' # this delete query should cascade to delete all relevant relos
             c.execute(delete_query, code_course)
             conn.commit()
@@ -164,12 +168,6 @@ class editcourse(Resource):
         req = request.get_json()
         conn = db.get_conn()
         c = conn.cursor()
-        # NEW PLAN: just run an update statement with all the new details since we assuming primary keys cant be changed (admin will have to delete and add course again to do that)
-        # update statement should cascade to relationships, keeping the eportfolios/candidates happy because we just query through the relationships to find list of outcomes/courses
-
-        # OLD PLAN: 1. delete the existing course (which should cascade to delete the outcome/admin relationships)
-        # 2. create a new course with the edited details
-        # 3. add relationships of the edited details
 
         # check that the course exists
         check_query = 'SELECT * FROM Course WHERE code = ? and university = ?'
@@ -205,81 +203,27 @@ class editcourse(Resource):
                 c.execute('DELETE FROM Course_GradOutcomes WHERE g_outcome = ?', (l[1],)) 
 
 
-        # add all the learning/grad outcomes to their respective tables. Should automatically filter out duplicates.
-        # inserting outcomes into their respective tables and relationships
-#        for learning_outcome in req['learningOutcomes']:
-#            c.execute('INSERT OR IGNORE INTO LearningOutcomes(l_outcome) VALUES(?)', (learning_outcome,))
-#            c.execute('INSERT OR IGNORE INTO Course_LearnOutcomes(l_outcome, code, university) VALUES (?, ?, ?)', (learning_outcome, req['code'], req['university']))
-
- #       for grad_outcome in req['gradOutcomes']:
-#           c.execute('INSERT OR IGNORE INTO GraduateOutcomes(g_outcome, university) VALUES(?, ?)', (grad_outcome, req['university']))
-#           c.execute('INSERT INTO Course_GradOutcomes(g_outcome, code, university) VALUES (?, ?, ?)', (grad_outcome, req['code'], req['university'])) 
-        
-#        update_query = 'UPDATE Course SET faculty = ?, description = ?, name = ?, link = ?, admin_email = ? WHERE code = ? and university = ?'
-#        infolist = (req['faculty'], req['description'], req['name'], req['link'], req['admin_email'], req['code'], req['university']) 
-#        c.execute(update_query, infolist)
-        
-        # inserting outcomes into EP skills sections
-
-        # inserting course_courseadmin details so we can map the course to the admin who added it (to check editing permissions later)
-#        c.execute('INSERT INTO Course_CourseAdmin(email, code, university) VALUES(?, ?, ?)', (req['admin_email'], req['code'], req['university']))     
-        conn.commit()
-        conn.close()
-        course = {
-            'code' : req['code'],
-            'learningOutcomes' : req['learningOutcomes'],
-            'university' : req['university'],
-            'faculty' : req['faculty'],
-            'gradOutcomes' : req['gradOutcomes'],
-            'description' : req['description'],
-            'name' : req['name'],
-            'link' : req['name']
-        }
-        returnVal = {
-            'ok' : True,
-            'course' : course
-        }
-        return returnVal
-        
-        '''
-        check_query = 'SELECT * FROM Course WHERE code = ? and university = ?'
-        code_course = (req['code'], req['university'])
-        c.execute(check_query, code_course)
-        res = c.fetchone()
-        if res == None:
-             api.abort(400, 'Course {} at {} does not exist.'.format(req['code'], req['university']), ok = False) 
-             print('not great')
-        else:
-            delete_query = 'DELETE FROM Course WHERE code = ? and university = ?' # this should cascade to delete all related learn/grad outcome RELATIONSHIPS and course_courseadmin relos
-            c.execute(delete_query, code_course)
- 
-        infolist = (req['code'], req['university'], req['faculty'], req['description'], req['name'], req['link'])
-
-        # inserting course details into back course table
-        c.execute('INSERT INTO Course(code, university, faculty, description, name, link) VALUES(?, ?, ?, ?, ?, ?)', infolist)
-        course = {
-            'code' : req['code'],
-            'university' : req['university'],
-            'faculty' : req['faculty'],
-            'description' : req['description'],
-            'name' : req['name'],
-            'link' : req['name']
-        }
-        
-        # inserting outcomes into their respective tables and relationships
+        # now that we've removed edited out outcomes, we can add all the learning/grad outcomes to their respective tables. Should automatically filter out duplicates.
         for learning_outcome in req['learningOutcomes']:
-            c.execute('INSERT OR IGNORE INTO LearningOutcomes(l_outcome) VALUES(?)', (learning_outcome,))
-            c.execute('INSERT INTO Course_LearnOutcomes(l_outcome, code, university) VALUES (?, ?, ?)', (learning_outcome, req['code'], req['university']))
+            try:
+                c.execute('INSERT INTO LearningOutcomes(l_outcome) VALUES(?)', (learning_outcome,))
+                c.execute('INSERT INTO Course_LearnOutcomes(l_outcome, code, university) VALUES ((SELECT last_insert_rowid()), ?, ?)', (req['code'], req['university']))
+            except db.sqlite3.Error as e:
+                print(e, learning_outcome)
+                continue
 
         for grad_outcome in req['gradOutcomes']:
-           c.execute('INSERT OR IGNORE INTO GraduateOutcomes(g_outcome) VALUES(?)', (grad_outcome,))
-           c.execute('INSERT INTO Course_GradOutcomes(g_outcome, code, university) VALUES (?, ?, ?)', (grad_outcome, req['code'], req['university']))
-
-        # inserting outcomes into EP skills sections
-
-        # inserting course_courseadmin details so we can map the course to the admin who added it (to check editing permissions later)
-        c.execute('INSERT INTO Course_CourseAdmin(email, code, university) VALUES(?, ?, ?)', (req['admin_email'], req['code'], req['university']))
-     
+            try:
+                c.execute('INSERT INTO GraduateOutcomes(g_outcome, university) VALUES(?, ?)', (grad_outcome, req['university']))
+                c.execute('INSERT INTO Course_GradOutcomes(g_outcome, code, university) VALUES ((SELECT last_insert_rowid()), ?, ?)', (req['code'], req['university'])) 
+            except db.sqlite3.Error as e:
+                continue
+       
+        # finally update the course details
+        update_query = 'UPDATE Course SET faculty = ?, description = ?, name = ?, link = ?, courseAdminEmail = ? WHERE code = ? and university = ?'
+        infolist = (req['faculty'], req['description'], req['name'], req['link'], req['admin_email'], req['code'], req['university']) 
+        c.execute(update_query, infolist)
+        
         conn.commit()
         conn.close()
         course = {
@@ -297,4 +241,3 @@ class editcourse(Resource):
             'course' : course
         }
         return returnVal
-        '''
