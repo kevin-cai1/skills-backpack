@@ -91,19 +91,33 @@ class accountInfo(Resource):
             # pw_edit = req.get('password')
             # name_edit = req.get('name')
             # uni_edit = req.get('university')
+            c.execute("SELECT password FROM Employer WHERE email = ?", (account,))
+            query = c.fetchone()
+            if query == None:
+                api.abort(400, "User '{}' not found".format(account), ok=False)
+            password = query[0]
+            if req['password'] == password:
+            
+            # getting api input
+            # edit_details = request.get_json()
+            # pw_edit = req.get('password')
+            # name_edit = req.get('name')
+            # uni_edit = req.get('university')
             # degree_edit = req.get('name')
             # grad_edit = req.get('gradYear')
 
             # update 
-            c.execute("UPDATE Employer SET (password, name, company) = (?,?,?) WHERE email = ?",(req['password'], req['name'], req['company'], req['email'],))
-            conn.commit()
-            conn.close()
-            new_details = {
-                'email' : req['email'],
-                'password' : req['password'],
-                'name' : req['name'],
-                'company' : req['company'],
-            }
+                c.execute("UPDATE Employer SET (password, name, company) = (?,?,?) WHERE email = ?",(req['password'], req['name'], req['company'], req['email'],))
+                conn.commit()
+                conn.close()
+                new_details = {
+                    'email' : req['email'],
+                    'password' : req['password'],
+                    'name' : req['name'],
+                    'company' : req['company'],
+                }
+            else:   
+                api.abort(400, "Password incorrect", ok=False)
 
         else: 
             api.abort(400, "Update Error")

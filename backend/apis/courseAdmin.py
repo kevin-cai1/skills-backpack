@@ -165,23 +165,31 @@ class accountInfo(Resource):
         
         # change account details if account exists
         elif (account_check == 1):  
-            
+            hashed_password = generate_password_hash(req['password'], "sha256")
             # getting api input
             # edit_details = request.get_json()
             # pw_edit = req.get('password')
             # name_edit = req.get('name')
             # uni_edit = req.get('university')
-
+            c.execute("SELECT password FROM CourseAdmin WHERE email = ?", (account,))
+            query = c.fetchone()
+            if query == None:
+                api.abort(400, "User '{}' not found".format(account), ok=False)
+            password = query[0]
+            if req['password'] == password:
+            
             # update 
-            c.execute("UPDATE CourseAdmin SET (password, name, university) = (?,?,?) WHERE email = ?",(req['password'], req['name'], req['university'], req['email'],))
-            conn.commit()
-            conn.close()
-            new_details = {
-                'email' : req['email'],
-                'password' : req['password'],
-                'name' : req['name'],
-                'university' : req['university']
-            }
+                c.execute("UPDATE CourseAdmin SET (password, name, university) = (?,?,?) WHERE email = ?",(req['password'], req['name'], req['university'], req['email'],))
+                conn.commit()
+                conn.close()
+                new_details = {
+                    'email' : req['email'],
+                    'password' : req['password'],
+                    'name' : req['name'],
+                    'university' : req['university']
+                }
+            else:   
+                api.abort(400, "Password incorrect", ok=False)
 
         else: 
             api.abort(400, "Update Error")

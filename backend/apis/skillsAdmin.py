@@ -162,23 +162,28 @@ class accountInfo(Resource):
         
         # change account details if account exists
         elif (account_check == 1):  
-            
             # getting api input
             # edit_details = request.get_json()
             # pw_edit = req.get('password')
             # name_edit = req.get('name')
             # uni_edit = req.get('university')
-
+            c.execute("SELECT password FROM Candidate WHERE email = ?", (account,))
+            query = c.fetchone()
+            if query == None:
+                api.abort(400, "User '{}' not found".format(account), ok=False)
+            password = query[0]
+            if req['password'] == password:
             # update 
-            c.execute("UPDATE SkillsBackpackAdmin SET (password, name) = (?,?) WHERE email = ?",(req['password'], req['name'], req['email'],))
-            conn.commit()
-            conn.close()
-            new_details = {
-                'email' : req['email'],
-                'password' : req['password'],
-                'name' : req['name'],
-            }
-
+                c.execute("UPDATE SkillsBackpackAdmin SET (password, name) = (?,?) WHERE email = ?",(req['password'], req['name'], req['email'],))
+                conn.commit()
+                conn.close()
+                new_details = {
+                    'email' : req['email'],
+                    'password' : req['password'],
+                    'name' : req['name'],
+                }
+            else:   
+                api.abort(400, "Password incorrect", ok=False)
         else: 
             api.abort(400, "Update Error")
             conn.close()
