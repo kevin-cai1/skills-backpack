@@ -14,7 +14,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 
-const top100Films = [
+const gradOutcomes = [
   { title: 'Deep discipline knowledge and intellectual breadth' },
   { title: 'Creative and critical thinking and problem solving' },
   { title: 'Teamwork and communication skills' },
@@ -26,6 +26,62 @@ const top100Films = [
 
 
 class Course_Create extends React.Component {
+  constructor(props) {
+      super(props);
+      this.state = {
+          gradOutcomes: ''
+      }
+      this.handleCourseAdd = this.handleCourseAdd.bind(this);
+  }
+
+  onTagsChange = (event, values) => {
+    this.setState({
+      gradOutcomes: values
+    }, () => {
+      // This will output an array of objects
+      // given by Autocompelte options property.
+      console.log(this.state.gradOutcomes);
+    });
+  }
+
+  handleCourseAdd = (e) => {
+      e.preventDefault();
+      console.log("hello?");
+      const gradOutcomesArr = [];
+      for (const key in this.state.gradOutcomes) {
+        gradOutcomesArr.push(this.state.gradOutcomes[key].title);
+      }
+      let dict = JSON.stringify({
+        "admin_email": SessionDetails.getEmail(),
+        "code": e.target.code.value,
+        "university": e.target.uni.value,
+        "faculty": e.target.faculty.value,
+        "description": e.target.description.value,
+        "name": e.target.name.value,
+        "link": e.target.link.value,
+        "learningOutcomes": e.target.learningOutcomes.value,
+        "gradOutcomes": gradOutcomesArr
+      });
+      console.log("Entire dictionary: ", dict);
+      this.handleCourseSend(dict);
+  }
+
+  handleCourseSend(dict) {
+    let url = 'http://localhost:5000/course/add/course/add';
+    console.log('Sending to ' + url + ': ' + dict);
+    return fetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: dict
+    }).then(response => {
+        console.log('Hello?: ' + response.ok && response.json())
+    })
+        .catch(err => console.log('Error:', err));
+  }
+
   render() {
     return(
       <div>
@@ -35,7 +91,7 @@ class Course_Create extends React.Component {
         <body className="Page-body">
           <h1>New Course Details</h1>
           <div className="Course-form-body">
-            <form>
+            <form onSubmit={ (e) => this.handleCourseAdd(e) }>
               <FormControl fullWidth={true} required={true} margin='normal'>
                 <InputLabel htmlFor="uni-select">University</InputLabel>
                 <Select name="uni" labelId="uni-select" id="select">
@@ -73,16 +129,22 @@ class Course_Create extends React.Component {
                 <Input name="description" id="input-description" type="text" multiline={true} rows={5}/>
                 <FormHelperText id="my-helper-text">(Optional) max. 200 words</FormHelperText>
               </FormControl>
+              <FormControl fullWidth={true} margin='normal'>
+                <InputLabel htmlFor="input-description">Learning Outcomes</InputLabel>
+                <Input name="learningOutcomes" id="input-description" type="text" multiline={true} rows={2}/>
+                <FormHelperText id="my-helper-text">Enter comma-separated text (e.g. Communication, Project Management, Using Software Tools)</FormHelperText>
+              </FormControl>
               <FormControl fullWidth={true} required={true} margin='normal'>
                 <Autocomplete
                   multiple
                   id="tags-standard"
-                  name="outcomes"
-                  options={top100Films}
+                  options={gradOutcomes}
                   getOptionLabel={(option) => option.title}
+                  onChange={this.onTagsChange}
                   renderInput={(params) => (
                     <TextField
                       {...params}
+                      name="gradOutcomes"
                       variant="standard"
                       label="Graduate Outcomes"
                     />
@@ -97,7 +159,7 @@ class Course_Create extends React.Component {
                     </Button>
                   </Box>
                   <Box m={3}>
-                    <Button type="submit" variant="contained" color="primary" component={Link} to="/">
+                    <Button type="submit" variant="contained" color="primary">
                       Create
                     </Button>
                   </Box>
