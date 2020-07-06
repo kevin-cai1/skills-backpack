@@ -31,6 +31,12 @@
     color: dimgrey;
 }
 
+.smaller-icon-padded {
+    padding-top: 4px;
+    padding-right: 7px;
+    color: dimgrey;
+}
+
 .ep-container {
     padding-left: 250px;
     padding-top: 50px;
@@ -52,4 +58,13 @@
 .skills-chip {
     margin-left: 5px;
     margin-right: 5px;
+}
+
+.ep-course-heading {
+    margin: 3px 0px 3px 0px;
+    font-size: 12px;
+}
+
+.italicised {
+    font-style: italic;
 }
