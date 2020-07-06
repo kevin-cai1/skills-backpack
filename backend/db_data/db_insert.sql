@@ -46,10 +46,10 @@ VALUES
 	('coding');
 
 -- Inserting data into GraduateOutcomes table
-INSERT INTO GraduateOutcomes(g_outcome)
+INSERT INTO GraduateOutcomes(g_outcome, university)
 VALUES
-	('teamwork'),
-	('leadership');
+	('teamwork', 'UNSW'),
+	('leadership', 'USYD');
 
 -- Inserting data into Employment table
 INSERT INTO Employment(id, job_title, candidate_email, description, startDate, endDate, employer)
@@ -68,8 +68,7 @@ VALUES
 INSERT INTO Course_GradOutcomes(g_outcome, code, university)
 VALUES
 	(1, 'COMP3900', 'UNSW'),
-	(2, 'COMP3900', 'UNSW'),
-	(1, 'COMP1000', 'USYD');
+	(2, 'COMP1000', 'USYD');
 
 -- Inserting data into ePortfolio_courses table
 INSERT INTO ePortfolio_Courses (EP_ID, code, university)

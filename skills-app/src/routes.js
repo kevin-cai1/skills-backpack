@@ -13,6 +13,8 @@ import Course_Create from './course-create-forms';
 import Manage_Courses from './manage_courses';
 import AdminInvite from './AdminInvite';
 import Candidate_EPortfolio from './candidate-eportfolio';
+import Home_skillsAdmin from './home-skillsAdmin';
+import Home_courseAdmin from './home-courseAdmin';
 
 const allRoutes = () => (
     <Router>
@@ -22,6 +24,8 @@ const allRoutes = () => (
         <Route exact path="/register" component={Register} />
         <Route exact path="/register/:email" component={AdminInvite} />
         <PrivateRoute path="/home" component={Home} />
+        <PrivateRoute path="/home-skillsAdmin" component={Home_skillsAdmin} />
+        <PrivateRoute path="/home-courseAdmin" component={Home_courseAdmin} />
         <PrivateRoute path="/changePassword" component={ChangePassword} />
         <PrivateRoute exact path="/course_create" component={Course_Create}/>
         <PrivateRoute exact path="/manage_courses" component={Manage_Courses}/>

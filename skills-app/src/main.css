@@ -3,3 +3,68 @@
     font-weight: bold;
     text-decoration: none;
 }
+
+.column-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.center-align-container {
+    text-align: center;
+}
+
+.row-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.user-profile-details-row {
+    display: flex;
+    flex-direction: row;
+    margin-left: 40px;
+    margin-right:40px;
+}
+
+.sm-icon-padded {
+    padding-top: 18px;
+    padding-right: 7px;
+    color: dimgrey;
+}
+
+.smaller-icon-padded {
+    padding-top: 4px;
+    padding-right: 7px;
+    color: dimgrey;
+}
+
+.ep-container {
+    padding-left: 250px;
+    padding-top: 50px;
+    padding-bottom: 150px;
+}
+
+.ep-h3-text {
+    color: #2D9CDB;
+}
+
+.add-circle-button {
+    font-size: 22px;
+    padding-top: 21px;
+    margin-left: 25px;
+    cursor: pointer;
+    color: dimgrey;
+}
+
+.skills-chip {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.ep-course-heading {
+    margin: 3px 0px 3px 0px;
+    font-size: 12px;
+}
+
+.italicised {
+    font-style: italic;
+}
