@@ -285,7 +285,7 @@ class Candidate_EPortfolio extends React.Component{
         if (! (childData == null)) {
             if (childData.hasOwnProperty('inputValue')) {
                 this.setState({newSkill: childData.inputValue});
-                this.setState({skillID: 0});
+                this.setState({skillID: -1});
             }
             else {
                 this.setState({newSkill: childData.name});
