@@ -167,7 +167,7 @@ class accountInfo(Resource):
             # pw_edit = req.get('password')
             # name_edit = req.get('name')
             # uni_edit = req.get('university')
-            c.execute("SELECT password FROM Candidate WHERE email = ?", (account,))
+            c.execute("SELECT password FROM SkillBackpackAdmin WHERE email = ?", (account,))
             query = c.fetchone()
             if query == None:
                 api.abort(400, "User '{}' not found".format(account), ok=False)

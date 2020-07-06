@@ -165,7 +165,6 @@ class accountInfo(Resource):
         
         # change account details if account exists
         elif (account_check == 1):  
-            hashed_password = generate_password_hash(req['password'], "sha256")
             # getting api input
             # edit_details = request.get_json()
             # pw_edit = req.get('password')
