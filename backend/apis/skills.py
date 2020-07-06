@@ -101,7 +101,7 @@ class UserSkills(Resource):
 
         conn= db.get_conn()
         conn.enable_load_extension(True)
-        conn.load_extension('./spellfix')              
+        # conn.load_extension('./spellfix')
         conn.enable_load_extension(False)
 
         c = conn.cursor()

@@ -92,6 +92,7 @@ CREATE TABLE GraduateOutcomes (
 DROP TABLE IF EXISTS Employment;
 CREATE TABLE Employment (
 	id INTEGER PRIMARY KEY,
+	job_title TEXT,
 	candidate_email TEXT,
 	description TEXT,
 	startDate TEXT NOT NULL,

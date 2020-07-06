@@ -8,7 +8,8 @@ import {
     InputLabel, MenuItem,
     MuiThemeProvider, Select,
     TextField,
-    Chip
+    Chip,
+    Card, CardContent, Typography, CardActions
 } from "@material-ui/core";
 import {theme} from "./App";
 import Box from "@material-ui/core/Box";
@@ -22,6 +23,7 @@ import InsertPhotoIcon from '@material-ui/icons/InsertPhoto';
 import SchoolIcon from '@material-ui/icons/School';
 import EmailIcon from '@material-ui/icons/Email';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
+import LanguageIcon from '@material-ui/icons/Language';
 
 const chipNames = [
     {name: 'css'},
@@ -48,6 +50,10 @@ class Candidate_EPortfolio extends React.Component{
             endDate: '',
             jobDescription: '',
             jobAdded: false,
+            candidateJobSkills: [],
+            candidateEmpSkills: [],
+            candidateCourses: [],
+            candidateEmpHistory: [],
         };
         this.handleSearchSkillsModal = this.handleSearchSkillsModal.bind(this);
         this.handleSearchSkillsModalClose = this.handleSearchSkillsModalClose.bind(this);
@@ -58,10 +64,12 @@ class Candidate_EPortfolio extends React.Component{
         this.handleEmploymentCheckbox = this.handleEmploymentCheckbox.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleAddJob = this.handleAddJob.bind(this);
+        this.handleDeleteSkill = this.handleDeleteSkill.bind(this);
     }
 
     componentDidMount() {
         this.fetchSkills();
+        this.fetchEportfolioDetails();
     }
 
     handleSearchSkillsModal() {
@@ -146,14 +154,14 @@ class Candidate_EPortfolio extends React.Component{
     }
 
     handleAddSkill() {
-        // return this.postNewSkill().then( (response) => {
-        //     console.log(response);
+        return this.postNewSkill().then( (response) => {
+            console.log(response);
             let result = true;
             this.setState({addSkillSuccessMessage: 'Successfully added \'' + this.state.newSkill + '\'.'});
             this.state.addSkillSuccess = true;
             this.forceUpdate();
-        // });
-
+            this.componentDidMount();
+        });
     }
 
     postNewSkill() {
@@ -166,6 +174,36 @@ class Candidate_EPortfolio extends React.Component{
 
         return fetch(url, {
             method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: data
+        }).then(response => {
+            console.log(response)
+            console.log('response ' + response.status)
+            return response.ok && response.json();
+        })
+            .catch(err => console.log('Error:', err));
+    }
+
+    handleDeleteSkill(id, name) {
+        return this.deleteSkill(id, name).then( (response) => {
+            console.log(response);
+            this.componentDidMount();
+        });
+    }
+
+    deleteSkill(id, name) {
+        let data = JSON.stringify({
+            "id": id,
+            "name": name
+        });
+        let url = 'http://localhost:5000/skills/' + SessionDetails.getEmail();
+        console.log('Sending to ' + url + ': ' + data);
+
+        return fetch(url, {
+            method: 'DELETE',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
@@ -212,11 +250,42 @@ class Candidate_EPortfolio extends React.Component{
         });
     }
 
+    getAllDetails() {
+        let url = 'http://localhost:5000/ePortfolio/' + SessionDetails.getEmail();
+        console.log('Fetching data from: ' + url);
+
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            }
+        }).then(response => {
+            return response.ok && response.json();
+        })
+            .catch(err => console.log('Error:', err));
+    }
+
+    fetchEportfolioDetails() {
+        return this.getAllDetails().then( (response) => {
+            console.log(response);
+            let status = response["ok"];
+            let count = response["entry_count"];
+            if (status) {
+                this.state.candidateJobSkills = response["job_skills"];
+                this.state.candidateEmpSkills = response["employability_skills"];
+                this.state.candidateCourses = response["courses"];
+                this.state.candidateEmpHistory = response["employment"];
+                this.forceUpdate();
+            }
+        });
+    }
+
     callbackFunction = (childData) => {
         if (! (childData == null)) {
             if (childData.hasOwnProperty('inputValue')) {
                 this.setState({newSkill: childData.inputValue});
-                this.setState({skillID: 0});
+                this.setState({skillID: -1});
             }
             else {
                 this.setState({newSkill: childData.name});
@@ -252,14 +321,37 @@ class Candidate_EPortfolio extends React.Component{
                             <AddCircleIcon className="add-circle-button"/>
                         </div>
                         <div>
-                            {chipNames.map(i => {
-                                return <Chip label={i.name} className="skills-chip"/>
+                            {this.state.candidateCourses.map(i => {
+                                return (
+                                <div style={{marginBottom:'15px'}}>
+                                    <Card style={{maxWidth:'750px'}}>
+                                        <CardContent>
+                                            <h4 style={{margin:'10px 0px 10px 0px'}}>{i.name} | {i.code}</h4>
+                                            <p className="ep-course-heading italicised">{i.faculty} Faculty &middot; {i.university}</p>
+                                            <div className="row-container">
+                                                <div className="row-container" style={{marginRight:'20px'}}>
+                                                    <LanguageIcon className="smaller-icon-padded" style={{'font-size':'15px'}}/>
+                                                    <p className="ep-course-heading">{i.link}</p>
+                                                </div>
+                                                <div className="row-container">
+                                                    <EmailIcon className="smaller-icon-padded" style={{'font-size':'15px'}}/>
+                                                    <p className="ep-course-heading">{i.course_email}</p>
+                                                </div>
+                                            </div>
+                                            <p>{i.description}</p>
+                                        </CardContent>
+                                        <CardActions>
+                                            <Button size="small">Edit</Button>
+                                        </CardActions>
+                                    </Card>
+                                </div>
+                                )
                             })}
                         </div>
                         <h3 className="ep-h3-text">Employability Skills</h3>
                         <div>
-                            {chipNames.map(i => {
-                                return <Chip label={i.name} className="skills-chip"/>
+                            {this.state.candidateEmpSkills.map(i => {
+                                return <Chip label={i.grad_outcome} className="skills-chip"/>
                             })}
                         </div>
                         <div className="row-container">
@@ -267,17 +359,32 @@ class Candidate_EPortfolio extends React.Component{
                             <AddCircleIcon className="add-circle-button" onClick={this.handleAddEmploymentModal}/>
                         </div>
                         <div>
-                            <h5>Deloitte</h5>
-                            <h5>2019/01/10 - Present</h5>
-                            <h5>Worked as a full stack developer on five different client project across industries such as banking, technology, government and education. </h5>
+                            {this.state.candidateEmpHistory.map(i => {
+                                return (
+                                    <div style={{marginBottom:'15px'}}>
+                                        <Card style={{maxWidth:'750px'}}>
+                                            <CardContent>
+                                                <h4 style={{margin:'10px 0px 10px 0px'}}>Software Engineer</h4>
+                                                <p className="ep-course-heading italicised">{i.employer}</p>
+                                                <p className="ep-course-heading">{i.start_date} - {i.end_date}</p>
+                                                <p>{i.description}</p>
+                                            </CardContent>
+                                            <CardActions>
+                                                <Button size="small">Edit</Button>
+                                            </CardActions>
+                                        </Card>
+                                    </div>
+                                )
+                            })}
                         </div>
                         <div className="row-container">
                             <h3 className="ep-h3-text">Job-Specific Skills</h3>
                             <AddCircleIcon className="add-circle-button" onClick={this.handleSearchSkillsModal}/>
                         </div>
                         <div>
-                            {chipNames.map(i => {
-                                return <Chip label={i.name} className="skills-chip"/>
+                            {this.state.candidateJobSkills.map(i => {
+                                return <Chip label={i.name} id={i.id} className="skills-chip"
+                                             onDelete={() => this.handleDeleteSkill(i.id, i.name)}/>
                             })}
                         </div>
                     </MuiThemeProvider>
