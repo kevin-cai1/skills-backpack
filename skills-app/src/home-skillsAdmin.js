@@ -40,8 +40,7 @@ class Home_skillsAdmin extends React.Component {
   }
 
   componentDidMount() {
-      this.sleep(2000).then(()=>{
-        console.log('you can see me after 1000 milliseconds');
+      this.sleep(1000).then(()=>{
         this.handleSkillsAdminLoad();
       });
   }
@@ -128,7 +127,6 @@ class Home_skillsAdmin extends React.Component {
   };
 
   handleChangePasswordSubmit = (e) => {
-      this.setState({ change_password: false });
       console.log(this.state.change_password);
       const password = e.target.password.value;
       const errors = this.validatePassword(password);
@@ -138,14 +136,18 @@ class Home_skillsAdmin extends React.Component {
               console.log(response);
               if (response !== true) {
                 alert("Something went wrong. Contact technical support: kevin@skillsbackpack.com.");
+                this.setState({ change_password: false });
               }
               else{
                 alert("Password successfully updated.");
+                this.setState({ change_password: false });
               }
           });
       }
       else {
           alert(errors);
+          this.setState({ invalid_password: true });
+
       }
   }
 
