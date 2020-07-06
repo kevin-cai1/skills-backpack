@@ -35,6 +35,25 @@ delete_course_details = api.model('delete_course', {
     'university' : fields.String(required = True, description = 'University that the course belongs to'),
     })
 
+# getting list of gradoutcomes based on the inputted uni
+@api.route('/course/<university>', methods=['GET'])
+class getgradoutcomes(Resource):
+    def get(self, university):
+        if university == None:
+            api.abort(400, 'Please enter a university', ok = False)
+        conn = db.get_conn()
+        c = conn.cursor()
+        c.execute('SELECT g_outcome from GraduateOutcomes WHERE university = ?', (university,))
+        gradoutcomes = []
+        outcomes = c.fetchall()
+        for o in outcomes:
+            gradoutcomes.append(o[0])
+        returnval = {
+                'ok' : True,
+                'gradoutcomes' : gradoutcomes
+            }
+        return returnval
+
 # getting course info 
 @api.route('/course/<university>/<code>', methods=['GET']) # specify query parameters using by entering them after a ? in the url (e.g. /course?code=COMP3900&university=UNSW)
 class getcourse(Resource):
@@ -80,6 +99,8 @@ class getcourse(Resource):
             }
         return returnVal
 
+
+# adding courses
 @api.route('/course/add')
 class addcourse(Resource):
     @api.expect(course_details) 
