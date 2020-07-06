@@ -10,6 +10,7 @@ api = Namespace('Employment', description='Endpoints relating to employment deta
 employment_data = api.model('employment', {
     'user' : fields.String(description="Email address of user associated with employment details"),
     'employer' : fields.String(description="Employer name of employment"),
+    'job_title': fields.String(description="Job title of employment"),
     'start_date' : fields.DateTime(description="Start date of employment"),
     'end_date' : fields.DateTime(description="End date of employment"),
     'description' : fields.String(description="Free text input description of employment")
@@ -23,13 +24,14 @@ class EmploymentDetails(Resource):
         conn = db.get_conn()
         c = conn.cursor()
 
-        c.execute("SELECT id, candidate_email, description, startDate, endDate, employer FROM Employment WHERE id = ?", (record_id,))
+        c.execute("SELECT id, candidate_email, description, startDate, endDate, employer, job_title FROM Employment WHERE id = ?", (record_id,))
         result = c.fetchone()
         if (result == None):
             api.abort(400, "Employment record '{}' doesn't exist".format(record_id), ok=False)
 
         entry = {
             'id' : result[0],
+            'job_title': result[5],
             'start_date' : result[3],
             'end_date' : result[4],
             'description' : result[2],
@@ -89,8 +91,8 @@ class AddEmployment(Resource):
 
         # create employment record
         employmentID = generate_employmentID()
-        employment = (employmentID, req['user'], req['description'], req['start_date'], req['end_date'], req['employer'],)
-        c.execute("INSERT INTO Employment (id, candidate_email, description, startDate, endDate, employer) VALUES (?,?,?,?,?,?)", employment)
+        employment = (employmentID, req['user'], req['job_title'], req['description'], req['start_date'], req['end_date'], req['employer'],)
+        c.execute("INSERT INTO Employment (id, job_title, candidate_email, description, startDate, endDate, employer) VALUES (?,?,?,?,?,?,?)", employment)
 
         conn.commit()
         conn.close()
@@ -118,7 +120,7 @@ class StudentEmployment(Resource):
     def get(self, email):
         conn = db.get_conn()
         c = conn.cursor()
-        c.execute('''SELECT id, description, startDate, endDate, employer FROM Employment WHERE candidate_email = ?''', (email,))
+        c.execute('''SELECT id, description, startDate, endDate, employer, job_title FROM Employment WHERE candidate_email = ?''', (email,))
         results = c.fetchall()
         if (results == []):
             api.abort(400, "No employment records found for '{}'".format(email), ok=False)
@@ -129,6 +131,7 @@ class StudentEmployment(Resource):
             print(r)
             entry = {
                 'id': r[0],
+                'job_title': r[5],
                 'description': r[1],
                 'start_date': r[2],
                 'end_date': r[3],

@@ -52,10 +52,10 @@ VALUES
 	('leadership');
 
 -- Inserting data into Employment table
-INSERT INTO Employment(id, candidate_email, description, startDate, endDate, employer)
+INSERT INTO Employment(id, job_title, candidate_email, description, startDate, endDate, employer)
 VALUES
-	(1, 'charmaineleung@unsw.edu.au', 'software development', '01/01/2020', '02/01/2020', 'Macquarie Group'),
-	(2, 'mirannakamura@usyd.edu.au', 'hacking', '01/01/2020', '02/01/2020', 'Google');
+	(1, 'Full stack developer', 'charmaineleung@unsw.edu.au', 'software development', '01/01/2020', '02/01/2020', 'Macquarie Group'),
+	(2, 'Security Analyst', 'mirannakamura@usyd.edu.au', 'hacking', '01/01/2020', '02/01/2020', 'Google');
 
 -- Inserting data into Course_LearnOutcomes table
 INSERT INTO Course_LearnOutcomes(l_outcome, code, university)
