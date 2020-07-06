@@ -7,7 +7,7 @@ api = Namespace('Course', description = 'Course admin operations')
 
 course_details = api.model('course', {
     'code' : fields.String(required = True, description = 'Course code'),
-    'learningOutcomes' :  fields.List(fields.String, description = 'Learning outcomes gained from the course'),  # assuming for now that we are allowing courses to be registed with no outcomes
+    'learningOutcomes' :  fields.String(description = 'Learning outcomes gained from the course'),  # assuming for now that we are allowing courses to be registed with no outcomes
     'university' : fields.String(required = True, description = 'University that the course belongs to'),
     'faculty' : fields.String(required = True, description = 'Faculty that the course belongs to'),
     'gradOutcomes' : fields.List(fields.String, description = 'Graduate outcomes gained from the course'),
@@ -19,7 +19,7 @@ course_details = api.model('course', {
 
 edited_course_details = api.model('course', {
     'code' : fields.String(required = True, description = 'Course code'),
-    'learningOutcomes' :  fields.List(fields.String, description = 'Learning outcomes gained from the course'),  # assuming for now that we are allowing courses to be registed with no outcomes
+    'learningOutcomes' :  fields.String(description = 'Learning outcomes gained from the course'),  # assuming for now that we are allowing courses to be registed with no outcomes
     'university' : fields.String(required = True, description = 'University that the course belongs to'),
     'faculty' : fields.String(description = 'Faculty that the course belongs to'),
     'gradOutcomes' : fields.List(fields.String, description = 'Graduate outcomes gained from the course'),
@@ -130,7 +130,8 @@ class addcourse(Resource):
             }
             
             # inserting outcomes into their respective tables and relationships
-            for learning_outcome in req['learningOutcomes']:
+            loutcomelist = req['learningOutcomes'].split(',')
+            for learning_outcome in loutcomelist:
                 c.execute('INSERT OR IGNORE INTO LearningOutcomes(l_outcome) VALUES(?)', (learning_outcome,))
                 c.execute('INSERT INTO Course_LearnOutcomes(l_outcome, code, university) VALUES ((SELECT last_insert_rowid()), ?, ?)', (req['code'], req['university']))
 

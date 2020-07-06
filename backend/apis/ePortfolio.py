@@ -6,6 +6,11 @@ from pprint import pprint
 
 api = Namespace('ePortfolio', description='Endpoint to get ePortfolio information')
 
+add_course_details = api.model('course details', {
+    'code' : fields.String(description = 'Course code', required = True),
+    'university' : fields.String(description = 'The university corresponding to the course being added', required = True)
+})
+
 @api.route('/<string:email>')
 class ePortfolio(Resource):
     @api.doc(description="get ePortfolio details for specified user")
@@ -97,3 +102,21 @@ class ePortfolio(Resource):
 
         return return_val
 
+    @api.doc(description = "Add course to ePortfolio")
+    @api.expect(add_course_details)
+    def post(self, email):
+        # to add course, just add to the eportfolio_courses (AKA candidate_courses) relo
+        req = request.get_json()
+        conn = db.get_conn()
+        c = conn.cursor()
+        c.execute('INSERT INTO ePortfolio_Courses(EP_ID, code, university) VALUES(?, ?, ?)', (email, req['code'], req['university']))
+        conn.commit()
+        conn.close()
+        return_val = {
+                'ok' : True,
+                'account' : email,
+                'code' : req['code'],
+                'university' : req['university']
+        }
+        return return_val
+    
