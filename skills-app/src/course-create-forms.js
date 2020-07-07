@@ -77,7 +77,7 @@ class Course_Create extends React.Component {
         },
         body: dict
     }).then(response => {
-        console.log('Hello?: ' + response.ok && response.json())
+        console.log('Hello?: ' + response.ok && response.course);
     })
         .catch(err => console.log('Error:', err));
   }
