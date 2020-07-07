@@ -14,24 +14,52 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 
-const gradOutcomes = [
-  { title: 'Deep discipline knowledge and intellectual breadth' },
-  { title: 'Creative and critical thinking and problem solving' },
-  { title: 'Teamwork and communication skills' },
-  { title: 'Professionalism and leadership readiness' },
-  { title: 'Intercultural and ethical competency' },
-  { title: 'Digital Capabilities' },
-  { title: 'Self-awareness and emotional intelligence' }
-];
+// const gradOutcomes = [
+//   { title: 'Deep discipline knowledge and intellectual breadth' },
+//   { title: 'Creative and critical thinking and problem solving' },
+//   { title: 'Teamwork and communication skills' },
+//   { title: 'Professionalism and leadership readiness' },
+//   { title: 'Intercultural and ethical competency' },
+//   { title: 'Digital Capabilities' },
+//   { title: 'Self-awareness and emotional intelligence' }
+// ];
 
 
 class Course_Create extends React.Component {
   constructor(props) {
       super(props);
       this.state = {
+          allGradOutcomes: [],
           gradOutcomes: ''
       }
       this.handleCourseAdd = this.handleCourseAdd.bind(this);
+      this.handleUniSelect = this.handleUniSelect.bind(this);
+      this.sendUniSelect = this.sendUniSelect.bind(this);
+  }
+
+  handleUniSelect = (e) => {
+    this.sendUniSelect(e);
+  }
+
+  sendUniSelect = (e) => {
+    let component = this;
+    console.log("selected:", e.target.value);
+    let url = 'http://localhost:5000/course/add/course/' + e.target.value;
+    console.log('Sending to ' + url);
+    return fetch(url, {
+        method: 'GET',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        }
+    }).then(function(response){ return response.json();
+    }).then(function(data) {
+          const items = data;
+          console.log("items:", items.gradoutcomes);
+          component.setState({ allGradOutcomes: items.gradoutcomes });
+          component.setState({ allGradOutcomes: [...component.state.allGradOutcomes, "new value"] });
+    })
+        .catch(err => console.log('Error:', err));
   }
 
   onTagsChange = (event, values) => {
@@ -47,10 +75,6 @@ class Course_Create extends React.Component {
   handleCourseAdd = (e) => {
       e.preventDefault();
       console.log("hello?");
-      const gradOutcomesArr = [];
-      for (const key in this.state.gradOutcomes) {
-        gradOutcomesArr.push(this.state.gradOutcomes[key].title);
-      }
       let dict = JSON.stringify({
         "admin_email": SessionDetails.getEmail(),
         "code": e.target.code.value,
@@ -60,7 +84,7 @@ class Course_Create extends React.Component {
         "name": e.target.name.value,
         "link": e.target.link.value,
         "learningOutcomes": e.target.learningOutcomes.value,
-        "gradOutcomes": gradOutcomesArr
+        "gradOutcomes": this.state.gradOutcomes
       });
       console.log("Entire dictionary: ", dict);
       this.handleCourseSend(dict);
@@ -94,10 +118,10 @@ class Course_Create extends React.Component {
             <form onSubmit={ (e) => this.handleCourseAdd(e) }>
               <FormControl fullWidth={true} required={true} margin='normal'>
                 <InputLabel htmlFor="uni-select">University</InputLabel>
-                <Select name="uni" labelId="uni-select" id="select">
-                  <MenuItem value="University of New South Wales">University of New South Wales</MenuItem>
-                  <MenuItem value="University of Sydney">University of Sydney</MenuItem>
-                  <MenuItem value="University of Technology Sydney">University of Technology Sydney</MenuItem>
+                <Select name="uni" labelId="uni-select" id="select" onChange={ this.handleUniSelect }>
+                  <MenuItem value="UNSW">University of New South Wales</MenuItem>
+                  <MenuItem value="USYD">University of Sydney</MenuItem>
+                  <MenuItem value="UTS">University of Technology Sydney</MenuItem>
                 </Select>
               </FormControl>
               <FormControl fullWidth={true} required={true} margin='normal'>
@@ -138,8 +162,8 @@ class Course_Create extends React.Component {
                 <Autocomplete
                   multiple
                   id="tags-standard"
-                  options={gradOutcomes}
-                  getOptionLabel={(option) => option.title}
+                  options={ this.state.allGradOutcomes }
+                  getOptionLabel={(option) => option}
                   onChange={this.onTagsChange}
                   renderInput={(params) => (
                     <TextField
