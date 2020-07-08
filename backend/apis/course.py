@@ -132,18 +132,30 @@ class addcourse(Resource):
             # inserting outcomes into their respective tables and relationships
             loutcomelist = req['learningOutcomes'].split(',')
             for learning_outcome in loutcomelist:
-                c.execute('INSERT OR IGNORE INTO LearningOutcomes(l_outcome) VALUES(?)', (learning_outcome,))
-                c.execute('INSERT INTO Course_LearnOutcomes(l_outcome, code, university) VALUES ((SELECT last_insert_rowid()), ?, ?)', (req['code'], req['university']))
+                try:
+                    c.execute('INSERT INTO LearningOutcomes(l_outcome) VALUES(?)', (learning_outcome,))
+                    c.execute('INSERT INTO Course_LearnOutcomes(l_outcome, code, university) VALUES ((SELECT last_insert_rowid()), ?, ?)', (req['code'], req['university']))
+                except db.sqlite3.Error as e:
+                    print(e)
+                    learnID = c.execute('SELECT id from LearningOutcomes WHERE l_outcome = ?', (learning_outcome,)).fetchone()[0]
+                    c.execute('INSERT INTO Course_LearnOutcomes(l_outcome, code, university) VALUES (?, ?, ?)', (learnID, req['code'], req['university']))
 
             for grad_outcome in req['gradOutcomes']:
-               c.execute('INSERT OR IGNORE INTO GraduateOutcomes(g_outcome, university) VALUES(?, ?)', (grad_outcome, req['university']))
-               c.execute('INSERT INTO Course_GradOutcomes(g_outcome, code, university) VALUES ((SELECT last_insert_rowid()), ?, ?)', (req['code'], req['university']))
+                try: 
+                    c.execute('INSERT INTO GraduateOutcomes(g_outcome, university) VALUES(?, ?)', (grad_outcome, req['university']))
+                    c.execute('INSERT INTO Course_GradOutcomes(g_outcome, code, university) VALUES ((SELECT last_insert_rowid()), ?, ?)', (req['code'], req['university']))
+                except db.sqlite3.Error as e: # error occurs when 140 fails because the outcome already exists in the db
+                    print(e)
+                    gradID = c.execute('SELECT id from GraduateOutcomes WHERE g_outcome = ? and university = ?', (grad_outcome, req['university'])).fetchone()[0]
+                    c.execute('INSERT INTO Course_GradOutcomes(g_outcome, code, university) VALUES (?, ?, ?)', (gradID, req['code'], req['university']))
 
             conn.commit()
             conn.close()
             returnVal = {
                 'ok' : True,
-                'course' : course
+                'course' : course,
+                'learningoutcomes' : req['learningOutcomes'],
+                'graduateOutcomes' : req['gradOutcomes']
             }
             return returnVal
         else:
