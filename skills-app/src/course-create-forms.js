@@ -30,7 +30,8 @@ class Course_Create extends React.Component {
       super(props);
       this.state = {
           allGradOutcomes: [],
-          gradOutcomes: ''
+          gradOutcomes: '',
+          redirect: null
       }
       this.handleCourseAdd = this.handleCourseAdd.bind(this);
       this.handleUniSelect = this.handleUniSelect.bind(this);
@@ -57,7 +58,6 @@ class Course_Create extends React.Component {
           const items = data;
           console.log("items:", items.gradoutcomes);
           component.setState({ allGradOutcomes: items.gradoutcomes });
-          component.setState({ allGradOutcomes: [...component.state.allGradOutcomes, "new value"] });
     })
         .catch(err => console.log('Error:', err));
   }
@@ -91,6 +91,7 @@ class Course_Create extends React.Component {
   }
 
   handleCourseSend(dict) {
+    let component = this;
     let url = 'http://localhost:5000/course/add/course/add';
     console.log('Sending to ' + url + ': ' + dict);
     return fetch(url, {
@@ -100,13 +101,24 @@ class Course_Create extends React.Component {
             'Content-Type': 'application/json',
         },
         body: dict
-    }).then(response => {
-        console.log('Hello?: ' + response.ok && response.course);
+    }).then(function(response){ return response.json();
+    }).then(function(data) {
+          const items = data;
+          console.log("items:", items);
+          if(items.ok == true) {
+              alert("Course successfully added.");
+              component.setState({redirect: 1});
+          }
     })
         .catch(err => console.log('Error:', err));
   }
 
   render() {
+    if(this.state.redirect) {
+        return (
+          <Redirect to='./home'/>
+        )
+    }
     return(
       <div>
         <header className="App-header">

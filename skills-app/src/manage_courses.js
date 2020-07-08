@@ -1,5 +1,6 @@
 import React from 'react';
 import './manage_courses.css';
+import SessionDetails from './SessionDetails';
 import MaterialTable from 'material-table';
 import { DeleteIcon, EditIcon, GroupIcon } from '@material-ui/icons';
 import {Link, Redirect} from 'react-router-dom';
@@ -21,6 +22,36 @@ class Manage_Courses extends React.Component {
           { code: 'COMP2041', name: 'Software Tools' },
         ],
       });
+  }
+
+  sleep(time){
+        return new Promise((resolve)=>setTimeout(resolve,time));
+  }
+
+  componentDidMount() {
+      this.sleep(1000).then(()=>{
+        this.getMyCourses();
+      });
+  }
+
+  getMyCourses = () => {
+    let component = this;
+    let email = SessionDetails.getEmail();
+    let url = 'http://localhost:5000/course/add/course/' + email;
+    console.log('Sending to ' + url);
+    return fetch(url, {
+        method: 'GET',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        }
+    }).then(function(response){ return response.json();
+    }).then(function(data) {
+          const items = data;
+          console.log("items:", items.gradoutcomes);
+          component.setState({ allGradOutcomes: items.gradoutcomes });
+    })
+        .catch(err => console.log('Error:', err));
   }
 
   render() {
