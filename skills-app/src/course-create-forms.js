@@ -30,7 +30,7 @@ class Course_Create extends React.Component {
       super(props);
       this.state = {
           allGradOutcomes: [],
-          gradOutcomes: '',
+          gradOutcomes: [],
           redirect: null
       }
       this.handleCourseAdd = this.handleCourseAdd.bind(this);
@@ -78,7 +78,7 @@ class Course_Create extends React.Component {
       let dict = JSON.stringify({
         "admin_email": SessionDetails.getEmail(),
         "code": e.target.code.value,
-        "university": e.target.uni.value,
+        "university": this.fullUniversity(e.target.uni.value),
         "faculty": e.target.faculty.value,
         "description": e.target.description.value,
         "name": e.target.name.value,
@@ -88,6 +88,22 @@ class Course_Create extends React.Component {
       });
       console.log("Entire dictionary: ", dict);
       this.handleCourseSend(dict);
+  }
+
+  fullUniversity(acronym) {
+      console.log("hello?");
+      if(acronym == "UNSW"){
+        return("University of New South Wales");
+      }
+      if(acronym == "USYD"){
+        return("University of Sydney");
+      }
+      if(acronym == "UTS"){
+        return("University of Technology Sydney");
+      }
+      else{
+        return(acronym);
+      }
   }
 
   handleCourseSend(dict) {
