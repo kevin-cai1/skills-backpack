@@ -3,6 +3,8 @@ from flask import request, jsonify
 
 import db
 
+from werkzeug.security import generate_password_hash
+
 api = Namespace('Employer', description='Employer user operations')
 
 @api.route('/all')
@@ -69,7 +71,7 @@ class accountInfo(Resource):
         }
         return return_val
 
-    @api.doc(description="Edit employer name")
+    @api.doc(description="Edit employer details")
     @api.expect(employer_details)
     def put(self, account):
         conn = db.get_conn()
@@ -85,7 +87,8 @@ class accountInfo(Resource):
         
         # change account details if account exists
         elif (account_check == 1):  
-            
+            hashed_password = generate_password_hash(req['password'], "sha256")
+
             # getting api input
             # edit_details = request.get_json()
             # pw_edit = req.get('password')
@@ -107,12 +110,12 @@ class accountInfo(Resource):
             # grad_edit = req.get('gradYear')
 
             # update 
-                c.execute("UPDATE Employer SET (password, name, company) = (?,?,?) WHERE email = ?",(req['password'], req['name'], req['company'], req['email'],))
+                c.execute("UPDATE Employer SET (name, company) = (?,?) WHERE email = ?",(req['name'], req['company'], req['email'],))
                 conn.commit()
                 conn.close()
                 new_details = {
-                    'email' : req['email'],
-                    'password' : req['password'],
+                    'email' : account,
+                    'password' : hashed_password,
                     'name' : req['name'],
                     'company' : req['company'],
                 }

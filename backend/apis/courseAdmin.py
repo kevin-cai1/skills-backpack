@@ -2,11 +2,13 @@ from flask_restplus import Namespace, Resource, fields
 from flask import request, jsonify
 
 import os
+import db
 
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 
 from cryptography.fernet import Fernet
+from werkzeug.security import generate_password_hash
 
 api = Namespace('Course Admin', description='Course Admin invite and creation')
 
@@ -149,7 +151,7 @@ class accountInfo(Resource):
         }
         return return_val
 
-    @api.doc(description="Edit user name")
+    @api.doc(description="Edit user details")
     @api.expect(course_admin_details)
     def put(self, account):
         conn = db.get_conn()
@@ -165,11 +167,14 @@ class accountInfo(Resource):
         
         # change account details if account exists
         elif (account_check == 1):  
+            hashed_password = generate_password_hash(req['password'], "sha256")
             # getting api input
             # edit_details = request.get_json()
             # pw_edit = req.get('password')
             # name_edit = req.get('name')
             # uni_edit = req.get('university')
+
+            # check password matches before they can edit details
             c.execute("SELECT password FROM CourseAdmin WHERE email = ?", (account,))
             query = c.fetchone()
             if query == None:
@@ -178,12 +183,12 @@ class accountInfo(Resource):
             if req['password'] == password:
             
             # update 
-                c.execute("UPDATE CourseAdmin SET (password, name, university) = (?,?,?) WHERE email = ?",(req['password'], req['name'], req['university'], req['email'],))
+                c.execute("UPDATE CourseAdmin SET (name, university) = (?,?) WHERE email = ?",(req['name'], req['university'], req['email'],))
                 conn.commit()
                 conn.close()
                 new_details = {
-                    'email' : req['email'],
-                    'password' : req['password'],
+                    'email' : account,
+                    'password' : hashed_password,
                     'name' : req['name'],
                     'university' : req['university']
                 }

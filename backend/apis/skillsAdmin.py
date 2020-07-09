@@ -146,7 +146,7 @@ class accountInfo(Resource):
         }
         return return_val
 
-    @api.doc(description="Edit user name")
+    @api.doc(description="Edit user details")
     @api.expect(skills_admin_details)
     def put(self, account):
         conn = db.get_conn()
@@ -162,6 +162,7 @@ class accountInfo(Resource):
         
         # change account details if account exists
         elif (account_check == 1):  
+            hashed_password = generate_password_hash(req['password'], "sha256")
             # getting api input
             # edit_details = request.get_json()
             # pw_edit = req.get('password')
@@ -174,12 +175,12 @@ class accountInfo(Resource):
             password = query[0]
             if req['password'] == password:
             # update 
-                c.execute("UPDATE SkillsBackpackAdmin SET (password, name) = (?,?) WHERE email = ?",(req['password'], req['name'], req['email'],))
+                c.execute("UPDATE SkillsBackpackAdmin SET (name) = (?) WHERE email = ?",(req['name'], req['email'],))
                 conn.commit()
                 conn.close()
                 new_details = {
-                    'email' : req['email'],
-                    'password' : req['password'],
+                    'email' : account,
+                    'password' : hashed_password,
                     'name' : req['name'],
                 }
             else:   

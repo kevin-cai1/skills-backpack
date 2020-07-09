@@ -67,7 +67,7 @@ class accountInfo(Resource):
         }
         return return_val
 
-    @api.doc(description="Edit user name")
+    @api.doc(description="Edit user details")
     @api.expect(candidate_details)
     def put(self, account):
         conn = db.get_conn()
@@ -94,6 +94,7 @@ class accountInfo(Resource):
 
             # update 
 
+            # checks password matches before they can edit user details
             c.execute("SELECT password FROM Candidate WHERE email = ?", (account,))
             query = c.fetchone()
             if query == None:
@@ -101,12 +102,12 @@ class accountInfo(Resource):
             password = query[0]
             if req['password'] == password:
 
-                c.execute("UPDATE Candidate SET (password, name, university, degree, gradYear) = (?,?,?,?,?) WHERE email = ?",(hashed_password, req['name'], req['university'], req['degree'], req['gradYear'], req['email'],))
+                c.execute("UPDATE Candidate SET (name, university, degree, gradYear) = (?,?,?,?) WHERE email = ?",(req['name'], req['university'], req['degree'], req['gradYear'], req['email'],))
                 conn.commit()
                 conn.close()
                 new_details = {
-                    'email' : req['email'],
-                    'password' : req['password'],
+                    'email' : account,
+                    'password' : hashed_password,
                     'name' : req['name'],
                     'university' : req['university'],
                     'degree' : req['degree'],
