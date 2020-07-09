@@ -2,6 +2,9 @@ from flask_restplus import Namespace, Resource, fields
 from flask import request, jsonify
 
 import db
+import secrets
+import string
+
 from pprint import pprint
 
 api = Namespace('ePortfolio', description='Endpoint to get ePortfolio information')
@@ -120,3 +123,78 @@ class ePortfolio(Resource):
         }
         return return_val
     
+
+@api.route('/candidate/<string:link>')
+class InviteToken(Resource):
+    @api.doc(description="Get the user associated with the given token")
+    def get(self, token):
+        conn = db.get_conn()
+        c = conn.cursor()
+
+        c.execute("SELECT email FROM Candidate_Links WHERE link = ?", (link,))
+
+        email = c.fetchone()
+
+        conn.close()
+        if (email == None):
+            api.abort(400, "Link not registered to any user", ok=False)
+
+        email = email[0]
+
+        return_val = {
+            'ok': True,
+            'email': email
+        }
+
+        return return_val
+
+@api.route('/link/<string:email>')
+class GetTokens(Resource):
+    api.doc(description="Get all invite links for the given user")
+    def get(self, email):
+        conn = db.get_conn()
+        c = conn.cursor()
+
+        c.execute("SELECT link FROM Candidate_Links WHERE email = ?", (email,))
+
+        linkResult = c.fetchall()
+        
+        conn.close()
+
+        if (linkResult == []):
+            api.abort(400, "No links found for user '{}'".format(email), ok=False)
+
+        links = []
+        for r in linkResult:
+            links.append(r)
+
+        return_val = {
+            'ok': True,
+            'email': email,
+            'links': links
+        }
+
+        return return_val
+    
+    @api.doc(description="Generate and add a new link to an ePortfolio")
+    def post(self, email):
+        conn = db.get_conn()
+        c = conn.cursor()
+
+        link = generateLink(20)
+
+        c.execute("INSERT INTO Candidate_Links (link, email) VALUES (?,?)", (link, email,))
+        
+        return_val = {
+            'ok': True,
+            'email': email,
+            'link': link
+        }
+
+        return return_val
+
+
+def generateLink(length):
+    alphabet = string.ascii_letters + string.digits
+    link = ''.join(secrets.choice(alphabet) for i in range(length))
+    return link

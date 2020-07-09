@@ -12,13 +12,6 @@ CREATE TABLE Candidate (
 	gradYear INTEGER
 );
 
--- Create ePortfolioLink table
--- Stores every EP link as a string 
-DROP TABLE IF EXISTS ePortfolioLink;
-CREATE TABLE ePortfolioLink (
-	link TEXT PRIMARY KEY
-);
-
 -- Create Employer table
 -- Stores Employer login info and their graduate and skills criteria
 DROP TABLE IF EXISTS Employer;
@@ -166,12 +159,8 @@ DROP TABLE IF EXISTS Candidate_Links;
 CREATE TABLE Candidate_Links (
 	link TEXT NOT NULL,
 	email TEXT NOT NULL,
-	FOREIGN KEY (link)
-		REFERENCES Candidate (email)
-			ON DELETE CASCADE
-			ON UPDATE CASCADE,
 	FOREIGN KEY (email)
-		REFERENCES ePortfolioLink (link)
+		REFERENCES Candidate (email)
 			ON DELETE CASCADE
 			ON UPDATE CASCADE,
 	PRIMARY KEY (link, email)

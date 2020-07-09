@@ -7,13 +7,6 @@ VALUES
 	('mirannakamura@usyd.edu.au', 'Miran Nakamura', 'USYD', 'miran', 'Computer Science', 2021);
 	--('alexgu@uts.edu.au', 'Alex Gu', 'UTS', 'alex'
 
--- Inserting data in ePortfolioLink table
-INSERT INTO ePortfolioLink (link)
-VALUES
-	('link1'),
-	('link2');
-	--('link3');
-
 -- Inserting data into Employer table
 INSERT INTO Employer (email, name, graduateCriteria, password, company)
 VALUES
