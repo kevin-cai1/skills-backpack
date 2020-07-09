@@ -45,6 +45,7 @@ class Candidate_EPortfolio extends React.Component{
             allSkills: '',
             skillID: 0,
             presentDate: false,
+            jobTitle: '',
             employerName: '',
             startDate: '',
             endDate: '',
@@ -54,6 +55,7 @@ class Candidate_EPortfolio extends React.Component{
             candidateEmpSkills: [],
             candidateCourses: [],
             candidateEmpHistory: [],
+            profile: [],
         };
         this.handleSearchSkillsModal = this.handleSearchSkillsModal.bind(this);
         this.handleSearchSkillsModalClose = this.handleSearchSkillsModalClose.bind(this);
@@ -106,6 +108,7 @@ class Candidate_EPortfolio extends React.Component{
         const fieldName = event.target.name;
         const fieldValue = event.target.value;
         this.setState({[fieldName]: fieldValue});
+        this.componentDidMount();
     }
 
     handleAddJob() {
@@ -120,6 +123,7 @@ class Candidate_EPortfolio extends React.Component{
     }
 
     clearEmploymentFields() {
+        this.setState({jobTitle: ''});
         this.setState({employerName: ''});
         this.setState({presentDate: false});
         this.setState({startDate: ''});
@@ -131,6 +135,7 @@ class Candidate_EPortfolio extends React.Component{
         let data = JSON.stringify({
             "user": SessionDetails.getEmail(),
             "employer": this.state.employerName,
+            "job_title": this.state.jobTitle,
             "start_date": this.state.startDate,
             "end_date": (this.state.endDate === 'Present') ? '' : this.state.endDate,
             "description": this.state.jobDescription
@@ -276,6 +281,7 @@ class Candidate_EPortfolio extends React.Component{
                 this.state.candidateEmpSkills = response["employability_skills"];
                 this.state.candidateCourses = response["courses"];
                 this.state.candidateEmpHistory = response["employment"];
+                this.state.profile = response["profile"];
                 this.forceUpdate();
             }
         });
@@ -301,15 +307,16 @@ class Candidate_EPortfolio extends React.Component{
                 <div className="center-align-container">
                     <div style={{'display': 'inline-block', 'padding-top':'50px'}}>
                         <div><InsertPhotoIcon style={{ fontSize: 100 }}/></div>
-                        <div style={{color: 'dimgrey'}}><h2>{SessionDetails.getName()}</h2></div>
+                        <div style={{color: 'dimgrey', "margin":"15px 0px 15px 0px"}}><h2>{this.state.profile.name}</h2></div>
+                        <h5 style={{"margin":"5px 0px 5px 0px"}}>{this.state.profile.degree} &middot; {this.state.profile.gradYear} Graduate</h5>
                         <div className="row-container">
                             <div className="user-profile-details-row">
                                 <SchoolIcon className="sm-icon-padded"/>
-                                <h5>University of New South Wales</h5>
+                                <h5>{this.state.profile.university}</h5>
                             </div>
                             <div className="user-profile-details-row">
                                 <EmailIcon className="sm-icon-padded"/>
-                                <h5>{SessionDetails.getEmail()}</h5>
+                                <h5>{this.state.profile.email}</h5>
                             </div>
                         </div>
                     </div>
@@ -437,6 +444,13 @@ class Candidate_EPortfolio extends React.Component{
                             }
                             <div className="Course-form-body">
                                 <form style={{"minWidth": "300px"}}>
+                                    <FormControl fullWidth={true} required={true} margin='normal'>
+                                        <TextField required label="Role"
+                                                   name="jobTitle"
+                                                   onChange={this.handleChange}
+                                                   value={this.state.jobTitle}
+                                        />
+                                    </FormControl>
                                     <FormControl fullWidth={true} required={true} margin='normal'>
                                         <TextField required label="Employer"
                                                    name="employerName"
