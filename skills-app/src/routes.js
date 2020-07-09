@@ -16,6 +16,7 @@ import Candidate_EPortfolio from './candidate-eportfolio';
 import Home_skillsAdmin from './home-skillsAdmin';
 import Home_courseAdmin from './home-courseAdmin';
 import Employer_Profile from './employer-profile';
+import Home_Employer from './home-employer';
 
 const allRoutes = () => (
     <Router>
@@ -27,6 +28,7 @@ const allRoutes = () => (
         <PrivateRoute path="/home" component={Home} />
         <PrivateRoute path="/home-skillsAdmin" component={Home_skillsAdmin} />
         <PrivateRoute path="/home-courseAdmin" component={Home_courseAdmin} />
+        <PrivateRoute path="/home-employer" component={Home_Employer} />
         <PrivateRoute path="/changePassword" component={ChangePassword} />
         <PrivateRoute exact path="/course_create" component={Course_Create}/>
         <PrivateRoute exact path="/manage_courses" component={Manage_Courses}/>
