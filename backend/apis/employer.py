@@ -17,7 +17,7 @@ class accounts(Resource):
         
 employer_details = api.model('employer details', {
     'email' : fields.String(description='university email for account identification', required=True),
-    'password'  : fields.String(description='password for account access', required=True),
+    # 'password'  : fields.String(description='password for account access', required=True),
     'name' : fields.String(description='name of user', required=True),
     'company' : fields.String(description='company of employer')
 })
@@ -87,19 +87,19 @@ class accountInfo(Resource):
         
         # change account details if account exists
         elif (account_check == 1):  
-            hashed_password = generate_password_hash(req['password'], "sha256")
+            # hashed_password = generate_password_hash(req['password'], "sha256")
 
             # getting api input
             # edit_details = request.get_json()
             # pw_edit = req.get('password')
             # name_edit = req.get('name')
             # uni_edit = req.get('university')
-            c.execute("SELECT password FROM Employer WHERE email = ?", (account,))
-            query = c.fetchone()
-            if query == None:
-                api.abort(400, "User '{}' not found".format(account), ok=False)
-            password = query[0]
-            if req['password'] == password:
+            # c.execute("SELECT password FROM Employer WHERE email = ?", (account,))
+            # query = c.fetchone()
+            # if query == None:
+            #     api.abort(400, "User '{}' not found".format(account), ok=False)
+            # password = query[0]
+            # if req['password'] == password:
             
             # getting api input
             # edit_details = request.get_json()
@@ -115,12 +115,12 @@ class accountInfo(Resource):
                 conn.close()
                 new_details = {
                     'email' : account,
-                    'password' : hashed_password,
+                    # 'password' : hashed_password,
                     'name' : req['name'],
                     'company' : req['company'],
                 }
-            else:   
-                api.abort(400, "Password incorrect", ok=False)
+            # else:   
+            #     api.abort(400, "Password incorrect", ok=False)
 
         else: 
             api.abort(400, "Update Error")

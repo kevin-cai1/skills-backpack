@@ -16,7 +16,7 @@ class accounts(Resource):
         
 candidate_details = api.model('candidate details', {
     'email' : fields.String(description='university email for account identification', required=True),
-    'password'  : fields.String(description='password for account access', required=True),
+    # 'password'  : fields.String(description='password for account access', required=True),
     'name' : fields.String(description='name of user', required=True),
     'university' : fields.String(description='university of candidate/course admin'),
     'degree' : fields.String(description='degree of candidate'),
@@ -83,7 +83,7 @@ class accountInfo(Resource):
         
         # change account details if account exists
         elif (account_check == 1):  
-            hashed_password = generate_password_hash(req['password'], "sha256")
+            # hashed_password = generate_password_hash(req['password'], "sha256")
             # getting api input
             # edit_details = request.get_json()
             # pw_edit = req.get('password')
@@ -95,33 +95,37 @@ class accountInfo(Resource):
             # update 
 
             # checks password matches before they can edit user details
-            c.execute("SELECT password FROM Candidate WHERE email = ?", (account,))
-            query = c.fetchone()
-            if query == None:
-                api.abort(400, "User '{}' not found".format(account), ok=False)
-            password = query[0]
-            if req['password'] == password:
+            # c.execute("SELECT password FROM Candidate WHERE email = ?", (account,))
+            # query = c.fetchone()
+            # if query == None:
+            #     api.abort(400, "User '{}' not found".format(account), ok=False)
+            
 
-                c.execute("UPDATE Candidate SET (name, university, degree, gradYear) = (?,?,?,?) WHERE email = ?",(req['name'], req['university'], req['degree'], req['gradYear'], req['email'],))
-                conn.commit()
-                conn.close()
-                new_details = {
-                    'email' : account,
-                    'password' : hashed_password,
-                    'name' : req['name'],
-                    'university' : req['university'],
-                    'degree' : req['degree'],
-                    'gradYear' : req['gradYear']
-                }
-            else:   
-                api.abort(400, "Password incorrect", ok=False)
+            c.execute("UPDATE Candidate SET (name, university, degree, gradYear) = (?,?,?,?) WHERE email = ?",(req['name'], req['university'], req['degree'], req['gradYear'], req['email'],))
+            conn.commit()
+            c.execute("SELECT name FROM Candidate WHERE email = ?", (account,))
+            check = c.fetchone()
+            newname = check[0]
+            conn.close()
+            new_details = {
+                'email' : account,
+                # 'password' : hashed_password,
+                'name' : newname,
+                'university' : req['university'],
+                'degree' : req['degree'],
+                'gradYear' : req['gradYear']
+            }
+            # else:   
+            #    api.abort(400, "Password incorrect", ok=False)
 
         else: 
             api.abort(400, "Update Error")
             conn.close()
+        
         return_val = {
             'ok' : True,
-            'new' : new_details
+            'new' : new_details,
+            'newname' : newname
         }
         return return_val
 
