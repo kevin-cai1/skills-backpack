@@ -45,7 +45,7 @@ class Course_Create extends React.Component {
   sendUniSelect = (e) => {
     let component = this;
     console.log("selected:", e.target.value);
-    let url = 'http://localhost:5000/course/add/course/' + e.target.value;
+    let url = 'http://localhost:5000/course/add/' + e.target.value;
     console.log('Sending to ' + url);
     return fetch(url, {
         method: 'GET',
@@ -108,7 +108,7 @@ class Course_Create extends React.Component {
 
   handleCourseSend(dict) {
     let component = this;
-    let url = 'http://localhost:5000/course/add/course/add';
+    let url = 'http://localhost:5000/course/add/add';
     console.log('Sending to ' + url + ': ' + dict);
     return fetch(url, {
         method: 'POST',

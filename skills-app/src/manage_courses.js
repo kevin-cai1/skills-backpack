@@ -33,7 +33,8 @@ class Manage_Courses extends React.Component {
         editLearnOutcomes: [],
         editGradOutcomes: [],
         successAlert: false,
-        failAlert: false
+        failAlert: false,
+        deleteAlert: false
       });
       this.handleCourseDelete = this.handleCourseDelete.bind(this);
       this.handleCourseEdit = this.handleCourseEdit.bind(this);
@@ -90,7 +91,7 @@ class Manage_Courses extends React.Component {
         "code": code,
         "university": uni
     });
-    let url = 'http://localhost:5000/course/add/course/delete';
+    let url = 'http://localhost:5000/course/add/delete';
     console.log('Sending to ' + url + ': ' + data);
 
     return fetch(url, {
@@ -104,6 +105,7 @@ class Manage_Courses extends React.Component {
         console.log('response ' + response);
         console.log('response stat HELLO?? ' + response.status);
         component.getMyCourses();
+        component.setState({ deleteAlert: true })
         return response.ok && response.json();
     })
         .catch(err => console.log('Error:', err));
@@ -117,7 +119,7 @@ class Manage_Courses extends React.Component {
   setCourseDetails(code, uni) {
     this.getGradOutcomes(uni);
     let component = this;
-    let url = 'http://localhost:5000/course/add/course/' + uni + '/' + code;
+    let url = 'http://localhost:5000/course/add/' + uni + '/' + code;
     console.log('Sending to ' + url);
     return fetch(url, {
         method: 'GET',
@@ -145,7 +147,7 @@ class Manage_Courses extends React.Component {
   getGradOutcomes = (uni) => {
     const urlUni = this.acronymUniversity(uni);
     let component = this;
-    let url = 'http://localhost:5000/course/add/course/' + urlUni;
+    let url = 'http://localhost:5000/course/add/' + urlUni;
     console.log('Sending to ' + url);
     return fetch(url, {
         method: 'GET',
@@ -208,7 +210,7 @@ class Manage_Courses extends React.Component {
 
   handleCourseSend(dict) {
     let component = this;
-    let url = 'http://localhost:5000/course/add/course/edit';
+    let url = 'http://localhost:5000/course/add/edit';
     console.log('Sending to ' + url + ': ' + dict);
     return fetch(url, {
         method: 'PUT',
@@ -246,6 +248,9 @@ class Manage_Courses extends React.Component {
           </Alert></div>}
           { this.state.successAlert && <div><Alert severity="success">
             Course successfully edited.
+          </Alert></div> }
+          { this.state.deleteAlert && <div><Alert severity="success">
+            Course deleted.
           </Alert></div> }
           <div className="Top-right">
             <MuiThemeProvider theme={theme}>
