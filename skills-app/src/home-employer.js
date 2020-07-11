@@ -4,32 +4,117 @@ import Autocomplete, {createFilterOptions} from '@material-ui/lab/Autocomplete';
 import {makeStyles, MuiThemeProvider} from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import SearchIcon from '@material-ui/icons/Search';
-import {Button, ButtonGroup} from '@material-ui/core';
+import {Button, ButtonGroup, Card, CardActions, CardContent} from '@material-ui/core';
 import { theme } from './App.js'
+import SessionDetails from "./SessionDetails";
+import LanguageIcon from "@material-ui/core/SvgIcon/SvgIcon";
+import EmailIcon from '@material-ui/icons/Email';
 
 const filter = createFilterOptions();
 
 class Home_Employer extends React.Component {
     constructor(props) {
         super(props);
-        const useStyles = makeStyles((theme) => ({
-            root: {
-                width: 500,
-                '& > * + *': {
-                    marginTop: theme.spacing(3),
-                }
-            },
-        }));
         this.state = {
             value: null,
             setValue: null,
-            valueList:'',
+            valueList: [],
+            allOutcomes: [],
+            candidateList: [],
+            numResults: '',
+            searchMessage: '',
         }
         this.handleSearch = this.handleSearch.bind(this);
     }
 
+    componentDidMount() {
+        this.populateDropdown();
+    }
+
+    postOutcomes() {
+        let data = JSON.stringify({
+            "attributes": this.state.valueList
+        });
+        let url = 'http://localhost:5000/search/search';
+        console.log('Sending to ' + url + ': ' + data);
+
+        return fetch(url, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: data
+        }).then(response => {
+            console.log(response)
+            console.log('response ' + response.status)
+            return response.ok && response.json();
+        })
+            .catch(err => console.log('Error:', err));
+    }
+
     handleSearch() {
-        console.log(this.state.valueList);
+        this.state.candidateList = [];
+        return this.postOutcomes().then( (response) => {
+            console.log(response);
+            let status = response["ok"];
+            if (!status) {
+                console.log("error");
+                this.state.searchMessage = "No results found. Try selecting different skills.";
+            } else {
+                let candidateList = response["candidates"];
+                candidateList.map( i => {
+                    i["matching skills"] = JSON.stringify(i["matching skills"]);
+                    i["matching skills"] = i["matching skills"].replace(/\"/g, '');
+                    i["matching skills"] = i["matching skills"].replace(/\[/g, '');
+                    i["matching skills"] = i["matching skills"].replace(/\]/g, '');
+                    i["matching skills"] = i["matching skills"].replace(/\,/g, '\, ');
+                });
+                let searchValues = JSON.stringify(this.state.valueList);
+                searchValues = searchValues.replace(/\"/g, '');
+                searchValues = searchValues.replace(/\[/g, '');
+                searchValues = searchValues.replace(/\]/g, '');
+                searchValues = searchValues.replace(/\,/g, '\, ');
+                this.setState({
+                    candidateList: candidateList,
+                    numResults: candidateList.length,
+                    searchMessage: candidateList.length + " results for " + searchValues
+                });
+            }
+        });
+    }
+
+    getOutcomes() {
+        let url = 'http://localhost:5000/search/getoutcomes';
+        console.log('Fetching data from: ' + url);
+
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+        }).then(response => {
+            console.log(response)
+            console.log('response ' + response.status)
+            return response.ok && response.json();
+        })
+            .catch(err => console.log('Error:', err));
+    }
+
+    populateDropdown() {
+        return this.getOutcomes().then( (response) => {
+            console.log(response);
+            let status = response["ok"];
+            if (!status) {
+                console.log("error");
+            } else {
+                let outcomes = response["outcomes"];
+                this.setState({
+                    allOutcomes: outcomes
+                });
+            }
+        });
     }
 
     render () {
@@ -40,7 +125,7 @@ class Home_Employer extends React.Component {
                     <MuiThemeProvider theme={theme}>
                         <ButtonGroup variant="contained"
                                      aria-label="contained primary button group">
-                            <Button href='./my-profile'>
+                            <Button href='./my-profile' style={{textTransform:"none"}}>
                                 My Profile
                             </Button>
                         </ButtonGroup>
@@ -59,8 +144,8 @@ class Home_Employer extends React.Component {
                         <Autocomplete
                             multiple
                             id="tags-outlined"
-                            options={chipNames}
-                            getOptionLabel={(option) => option.name}
+                            options={this.state.allOutcomes}
+                            getOptionLabel={(option) => option}
                             filterSelectedOptions
                             onChange={(event, newValue) => {
                                 if (typeof newValue === 'string') {
@@ -69,9 +154,7 @@ class Home_Employer extends React.Component {
                                     });
                                 } else if (newValue && newValue.inputValue) {
                                     // Create a new value from the user input
-                                    this.state.setValue({
-                                        name: newValue.inputValue,
-                                    });
+                                    this.state.setValue = newValue.inputValue;
                                 } else {
                                     this.state.setValue = newValue;
                                 }
@@ -82,10 +165,9 @@ class Home_Employer extends React.Component {
 
                                 // Suggest the creation of a new value
                                 if (params.inputValue !== '') {
-                                    filtered.push({
-                                        inputValue: params.inputValue,
-                                        name: `Add "${params.inputValue}"`,
-                                    });
+                                    filtered.push(
+                                        params.inputValue
+                                    );
                                 }
 
                                 return filtered;
@@ -100,9 +182,9 @@ class Home_Employer extends React.Component {
                                     return option.inputValue;
                                 }
                                 // Regular option
-                                return option.name;
+                                return option;
                             }}
-                            renderOption={(option) => option.name}
+                            renderOption={(option) => option}
                             renderInput={(params) => (
                                 <div className="row-container">
                                     <TextField
@@ -124,17 +206,49 @@ class Home_Employer extends React.Component {
                     </div>
                 </div>
             </div>
+            <div className="center-align-container" style={{'margin':'15px 0px 30px 0px'}}>
+                <div style={{'display':'inline-block'}}>
+                <div style={{'overflow':'hidden'}}>
+                    <p className="ep-course-heading italicised" style={{float:'left','font-style':'normal','marginBottom':'10px'}}>
+                        {this.state.searchMessage}
+                    </p>
+                </div>
+                {this.state.candidateList.map(i => {
+                    return (
+                        <div style={{marginBottom:'15px'}}>
+                            <Card style={{width:'750px'}}>
+                                <CardContent>
+                                    <div style={{'overflow':'hidden'}}>
+                                        <h4 style={{margin:'10px 0px 10px 0px',float:'left','text-decoration':'none'}}>
+                                            <a href={'./view-eportfolio/' + i.email} target="_blank" style={{'text-decoration':'none', color:'#2D9CDB'}}>
+                                                {i.name}
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div style={{'overflow':'hidden'}}>
+                                        <p className="ep-course-heading italicised" style={{float:'left','font-style':'normal'}}>{i.degree} Student</p>
+                                    </div>
+                                    <div className="row-container">
+                                        <div className="row-container">
+                                            <EmailIcon className="smaller-icon-padded" style={{'font-size':'15px'}}/>
+                                            <p className="ep-course-heading">{i.email}</p>
+                                        </div>
+                                    </div>
+                                    <div style={{'overflow':'hidden'}}>
+                                        <p className="ep-course-heading italicised" style={{float:'left', 'margin-top':'15px'}}>
+                                            Skills: {i["matching skills"]}
+                                        </p>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    )
+                })}
+                </div>
+            </div>
             </body>
         );
     }
 }
 
 export default Home_Employer;
-
-const chipNames = [
-    {name: 'css'},
-    {name: 'html'},
-    {name: 'reactjs'},
-    {name: 'python'},
-    {name: 'communication'},
-]
