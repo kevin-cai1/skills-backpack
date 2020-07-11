@@ -60,9 +60,16 @@ class search(Resource):
                     'matching skills' : unsorted_candidates[email]
             }
             res.append(new_entry) # append all the candidate entries to the final result
-        returnVal = {
-                'candidates': res 
-        }
+        if not res:
+            returnVal = {
+                    'ok' : False,
+                    'candidates' : 'No Results Found'
+            }
+        else:
+            returnVal = {
+                    'ok' : True,
+                    'candidates': res 
+            }
         return returnVal
 
 # api which returns all graduate and learning outcomes in one list
