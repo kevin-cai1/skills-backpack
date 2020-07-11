@@ -36,7 +36,7 @@ delete_course_details = api.model('delete_course', {
     })
 
 # getting list of gradoutcomes based on the inputted uni
-@api.route('/course/<university>', methods=['GET'])
+@api.route('/<university>', methods=['GET'])
 class getgradoutcomes(Resource):
     def get(self, university):
         if university == None:
@@ -55,7 +55,7 @@ class getgradoutcomes(Resource):
         return returnval
 
 # getting course info 
-@api.route('/course/<university>/<code>', methods=['GET']) # specify query parameters using by entering them after a ? in the url (e.g. /course?code=COMP3900&university=UNSW)
+@api.route('/<university>/<code>', methods=['GET']) # specify query parameters using by entering them after a ? in the url (e.g. /course?code=COMP3900&university=UNSW)
 class getcourse(Resource):
     def get(self, code, university):
         if code == None or university == None:
@@ -101,7 +101,7 @@ class getcourse(Resource):
 
 
 # adding courses
-@api.route('/course/add')
+@api.route('/add')
 class addcourse(Resource):
     @api.expect(course_details) 
     def post(self):
@@ -130,24 +130,27 @@ class addcourse(Resource):
             }
             
             # inserting outcomes into their respective tables and relationships
-            loutcomelist = req['learningOutcomes'].split(',')
-            for learning_outcome in loutcomelist:
+            for learning_outcome in req['learningOutcomes'].split(','):
                 try:
                     c.execute('INSERT INTO LearningOutcomes(l_outcome) VALUES(?)', (learning_outcome,))
                     c.execute('INSERT INTO Course_LearnOutcomes(l_outcome, code, university) VALUES ((SELECT last_insert_rowid()), ?, ?)', (req['code'], req['university']))
                 except db.sqlite3.Error as e:
-                    print(e)
                     learnID = c.execute('SELECT id from LearningOutcomes WHERE l_outcome = ?', (learning_outcome,)).fetchone()[0]
-                    c.execute('INSERT INTO Course_LearnOutcomes(l_outcome, code, university) VALUES (?, ?, ?)', (learnID, req['code'], req['university']))
+                    try:
+                        c.execute('INSERT INTO Course_LearnOutcomes(l_outcome, code, university) VALUES (?, ?, ?)', (learnID, req['code'], req['university']))
+                    except db.sqlite3.Error as e:
+                        continue
 
             for grad_outcome in req['gradOutcomes']:
                 try: 
                     c.execute('INSERT INTO GraduateOutcomes(g_outcome, university) VALUES(?, ?)', (grad_outcome, req['university']))
                     c.execute('INSERT INTO Course_GradOutcomes(g_outcome, code, university) VALUES ((SELECT last_insert_rowid()), ?, ?)', (req['code'], req['university']))
                 except db.sqlite3.Error as e: # error occurs when 140 fails because the outcome already exists in the db
-                    print(e)
                     gradID = c.execute('SELECT id from GraduateOutcomes WHERE g_outcome = ? and university = ?', (grad_outcome, req['university'])).fetchone()[0]
-                    c.execute('INSERT INTO Course_GradOutcomes(g_outcome, code, university) VALUES (?, ?, ?)', (gradID, req['code'], req['university']))
+                    try:
+                        c.execute('INSERT INTO Course_GradOutcomes(g_outcome, code, university) VALUES (?, ?, ?)', (gradID, req['code'], req['university']))
+                    except db.sqlite3.Error as e:
+                        continue
 
             conn.commit()
             conn.close()
@@ -163,7 +166,7 @@ class addcourse(Resource):
 
 # deleting courses
 # expects course code and uni as input to identify the specific course to be deleted
-@api.route('/course/delete')
+@api.route('/delete')
 class deletecourse(Resource):
     @api.expect(delete_course_details)
     def delete(self):
@@ -195,7 +198,7 @@ class deletecourse(Resource):
     
 # editing existing courses, assuming that the code and university can't be changed
 # expects values for every field in the course table (if the value doesn't change, input the same value as before, not an empty string.)
-@api.route('/course/edit')
+@api.route('/edit')
 class editcourse(Resource):
     @api.expect(course_details)
     def put(self):
@@ -238,21 +241,28 @@ class editcourse(Resource):
 
 
         # now that we've removed edited out outcomes, we can add all the learning/grad outcomes to their respective tables. Should automatically filter out duplicates.
-        for learning_outcome in req['learningOutcomes']:
+        for learning_outcome in req['learningOutcomes'].split(','):
             try:
                 c.execute('INSERT INTO LearningOutcomes(l_outcome) VALUES(?)', (learning_outcome,))
                 c.execute('INSERT INTO Course_LearnOutcomes(l_outcome, code, university) VALUES ((SELECT last_insert_rowid()), ?, ?)', (req['code'], req['university']))
             except db.sqlite3.Error as e:
-                print(e, learning_outcome)
-                continue
+                learnID = c.execute('SELECT id from LearningOutcomes WHERE l_outcome = ?', (learning_outcome,)).fetchone()[0]
+                try:
+                    c.execute('INSERT INTO Course_LearnOutcomes(l_outcome, code, university) VALUES (?, ?, ?)', (learnID, req['code'], req['university']))
+                except db.sqlite3.Error as e:
+                    continue
 
         for grad_outcome in req['gradOutcomes']:
-            try:
+            try: 
                 c.execute('INSERT INTO GraduateOutcomes(g_outcome, university) VALUES(?, ?)', (grad_outcome, req['university']))
-                c.execute('INSERT INTO Course_GradOutcomes(g_outcome, code, university) VALUES ((SELECT last_insert_rowid()), ?, ?)', (req['code'], req['university'])) 
-            except db.sqlite3.Error as e:
-                continue
-       
+                c.execute('INSERT INTO Course_GradOutcomes(g_outcome, code, university) VALUES ((SELECT last_insert_rowid()), ?, ?)', (req['code'], req['university']))
+            except db.sqlite3.Error as e: # error occurs when 140 fails because the outcome already exists in the db
+                gradID = c.execute('SELECT id from GraduateOutcomes WHERE g_outcome = ? and university = ?', (grad_outcome, req['university'])).fetchone()[0]
+                try:
+                    c.execute('INSERT INTO Course_GradOutcomes(g_outcome, code, university) VALUES (?, ?, ?)', (gradID, req['code'], req['university']))
+                except db.sqlite3.Error as e:
+                    continue
+        
         # finally update the course details
         update_query = 'UPDATE Course SET faculty = ?, description = ?, name = ?, link = ?, courseAdminEmail = ? WHERE code = ? and university = ?'
         infolist = (req['faculty'], req['description'], req['name'], req['link'], req['admin_email'], req['code'], req['university']) 
