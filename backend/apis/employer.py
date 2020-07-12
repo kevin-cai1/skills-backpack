@@ -3,6 +3,8 @@ from flask import request, jsonify
 
 import db
 
+from werkzeug.security import generate_password_hash
+
 api = Namespace('Employer', description='Employer user operations')
 
 @api.route('/all')
@@ -15,7 +17,7 @@ class accounts(Resource):
         
 employer_details = api.model('employer details', {
     'email' : fields.String(description='university email for account identification', required=True),
-    'password'  : fields.String(description='password for account access', required=True),
+    # 'password'  : fields.String(description='password for account access', required=True),
     'name' : fields.String(description='name of user', required=True),
     'company' : fields.String(description='company of employer')
 })
@@ -69,7 +71,7 @@ class accountInfo(Resource):
         }
         return return_val
 
-    @api.doc(description="Edit employer name")
+    @api.doc(description="Edit employer details")
     @api.expect(employer_details)
     def put(self, account):
         conn = db.get_conn()
@@ -85,6 +87,19 @@ class accountInfo(Resource):
         
         # change account details if account exists
         elif (account_check == 1):  
+            # hashed_password = generate_password_hash(req['password'], "sha256")
+
+            # getting api input
+            # edit_details = request.get_json()
+            # pw_edit = req.get('password')
+            # name_edit = req.get('name')
+            # uni_edit = req.get('university')
+            # c.execute("SELECT password FROM Employer WHERE email = ?", (account,))
+            # query = c.fetchone()
+            # if query == None:
+            #     api.abort(400, "User '{}' not found".format(account), ok=False)
+            # password = query[0]
+            # if req['password'] == password:
             
             # getting api input
             # edit_details = request.get_json()
@@ -95,15 +110,17 @@ class accountInfo(Resource):
             # grad_edit = req.get('gradYear')
 
             # update 
-            c.execute("UPDATE Employer SET (password, name, company) = (?,?,?) WHERE email = ?",(req['password'], req['name'], req['company'], req['email'],))
-            conn.commit()
-            conn.close()
-            new_details = {
-                'email' : req['email'],
-                'password' : req['password'],
-                'name' : req['name'],
-                'company' : req['company'],
-            }
+                c.execute("UPDATE Employer SET (name, company) = (?,?) WHERE email = ?",(req['name'], req['company'], req['email'],))
+                conn.commit()
+                conn.close()
+                new_details = {
+                    'email' : account,
+                    # 'password' : hashed_password,
+                    'name' : req['name'],
+                    'company' : req['company'],
+                }
+            # else:   
+            #     api.abort(400, "Password incorrect", ok=False)
 
         else: 
             api.abort(400, "Update Error")
