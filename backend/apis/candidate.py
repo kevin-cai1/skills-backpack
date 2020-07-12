@@ -103,14 +103,14 @@ class accountInfo(Resource):
 
             c.execute("UPDATE Candidate SET (name, university, degree, gradYear) = (?,?,?,?) WHERE email = ?",(req['name'], req['university'], req['degree'], req['gradYear'], req['email'],))
             conn.commit()
-            c.execute("SELECT name FROM Candidate WHERE email = ?", (account,))
-            check = c.fetchone()
-            newname = check[0]
+            # c.execute("SELECT name FROM Candidate WHERE email = ?", (account,))
+            # check = c.fetchone()
+            # newname = check[0]
             conn.close()
             new_details = {
                 'email' : account,
                 # 'password' : hashed_password,
-                'name' : newname,
+                'name' : req['name'],
                 'university' : req['university'],
                 'degree' : req['degree'],
                 'gradYear' : req['gradYear']
@@ -124,8 +124,8 @@ class accountInfo(Resource):
         
         return_val = {
             'ok' : True,
-            'new' : new_details,
-            'newname' : newname
+            'new' : new_details
+            #'newname' : newname
         }
         return return_val
 
