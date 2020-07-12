@@ -56,7 +56,28 @@ VALUES
 	('teamwork', 'UNSW'),
 	('leadership', 'USYD'),
 	('meming', 'UNSW'),
-	('teeming', 'USYD');
+	('teeming', 'USYD'),
+	('Scholars capable of independent and collaborative enquiry', 'UNSW'),
+	('Scholars rigorous in their analysis', 'UNSW'),
+	('Scholars able to innovate by applying their knowledge and skills to the solution of novel problems', 'UNSW'),
+	('Scholars able to innovate by applying their knowledge and skills to the solution of routine problems', 'UNSW'),
+	('Entrepreneurial leaders capable of initiating and embracing innovation and change', 'UNSW'),
+	('Entrepreneurial leaders engaging and enabling others to contribute to change', 'UNSW'),
+	('Professionals capable of ethical learning', 'UNSW'),
+	('Professionals capable of self-directed practice', 'UNSW'),
+	('Professionals capable of independent lifelong learning', 'UNSW'),
+	('Global citizens who are culturally adept', 'UNSW'),
+	('Global citizens who are capable of respecting diversity', 'UNSW'),
+	('Global citizens who are capable of acting in a socially just and responsible way', 'UNSW'),
+	('Depth of disciplinary expertise', 'USYD'),
+	('Critical thinking and problem solving', 'USYD'),
+	('Oral and written communication', 'USYD'),
+	('Information and digital literacy', 'USYD'),
+	('Generating novel ideas and solutions', 'USYD'),
+	('Cultural competence', 'USYD'),
+	('Interdisciplinary effectiveness', 'USYD'),
+	('Integrated professional, ethical, and personal identity', 'USYD'),
+	('Engaging others in a process, idea or vision', 'USYD');
 
 -- Inserting data into Employment table
 INSERT INTO Employment(id, job_title, candidate_email, description, startDate, endDate, employer)
