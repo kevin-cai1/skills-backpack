@@ -89,14 +89,14 @@ class ChangePassword extends React.Component {
     postPassword() {
         let data = JSON.stringify({
             "email": SessionDetails.getEmail(),
-            "currentPassword": this.state.currentPassword,
-            "newPassword": this.state.newPassword
+            "password": this.state.currentPassword,
+            "new_password": this.state.newPassword
         });
-        let url = 'http://localhost:5000/account/changePassword';
+        let url = 'http://localhost:5000/password/' + SessionDetails.getEmail();
         console.log('Sending to ' + url + ': ' + data);
 
         return fetch(url, {
-            method: 'POST',
+            method: 'PUT',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
@@ -111,12 +111,11 @@ class ChangePassword extends React.Component {
     }
 
     handleSubmit(event) {
-        // return this.postPassword().then( (response) => {
-        //     console.log(response);
-        //     this.state.formError = '';
-        //     this.state.formSuccess = '';
-        //     let status = response["success"];
-            let status = false;
+        return this.postPassword().then( (response) => {
+            console.log(response);
+            this.state.formError = '';
+            this.state.formSuccess = '';
+            let status = response["ok"];
             this.setState({
                 currentPassword: '',
                 newPassword: '',
@@ -129,7 +128,7 @@ class ChangePassword extends React.Component {
                 this.state.formSuccess = true;
                 this.forceUpdate();
             }
-        // });
+        });
     }
 
     render() {
