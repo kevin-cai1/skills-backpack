@@ -55,12 +55,20 @@ class Home_Employer extends React.Component {
 
     handleSearch() {
         this.state.candidateList = [];
+        let searchValues = JSON.stringify(this.state.valueList);
+        searchValues = searchValues.replace(/\"/g, '');
+        searchValues = searchValues.replace(/\[/g, '');
+        searchValues = searchValues.replace(/\]/g, '');
+        searchValues = searchValues.replace(/\,/g, '\, ');
         return this.postOutcomes().then( (response) => {
             console.log(response);
             let status = response["ok"];
             if (!status) {
-                console.log("error");
-                this.state.searchMessage = "No results found. Try selecting different skills.";
+                console.log("No results found.");
+                this.setState({
+                    candidateList: [],
+                    searchMessage: "No results found for " + searchValues + ". Try selecting different skills."
+                });
             } else {
                 let candidateList = response["candidates"];
                 candidateList.map( i => {
@@ -70,15 +78,10 @@ class Home_Employer extends React.Component {
                     i["matching skills"] = i["matching skills"].replace(/\]/g, '');
                     i["matching skills"] = i["matching skills"].replace(/\,/g, '\, ');
                 });
-                let searchValues = JSON.stringify(this.state.valueList);
-                searchValues = searchValues.replace(/\"/g, '');
-                searchValues = searchValues.replace(/\[/g, '');
-                searchValues = searchValues.replace(/\]/g, '');
-                searchValues = searchValues.replace(/\,/g, '\, ');
                 this.setState({
                     candidateList: candidateList,
                     numResults: candidateList.length,
-                    searchMessage: candidateList.length + " results for " + searchValues
+                    searchMessage: candidateList.length + " result(s) for " + searchValues
                 });
             }
         });
