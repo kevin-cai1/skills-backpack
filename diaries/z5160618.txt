@@ -59,3 +59,8 @@ Week 6
 - fixed editing courses api to account for cases where outcomes already exist
 - fixed adding courses api so it would work with the front end
 
+13/07/20
+- Finished implementing backend search API, getting list of graduate outcomes based on uni API, and getting list of gradoutcomes/job skills API
+- Started documenting API usage
+- Edited search API to account for case where no matches are found
+
