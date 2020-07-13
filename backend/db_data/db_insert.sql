@@ -117,12 +117,12 @@ VALUES
 	('link1', 'charmaineleung@unsw.edu.au', 'CBA'),
 	('link2', 'mirannakamura@usyd.edu.au', 'UNSW');
 
-INSERT INTO Skill (id, name)
-VALUES
-	(1, 'Python'),
-	(2, 'C Programming'),
-	(3, 'Java'),
-	(4, 'MIPS');
+--INSERT INTO Skill (id, name)
+--VALUES
+--	(1, 'Python'),
+--	(2, 'C Programming'),
+--	(3, 'Java'),
+--	(4, 'MIPS');
 
 INSERT INTO Employer_Skill (employer, skillID)
 VALUES

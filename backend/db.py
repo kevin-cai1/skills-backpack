@@ -16,6 +16,7 @@ def init_db():
     db = sqlite3.connect('skills.db')
     load_schema(db)
     insert_data(db)
+    load_skills(db)
 
     db.commit()
     db.close()
@@ -33,6 +34,19 @@ def insert_data(db):
         sql_script = sql_file.read()
     cursor = db.cursor()
     cursor.executescript(sql_script)
+
+def load_skills(db):
+    f = open('./linkedin_skills.txt', "r")
+    cursor = db.cursor()
+    for line in f:
+        print(line)
+        try:
+            cursor.execute("INSERT INTO Skill (name) VALUES (?)", (line,))
+        except sqlite3.IntegrityError as e:
+            print(e)
+    db.commit()
+    f.close()
+
 
 if __name__ == "__main__":
     init_db()
