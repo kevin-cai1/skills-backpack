@@ -26,7 +26,7 @@ edited_course_details = api.model('course', {
     'description' : fields.String(description = 'Description of the course'),
     'name' : fields.String(description = 'Name of the course'),
     'link' : fields.String(description = 'link to course handbook'),
-    'admin_email' : fields.String(description = 'email of the course admin who is submitting the course')
+    'admin_email' : fields.String(required = True, description = 'email of the course admin who is submitting the course')
     })
 
 

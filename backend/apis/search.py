@@ -82,9 +82,8 @@ class search(Resource):
         c = conn.cursor()
         res = []
 
-        learning_outcomes = c.execute('SELECT l_outcome FROM LearningOutcomes').fetchall()
-        for l in learning_outcomes:
-            res.append(l[0])
+        for j in c.execute('SELECT name FROM Skill').fetchall():
+            res.append(j[0])
 
         grad_outcomes = c.execute('SELECT DISTINCT g_outcome FROM GraduateOutcomes').fetchall()
         for g in grad_outcomes:
