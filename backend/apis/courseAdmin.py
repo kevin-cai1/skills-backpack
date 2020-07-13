@@ -1,12 +1,7 @@
 from flask_restplus import Namespace, Resource, fields
 from flask import request, jsonify
 
-<<<<<<< HEAD
 import os, db
-=======
-import os
-import db
->>>>>>> update_details
 
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail

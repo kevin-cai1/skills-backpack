@@ -118,9 +118,7 @@ class createAccount(Resource):
             api.abort(400, "User '{}' already exists".format(req['email']), ok=False)
 
         if (accountType == "candidate"):
-            newID = generate_portfolioID()
-            c.execute("INSERT INTO ePortfolio (id) VALUES(?)", (newID,))
-            c.execute("INSERT INTO Candidate values (?,?,?,?,?,?, ?)",(req['email'], req['name'], req['university'], hashed_password, req['degree'], req['gradYear'], newID,))
+            c.execute("INSERT INTO Candidate values (?,?,?,?,?,?)",(req['email'], req['name'], req['university'], hashed_password, req['degree'], req['gradYear'],))
             conn.commit()
             conn.close()
             account = {
@@ -131,7 +129,6 @@ class createAccount(Resource):
                 'university' : req['university'],
                 'degree' : req['degree'],
                 'gradYear' : req['gradYear'],
-                'portfolio_ID': newID
             }
         elif (accountType == "employer"):
             c.execute("INSERT INTO Employer(email, name, password, company) values (?,?,?,?)", (req['email'], req['name'],hashed_password , req['company'],),)
@@ -179,10 +176,3 @@ def generatePassword(length):
     alphabet = string.ascii_letters + string.digits
     password = ''.join(secrets.choice(alphabet) for i in range(length))
     return password
-
-def generate_portfolioID():
-    conn = db.get_conn() 
-    c = conn.cursor() #cursor to execute commands
-    c.execute('SELECT MAX(id) FROM ePortfolio')
-    val = c.fetchone()[0]
-    return val+1
