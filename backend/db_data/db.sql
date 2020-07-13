@@ -159,6 +159,7 @@ DROP TABLE IF EXISTS Candidate_Links;
 CREATE TABLE Candidate_Links (
 	link TEXT NOT NULL,
 	email TEXT NOT NULL,
+	tag TEXT,
 	FOREIGN KEY (email)
 		REFERENCES Candidate (email)
 			ON DELETE CASCADE

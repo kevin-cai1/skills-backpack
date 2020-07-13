@@ -70,10 +70,10 @@ VALUES
 	('mirannakamura@usyd.edu.au', 'COMP1000', 'USYD');
 
 -- Inserting data into Candidate_Links table
-INSERT INTO Candidate_Links (link, email)
+INSERT INTO Candidate_Links (link, email, tag)
 VALUES
-	('link1', 'charmaineleung@unsw.edu.au'),
-	('link2', 'mirannakamura@usyd.edu.au');
+	('link1', 'charmaineleung@unsw.edu.au', 'CBA'),
+	('link2', 'mirannakamura@usyd.edu.au', 'UNSW');
 
 INSERT INTO Skill (id, name)
 VALUES

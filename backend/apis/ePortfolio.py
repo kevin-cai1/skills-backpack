@@ -127,7 +127,7 @@ class ePortfolio(Resource):
 @api.route('/candidate/<string:link>')
 class InviteToken(Resource):
     @api.doc(description="Get the user associated with the given token")
-    def get(self, token):
+    def get(self, link):
         conn = db.get_conn()
         c = conn.cursor()
 
@@ -150,12 +150,12 @@ class InviteToken(Resource):
 
 @api.route('/link/<string:email>')
 class GetTokens(Resource):
-    api.doc(description="Get all invite links for the given user")
+    @api.doc(description="Get all invite links for the given user")
     def get(self, email):
         conn = db.get_conn()
         c = conn.cursor()
 
-        c.execute("SELECT link FROM Candidate_Links WHERE email = ?", (email,))
+        c.execute("SELECT link, tag FROM Candidate_Links WHERE email = ?", (email,))
 
         linkResult = c.fetchall()
         
@@ -166,7 +166,11 @@ class GetTokens(Resource):
 
         links = []
         for r in linkResult:
-            links.append(r)
+            entry = {
+                'link': r[0],
+                'tag': r[1]
+            }
+            links.append(entry)
 
         return_val = {
             'ok': True,
@@ -184,7 +188,9 @@ class GetTokens(Resource):
         link = generateLink(20)
 
         c.execute("INSERT INTO Candidate_Links (link, email) VALUES (?,?)", (link, email,))
-        
+        conn.commit()
+        conn.close()
+
         return_val = {
             'ok': True,
             'email': email,
