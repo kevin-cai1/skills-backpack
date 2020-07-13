@@ -23,3 +23,15 @@ Week 4
 - Outlined the JSON format for the changePassword API
 - Redesigned the landing page
 - Added the change password form
+
+Week 5
+- created a generic add skills modal, so employers can add desired skills and candidates can add job skills attained
+- created a add employment history modal, for candidates
+- worked with Kevin on the API requirements for rendering candidate e-portfolio, deleting skills
+- created the e-portfolio page for candidates to view/edit/delete their eportfolio
+
+Week 6
+- created a employer profile page for employers to add their required skills
+- created the search bar for employers to search for candidates with their desired skills
+- rendered the search bar results with a list of candidates matching skills criteria
+- created a new view for employers to view candidate eportfolios, which takes in candidate email in the url

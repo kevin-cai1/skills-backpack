@@ -108,8 +108,10 @@ export default function Navbar() {
                                         open={open}
                                         onClose={handleClose}
                                     >
-                                        <MenuItem onClick={handleClose}><Link to='./changePassword'>Change Password</Link></MenuItem>
-                                        <MenuItem onClick={handleLogout}><Link to='./'>Logout</Link></MenuItem>
+                                        <MenuItem onClick={handleClose}><Link to='./changePassword' style={{'text-decoration':'none','color':'black'}}
+                                        >Change Password</Link></MenuItem>
+                                        <MenuItem onClick={handleLogout}><Link to='./' style={{'text-decoration':'none','color':'black'}}
+                                        >Logout</Link></MenuItem>
                                     </Menu>
                                 </div> :
                                 <div style={{"margin-left":"auto","margin-right":"0"}}>

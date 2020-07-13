@@ -30,7 +30,8 @@ class Course_Create extends React.Component {
       super(props);
       this.state = {
           allGradOutcomes: [],
-          gradOutcomes: ''
+          gradOutcomes: [],
+          redirect: null
       }
       this.handleCourseAdd = this.handleCourseAdd.bind(this);
       this.handleUniSelect = this.handleUniSelect.bind(this);
@@ -44,7 +45,7 @@ class Course_Create extends React.Component {
   sendUniSelect = (e) => {
     let component = this;
     console.log("selected:", e.target.value);
-    let url = 'http://localhost:5000/course/add/course/' + e.target.value;
+    let url = 'http://localhost:5000/course/add/' + e.target.value;
     console.log('Sending to ' + url);
     return fetch(url, {
         method: 'GET',
@@ -57,7 +58,6 @@ class Course_Create extends React.Component {
           const items = data;
           console.log("items:", items.gradoutcomes);
           component.setState({ allGradOutcomes: items.gradoutcomes });
-          component.setState({ allGradOutcomes: [...component.state.allGradOutcomes, "new value"] });
     })
         .catch(err => console.log('Error:', err));
   }
@@ -78,7 +78,7 @@ class Course_Create extends React.Component {
       let dict = JSON.stringify({
         "admin_email": SessionDetails.getEmail(),
         "code": e.target.code.value,
-        "university": e.target.uni.value,
+        "university": this.fullUniversity(e.target.uni.value),
         "faculty": e.target.faculty.value,
         "description": e.target.description.value,
         "name": e.target.name.value,
@@ -90,8 +90,25 @@ class Course_Create extends React.Component {
       this.handleCourseSend(dict);
   }
 
+  fullUniversity(acronym) {
+      console.log("hello?");
+      if(acronym == "UNSW"){
+        return("University of New South Wales");
+      }
+      if(acronym == "USYD"){
+        return("University of Sydney");
+      }
+      if(acronym == "UTS"){
+        return("University of Technology Sydney");
+      }
+      else{
+        return(acronym);
+      }
+  }
+
   handleCourseSend(dict) {
-    let url = 'http://localhost:5000/course/add/course/add';
+    let component = this;
+    let url = 'http://localhost:5000/course/add/add';
     console.log('Sending to ' + url + ': ' + dict);
     return fetch(url, {
         method: 'POST',
@@ -100,13 +117,24 @@ class Course_Create extends React.Component {
             'Content-Type': 'application/json',
         },
         body: dict
-    }).then(response => {
-        console.log('Hello?: ' + response.ok && response.course);
+    }).then(function(response){ return response.json();
+    }).then(function(data) {
+          const items = data;
+          console.log("items:", items);
+          if(items.ok == true) {
+              alert("Course successfully added.");
+              component.setState({redirect: 1});
+          }
     })
         .catch(err => console.log('Error:', err));
   }
 
   render() {
+    if(this.state.redirect) {
+        return (
+          <Redirect to='./home'/>
+        )
+    }
     return(
       <div>
         <header className="App-header">

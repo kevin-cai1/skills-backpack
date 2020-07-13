@@ -44,8 +44,23 @@ Week 4
 - Updated DB to reflect new relationships between grad/learning outcomes and the courses
 
 Week 5
+04/07/20
 - Did demo, did retro
 - discussed things to improve, what went well, what didnt go well
 - Redesigned the database so that EP table was removed
 - Redid the APIs for course getting/adding/editing to reflect changes in database
 - accounted for EP relationships so that when admins changed courses they would be reflected in candidate EPs
+
+Week 6
+10/07/20
+- closed last sprint, started assigning tasks for next sprint
+- volunteered to do the backend for searching
+- started working on search algorithm while coordinating how it would work with charmaine on the front end
+- fixed editing courses api to account for cases where outcomes already exist
+- fixed adding courses api so it would work with the front end
+
+13/07/20
+- Finished implementing backend search API, getting list of graduate outcomes based on uni API, and getting list of gradoutcomes/job skills API
+- Started documenting API usage
+- Edited search API to account for case where no matches are found
+

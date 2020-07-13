@@ -30,44 +30,86 @@ VALUES
 INSERT INTO Course (code, university, faculty, description, name, link, courseAdminEmail)
 VALUES
 	('COMP3900', 'UNSW', 'Computer Science and Engineering', 'build a project in a team', 'Computer Science Project', 'COMP3900.com', 'courseadmin1@unsw.edu.au'),
-	('COMP1000', 'USYD', 'Computer Science', 'hack the system', 'Hackerman 101', 'COMP1000.com', 'courseadmin2@usyd.edu.au');
+	('COMP1000', 'USYD', 'Computer Science', 'hack the system', 'Hackerman 101', 'COMP1000.com', 'courseadmin2@usyd.edu.au'),
+	('COMP6969', 'UNSW', 'Computer Science and Engineering', 'hehexd', 'Funny course', 'COMP6969.com', 'courseadmin1@unsw.edu.au'),
+	('COMP4200', 'USYD', 'Computer Science', 'desc', 'mow the lawn', 'COMP4200.com', 'courseadmin2@usyd.edu.au');
+	
 
 -- Inserting data into LearningOutcomes table
 INSERT INTO LearningOutcomes(l_outcome)
 VALUES
 	('hacking'),
-	('coding');
+	('coding'),
+	('meming'),
+	('teeming');
 
 -- Inserting data into GraduateOutcomes table
 INSERT INTO GraduateOutcomes(g_outcome, university)
 VALUES
 	('teamwork', 'UNSW'),
-	('leadership', 'USYD');
+	('leadership', 'USYD'),
+	('meming', 'UNSW'),
+	('teeming', 'USYD'),
+	('Scholars capable of independent and collaborative enquiry', 'UNSW'),
+	('Scholars rigorous in their analysis', 'UNSW'),
+	('Scholars able to innovate by applying their knowledge and skills to the solution of novel problems', 'UNSW'),
+	('Scholars able to innovate by applying their knowledge and skills to the solution of routine problems', 'UNSW'),
+	('Entrepreneurial leaders capable of initiating and embracing innovation and change', 'UNSW'),
+	('Entrepreneurial leaders engaging and enabling others to contribute to change', 'UNSW'),
+	('Professionals capable of ethical learning', 'UNSW'),
+	('Professionals capable of self-directed practice', 'UNSW'),
+	('Professionals capable of independent lifelong learning', 'UNSW'),
+	('Global citizens who are culturally adept', 'UNSW'),
+	('Global citizens who are capable of respecting diversity', 'UNSW'),
+	('Global citizens who are capable of acting in a socially just and responsible way', 'UNSW'),
+	('Depth of disciplinary expertise', 'USYD'),
+	('Critical thinking and problem solving', 'USYD'),
+	('Oral and written communication', 'USYD'),
+	('Information and digital literacy', 'USYD'),
+	('Generating novel ideas and solutions', 'USYD'),
+	('Cultural competence', 'USYD'),
+	('Interdisciplinary effectiveness', 'USYD'),
+	('Integrated professional, ethical, and personal identity', 'USYD'),
+	('Engaging others in a process, idea or vision', 'USYD');
 
 -- Inserting data into Employment table
 INSERT INTO Employment(id, job_title, candidate_email, description, startDate, endDate, employer)
 VALUES
 	(1, 'Full stack developer', 'charmaineleung@unsw.edu.au', 'software development', '01/01/2020', '02/01/2020', 'Macquarie Group'),
-	(2, 'Security Analyst', 'mirannakamura@usyd.edu.au', 'hacking', '01/01/2020', '02/01/2020', 'Google');
+	(2, 'Security Analyst', 'mirannakamura@usyd.edu.au', 'hacking', '01/01/2020', '02/01/2020', 'Google'),
+	(3, 'Meme page manager', 'charmaineleung@unsw.edu.au', 'meme making', '05/06/2020', '06/06/2020', 'Meme lords'),
+	(4, 'Valorant pro', 'mirannakamura@usyd.edu.au', 'clicking on heads', '06/07/2020', '07/07/2020', 'Riot games');
 
 -- Inserting data into Course_LearnOutcomes table
 INSERT INTO Course_LearnOutcomes(l_outcome, code, university)
 VALUES
 	(1, 'COMP1000', 'USYD'),
 	(1, 'COMP3900', 'UNSW'),
-	(2, 'COMP3900', 'UNSW');
+	(2, 'COMP3900', 'UNSW'),
+	(3, 'COMP6969', 'UNSW'),
+	(4, 'COMP6969', 'UNSW'),
+	(2, 'COMP1000', 'USYD'),
+	(2, 'COMP4200', 'USYD'),
+	(3, 'COMP4200', 'USYD');
 
 -- Inserting data into Course_GradOutcomes table
 INSERT INTO Course_GradOutcomes(g_outcome, code, university)
 VALUES
 	(1, 'COMP3900', 'UNSW'),
-	(2, 'COMP1000', 'USYD');
+	(2, 'COMP1000', 'USYD'),
+	(2, 'COMP4200', 'USYD'),
+	(4, 'COMP4200', 'USYD'),
+	(3, 'COMP6969', 'UNSW'),
+	(1, 'COMP6969', 'UNSW');
 
 -- Inserting data into ePortfolio_courses table
 INSERT INTO ePortfolio_Courses (EP_ID, code, university)
 VALUES
 	('charmaineleung@unsw.edu.au', 'COMP3900', 'UNSW'),
-	('mirannakamura@usyd.edu.au', 'COMP1000', 'USYD');
+	('mirannakamura@usyd.edu.au', 'COMP1000', 'USYD'),
+	('charmaineleung@unsw.edu.au', 'COMP6969', 'UNSW'),
+	('mirannakamura@usyd.edu.au', 'COMP4200', 'USYD');
+
 
 -- Inserting data into Candidate_Links table
 INSERT INTO Candidate_Links (link, email, tag)
@@ -78,7 +120,9 @@ VALUES
 INSERT INTO Skill (id, name)
 VALUES
 	(1, 'Python'),
-	(2, 'C Programming');
+	(2, 'C Programming'),
+	(3, 'Java'),
+	(4, 'MIPS');
 
 INSERT INTO Employer_Skill (employer, skillID)
 VALUES
@@ -88,4 +132,6 @@ VALUES
 INSERT INTO ePortfolio_Skill (candidate, skillID)
 VALUES
 	('charmaineleung@unsw.edu.au', 1),
-	('mirannakamura@usyd.edu.au', 2);
+	('mirannakamura@usyd.edu.au', 2),
+	('charmaineleung@unsw.edu.au', 3),
+	('mirannakamura@usyd.edu.au', 4);

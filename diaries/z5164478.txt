@@ -26,3 +26,10 @@ This week I finished off updating user data so now all users can change their ac
 graduation year, company, etc. Users are also able to change their password which also requires verification before they are 
 able to do so. Also, following this weeks meeting, we have decided to change up our sprint plan to fit the guideline a bit 
 better so I have been making those chages in our Jira. 
+
+Week 6
+We've close our previous sprint and started the current one which we will be demoing in week 8. I've completely finished the
+updating user details where they no longer need a password verification to edit simple details such as name, univeristy, 
+company, etc. since they will already be logged in. I also broke out password into its own api so that it can be easily accessed
+from a frontend perspective. This will still require password verification just for better security. For the next sprint I've
+started working on the candidate EPs and I'll also be finalising the retrospective which is due in next week.

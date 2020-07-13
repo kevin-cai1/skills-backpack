@@ -229,12 +229,38 @@ class UserSkills(Resource):
         c = conn.cursor()
         skillID = req['id']
 
-        c.execute("SELECT * FROM ePortfolio_Skill WHERE candidate = ? AND skillID = ?", (email, skillID,))
+        c.execute("SELECT email from Candidate WHERE email = ?", (email,))
+        account = c.fetchone()
+        linkID = None
+
+        if (account != None):
+            linkID = account[0]
+            userType = "candidate"
+        else:
+            c.execute("SELECT email from Employer WHERE email = ?", (email,))
+            account = c.fetchone()
+
+            if (account != None):
+                linkID = account[0]
+                userType = "employer"
+
+        if (linkID == None):
+            api.abort("User '{}' not found".format(email), ok=False)
+
+        if (userType == "candidate"):
+            c.execute("SELECT * FROM ePortfolio_Skill WHERE candidate = ? AND skillID = ?)", (email, skillID,))
+        else:
+            c.execute("SELECT * FROM Employer_Skill WHERE employer = ? AND skillID = ?", (email, skillID,))
+
         result = c.fetchone()
         if (result == None):
-            api.abort(400, "User '{}' or Skill '{}' does not exist".format(email, skillID))
+            api.abort(400, "Skill '{}' does not exist for user '{}'".format(skillID, email))
         
-        c.execute("DELETE FROM ePortFolio_Skill WHERE candidate = ? AND skillID = ?", (email, skillID,))
+        if (userType == "candidate"):
+            c.execute("DELETE FROM ePortFolio_Skill WHERE candidate = ? AND skillID = ?", (email, skillID,))
+        else:
+            c.execute("DELETE FROM Employer_Skill WHERE employer = ? AND skillID = ?", (email, skillID,))
+        
         conn.commit()
         conn.close()
 
