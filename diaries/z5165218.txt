@@ -31,3 +31,12 @@ We took on some feedback from Rachid, and I worked to remedy some issues with ou
 I then wrote up all the endpoints relating to working with employment records on user portfolios.
 Later in the week, I worked with Gordon to revise the entire database structure around ePortfolios. I then wrote up endpoints to get ePortfolio information
 as well as to manage skills for both candidates and employers.
+
+Week 6
+During the break week we altered our sprint plan to move into two week sprints. Taking on feedback from our first demo, I worked to fix some of the minor issues pointed out.
+This included adding encryption for password storage, as well as cleaning up our login interface. This week I primarily worked on ePortfolio links.
+I worked independently on both the frontend and backend to implement creation and viewing of designated ePortfolio links.
+I also assisted in resolving a variety of bugs that came up relating to previous endpoints.
+
+Week 7
+
