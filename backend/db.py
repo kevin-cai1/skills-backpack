@@ -43,7 +43,7 @@ def load_skills(db):
         count += 1
         if (count % 2 == 0):
             try:
-                cursor.execute("INSERT OR IGNORE INTO Skill (name) VALUES (?)", (line,))
+                cursor.execute("INSERT OR IGNORE INTO Skill (name) VALUES (?)", (line.rstrip(),))
             except sqlite3.IntegrityError as e:
                 print(e)
     db.commit()
