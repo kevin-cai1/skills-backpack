@@ -14,9 +14,9 @@ def findmatches(candidate_email, attribute, c, res):
     # iterate through each gradoutcome associated with the specified candidate email
     lowercase_attribute = attribute.lower() # change the search variable to lowercase to make search case insensitive
     for grad_attr in c.execute('SELECT DISTINCT g.g_outcome FROM Candidate cand, ePortfolio_Courses ec, Course c, Course_Gradoutcomes cg, Graduateoutcomes g WHERE g.id = cg.g_outcome and cg.code = c.code and cg.university = c.university and c.code = ec.code and c.university = ec.university and ec.EP_ID = cand.email and cand.email = ?', (candidate_email,)):
-        if grad_attr[0].lower() == lowercase_attribute:
+        if grad_attr[0].lower().strip() == lowercase_attribute.strip():
             if candidate_email in res: # if the email already has some matches, just append to the existing entry
-                res[candidate_email].append(lowercase_attribute.capitalize())
+                res[candidate_email].append(grad_attr[0].strip().capitalize())
                 return
             new_entry = [] # if the email is not yet in the dictionary (ie no matches yet), give it it's first entry
             new_entry.append(lowercase_attribute.capitalize())
@@ -25,9 +25,9 @@ def findmatches(candidate_email, attribute, c, res):
     
     # if the attribute wasn't found in gradoutcomes, iterate through the job specific skills associated with the candidate
     for job_skill in c.execute('SELECT DISTINCT s.name FROM Skill s, ePortfolio_Skill es WHERE s.id = es.skillID and es.candidate = ?', (candidate_email,)):
-        if job_skill[0].lower() == lowercase_attribute:
+        if job_skill[0].lower().strip() == lowercase_attribute.strip():
             if candidate_email in res:
-                res[candidate_email].append(lowercase_attribute.capitalize())
+                res[candidate_email].append(grad_attr[0].strip().capitalize())
                 return
             new_entry = []
             new_entry.append(lowercase_attribute.capitalize())
