@@ -52,6 +52,8 @@ class getgradoutcomes(Resource):
                 'ok' : True,
                 'gradoutcomes' : gradoutcomes
             }
+        conn.commit()
+        conn.close()
         return returnval
 
 # getting course info 
@@ -97,6 +99,8 @@ class getcourse(Resource):
                     'gradoutcomes' : graduate_outcomes,
                     'learnoutcomes' : learning_outcomes
             }
+        conn.commit()
+        conn.close()
         return returnVal
 
 
@@ -162,6 +166,7 @@ class addcourse(Resource):
             }
             return returnVal
         else:
+            conn.close()
             api.abort(400, 'Course {} at {} already exists.'.format(req['code'], req['university']), ok = False) 
 
 # deleting courses
@@ -180,7 +185,8 @@ class deletecourse(Resource):
         c.execute(check_query, code_course)
         res = c.fetchone()
         if res == None:
-             api.abort(400, 'Course {} at {} does not exist.'.format(req['code'], req['university']), ok = False) 
+            conn.close()
+            api.abort(400, 'Course {} at {} does not exist.'.format(req['code'], req['university']), ok = False) 
         else:
              # THIS IS FOR IF WE DECIDE TO DELETE LEARNINGOUTCOMES ASSOCIATED WITH THE COURSE (need to account for when 2 courses share learningoutcomes though)
          #   c.execute('SELECT l_outcome FROM course_learnoutcomes WHERE code = ? AND university = ?', (req['code'], req['university']))
@@ -212,13 +218,15 @@ class editcourse(Resource):
         c.execute(check_query, code_course)
         res = c.fetchone()
         if res == None:
-             api.abort(400, 'Course {} at {} does not exist.'.format(req['code'], req['university']), ok = False) 
+            conn.close()
+            api.abort(400, 'Course {} at {} does not exist.'.format(req['code'], req['university']), ok = False) 
 
         # check that the admin is legit
         check_admin_query = 'SELECT * FROM CourseAdmin WHERE email = ?'
         c.execute(check_admin_query, (req['admin_email'],))
         res = c.fetchone()
         if res == None:
+            conn.close()
             api.abort(400, 'Course Admin email ? does not exist.'.format(req['admin_email']), ok = False) 
        
         # if the course admin has removed some outcomes, we must first delete those outcomes and their relos
