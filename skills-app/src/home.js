@@ -30,6 +30,9 @@ class Home extends React.Component {
         else if( SessionDetails.getType() === "employer" ) {
             return ( <Redirect to='./home-employer'/> );
         }
+        else if( SessionDetails.getType() === "candidate" ) {
+            return ( <Redirect to='./home-candidate'/>);
+        }
         else {
             return (
                 <body>

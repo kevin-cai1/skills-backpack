@@ -80,7 +80,7 @@ class ePortfolio(Resource):
                 courses.append(entry)
 
         employment = []
-        c.execute('''SELECT id, description, startDate, endDate, employer FROM Employment WHERE candidate_email = ?''', (email,))
+        c.execute('''SELECT id, description, startDate, endDate, employer, job_title FROM Employment WHERE candidate_email = ?''', (email,))
         employment_results = c.fetchall()
         if (employment_results != []):
             for r in employment_results:
@@ -90,7 +90,8 @@ class ePortfolio(Resource):
                     'description': r[1],
                     'start_date': r[2],
                     'end_date': r[3],
-                    'employer': r[4]
+                    'employer': r[4],
+                    'job_title': r[5]
                 }
                 employment.append(entry)
 

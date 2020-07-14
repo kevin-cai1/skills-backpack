@@ -101,7 +101,7 @@ class Home_skillsAdmin extends React.Component {
       let data = JSON.stringify({
           "new_password": e.target.password.value
       });
-      let url = 'http://localhost:5000/skills_admin/' + SessionDetails.getEmail();
+      let url = 'http://localhost:5000/skills_admin/details/' + SessionDetails.getEmail();
       console.log('Sending to ' + url + ': ' + data);
 
       return fetch(url, {
