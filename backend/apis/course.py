@@ -135,6 +135,7 @@ class addcourse(Resource):
             
             # inserting outcomes into their respective tables and relationships
             for learning_outcome in req['learningOutcomes'].split(','):
+                learning_outcome = learning_outcome.strip()
                 try:
                     c.execute('INSERT INTO LearningOutcomes(l_outcome) VALUES(?)', (learning_outcome,))
                     c.execute('INSERT INTO Course_LearnOutcomes(l_outcome, code, university) VALUES ((SELECT last_insert_rowid()), ?, ?)', (req['code'], req['university']))
@@ -250,6 +251,7 @@ class editcourse(Resource):
 
         # now that we've removed edited out outcomes, we can add all the learning/grad outcomes to their respective tables. Should automatically filter out duplicates.
         for learning_outcome in req['learningOutcomes'].split(','):
+            learning_outcome = learning_outcome.strip()
             try:
                 c.execute('INSERT INTO LearningOutcomes(l_outcome) VALUES(?)', (learning_outcome,))
                 c.execute('INSERT INTO Course_LearnOutcomes(l_outcome, code, university) VALUES ((SELECT last_insert_rowid()), ?, ?)', (req['code'], req['university']))
