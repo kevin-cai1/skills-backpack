@@ -30,7 +30,7 @@ class Invite(Resource):
         course_email = req['course_email']
 
         # temporary line for sendgrid to always work v
-        skills_email = 'z5165218@unsw.edu.au'
+        skills_email = 'skillsbackpack@gmail.com'
 
         message = Mail(
             from_email=skills_email,

@@ -38,12 +38,14 @@ def insert_data(db):
 def load_skills(db):
     f = open('./linkedin_skills.txt', "r")
     cursor = db.cursor()
+    count = 0
     for line in f:
-        print(line)
-        try:
-            cursor.execute("INSERT INTO Skill (name) VALUES (?)", (line,))
-        except sqlite3.IntegrityError as e:
-            print(e)
+        count += 1
+        if (count % 2 == 0):
+            try:
+                cursor.execute("INSERT INTO Skill (name) VALUES (?)", (line,))
+            except sqlite3.IntegrityError as e:
+                print(e)
     db.commit()
     f.close()
 
