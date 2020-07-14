@@ -371,7 +371,7 @@ class Candidate_EPortfolio extends React.Component{
                                     <div style={{marginBottom:'15px'}}>
                                         <Card style={{maxWidth:'750px'}}>
                                             <CardContent>
-                                                <h4 style={{margin:'10px 0px 10px 0px'}}>Software Engineer</h4>
+                                                <h4 style={{margin:'10px 0px 10px 0px'}}>{i.job_title}</h4>
                                                 <p className="ep-course-heading italicised">{i.employer}</p>
                                                 <p className="ep-course-heading">{i.start_date} - {i.end_date}</p>
                                                 <p>{i.description}</p>

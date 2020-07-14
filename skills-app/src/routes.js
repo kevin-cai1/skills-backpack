@@ -19,6 +19,7 @@ import Employer_Profile from './employer-profile';
 import Home_Employer from './home-employer';
 import View_EPortfolio from './view-eportfolio';
 import Link_EPortfolio from './link-eportfolio';
+import Home_Candidate from './home-candidate.js';
 
 const allRoutes = () => (
     <Router>
@@ -31,6 +32,7 @@ const allRoutes = () => (
         <PrivateRoute path="/home" component={Home} />
         <PrivateRoute path="/home-skillsAdmin" component={Home_skillsAdmin} />
         <PrivateRoute path="/home-courseAdmin" component={Home_courseAdmin} />
+        <PrivateRoute path="/home-candidate" component={Home_Candidate} />
         <PrivateRoute path="/home-employer" component={Home_Employer} />
         <PrivateRoute path="/changePassword" component={ChangePassword} />
         <PrivateRoute exact path="/course_create" component={Course_Create}/>
