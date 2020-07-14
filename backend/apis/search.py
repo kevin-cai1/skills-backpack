@@ -71,6 +71,8 @@ class search(Resource):
                     'ok' : True,
                     'candidates': res 
             }
+        conn.commit()
+        conn.close()
         return returnVal
 
 # api which returns all graduate and learning outcomes in one list
@@ -82,7 +84,7 @@ class search(Resource):
         c = conn.cursor()
         res = []
 
-        for j in c.execute('SELECT name FROM Skill').fetchall():
+        for j in c.execute('SELECT DISTINCT name FROM Skill').fetchall():
             res.append(j[0])
 
         grad_outcomes = c.execute('SELECT DISTINCT g_outcome FROM GraduateOutcomes').fetchall()
@@ -93,6 +95,8 @@ class search(Resource):
             'ok' : True,
             'outcomes': res
         }
+        conn.commit()
+        conn.close()
         return returnVal
 
 
