@@ -64,3 +64,9 @@ Week 6
 - Started documenting API usage
 - Edited search API to account for case where no matches are found
 
+Week 7
+14/07/20
+- discussed blockers and issues during lab
+- submitted retro
+- started handling errors for sql queries to fix database locking issue
+
