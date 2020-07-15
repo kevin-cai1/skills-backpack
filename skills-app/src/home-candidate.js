@@ -89,7 +89,6 @@ class Home_Candidate extends React.Component {
                 </Box>
               </MuiThemeProvider>
             </div>
-            <p><a href='./login' onClick={this.handleLogout}>Logout</a></p>
         </body>
         <footer className="Home-footer">
           <p>Yuppies 2020 </p>
