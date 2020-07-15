@@ -122,134 +122,142 @@ class Home_Employer extends React.Component {
 
     render () {
         return (
-            <body className="column-container">
-            <div style={{'padding-top':'50px','overflow':'hidden'}}>
-                <div style={{'float':'right', 'marginRight':'90px'}}>
-                    <MuiThemeProvider theme={theme}>
-                        <ButtonGroup variant="contained"
-                                     aria-label="contained primary button group">
-                            <Button href='./my-profile' style={{textTransform:"none"}}>
-                                My Profile
-                            </Button>
-                        </ButtonGroup>
-                    </MuiThemeProvider>
-                </div>
-            </div>
-            <div className="center-align-container">
-                <div style={{'display': 'inline-block','padding-top':'40px'}}>
-                    <h3>Candidate Search</h3>
-                    <div style={{
-                        width: 500,
-                        '& > * + *': {
-                        marginTop: '3px',
-                    },
-                    }}>
-                        <Autocomplete
-                            multiple
-                            id="tags-outlined"
-                            options={this.state.allOutcomes}
-                            getOptionLabel={(option) => option}
-                            filterSelectedOptions
-                            onChange={(event, newValue) => {
-                                if (typeof newValue === 'string') {
-                                    this.state.setValue({
-                                        name: newValue,
-                                    });
-                                } else if (newValue && newValue.inputValue) {
-                                    // Create a new value from the user input
-                                    this.state.setValue = newValue.inputValue;
-                                } else {
-                                    this.state.setValue = newValue;
-                                }
-                                this.state.valueList = newValue;
-                            }}
-                            filterOptions={(options, params) => {
-                                const filtered = filter(options, params);
-
-                                // Suggest the creation of a new value
-                                if (params.inputValue !== '') {
-                                    filtered.push(
-                                        params.inputValue
-                                    );
-                                }
-
-                                return filtered;
-                            }}
-                            getOptionLabel={(option) => {
-                                // Value selected with enter, right from the input
-                                if (typeof option === 'string') {
-                                    return option;
-                                }
-                                // Add "xxx" option created dynamically
-                                if (option.inputValue) {
-                                    return option.inputValue;
-                                }
-                                // Regular option
-                                return option;
-                            }}
-                            renderOption={(option) => option}
-                            renderInput={(params) => (
-                                <div className="row-container">
-                                    <TextField
-                                        {...params}
-                                        variant="outlined"
-                                        label="Enter some skills.."
-                                    />
-                                    <MuiThemeProvider theme={theme}>
-                                        <ButtonGroup variant="contained" color="primary"
-                                                     aria-label="contained primary button group">
-                                            <Button onClick={this.handleSearch} variant="contained" color="primary" style={{'minWidth':'73px'}}>
-                                                <SearchIcon/>
-                                            </Button>
-                                        </ButtonGroup>
-                                    </MuiThemeProvider>
-                                </div>
-                            )}
-                        />
+            <div className="A-page">
+                <header className="App-header">
+                    <h1>Skills Backpack</h1>
+                </header>
+                <body className="column-container" style={{'min-height':'500px'}}>
+                <div style={{'padding-top':'50px','overflow':'hidden'}}>
+                    <div style={{'float':'right', 'marginRight':'90px'}}>
+                        <MuiThemeProvider theme={theme}>
+                            <ButtonGroup variant="contained"
+                                         aria-label="contained primary button group">
+                                <Button href='./my-profile' style={{textTransform:"none"}}>
+                                    My Profile
+                                </Button>
+                            </ButtonGroup>
+                        </MuiThemeProvider>
                     </div>
                 </div>
-            </div>
-            <div className="center-align-container" style={{'margin':'15px 0px 30px 0px'}}>
-                <div style={{'display':'inline-block'}}>
-                <div style={{'overflow':'hidden'}}>
-                    <p className="ep-course-heading italicised" style={{float:'left','font-style':'normal','marginBottom':'10px'}}>
-                        {this.state.searchMessage}
-                    </p>
-                </div>
-                {this.state.candidateList.map(i => {
-                    return (
-                        <div style={{marginBottom:'15px'}}>
-                            <Card style={{width:'750px'}}>
-                                <CardContent>
-                                    <div style={{'overflow':'hidden'}}>
-                                        <h4 style={{margin:'10px 0px 10px 0px',float:'left','text-decoration':'none'}}>
-                                            <a href={'./view-eportfolio/' + i.email} target="_blank" style={{'text-decoration':'none', color:'#2D9CDB'}}>
-                                                {i.name}
-                                            </a>
-                                        </h4>
-                                    </div>
-                                    <div style={{'overflow':'hidden'}}>
-                                        <p className="ep-course-heading italicised" style={{float:'left','font-style':'normal'}}>{i.degree} Student</p>
-                                    </div>
+                <div className="center-align-container">
+                    <div style={{'display': 'inline-block','padding-top':'40px'}}>
+                        <h3>Candidate Search</h3>
+                        <div style={{
+                            width: 500,
+                            '& > * + *': {
+                                marginTop: '3px',
+                            },
+                        }}>
+                            <Autocomplete
+                                multiple
+                                id="tags-outlined"
+                                options={this.state.allOutcomes}
+                                getOptionLabel={(option) => option}
+                                filterSelectedOptions
+                                onChange={(event, newValue) => {
+                                    if (typeof newValue === 'string') {
+                                        this.state.setValue({
+                                            name: newValue,
+                                        });
+                                    } else if (newValue && newValue.inputValue) {
+                                        // Create a new value from the user input
+                                        this.state.setValue = newValue.inputValue;
+                                    } else {
+                                        this.state.setValue = newValue;
+                                    }
+                                    this.state.valueList = newValue;
+                                }}
+                                filterOptions={(options, params) => {
+                                    const filtered = filter(options, params);
+
+                                    // Suggest the creation of a new value
+                                    if (params.inputValue !== '') {
+                                        filtered.push(
+                                            params.inputValue
+                                        );
+                                    }
+
+                                    return filtered;
+                                }}
+                                getOptionLabel={(option) => {
+                                    // Value selected with enter, right from the input
+                                    if (typeof option === 'string') {
+                                        return option;
+                                    }
+                                    // Add "xxx" option created dynamically
+                                    if (option.inputValue) {
+                                        return option.inputValue;
+                                    }
+                                    // Regular option
+                                    return option;
+                                }}
+                                renderOption={(option) => option}
+                                renderInput={(params) => (
                                     <div className="row-container">
-                                        <div className="row-container">
-                                            <EmailIcon className="smaller-icon-padded" style={{'font-size':'15px'}}/>
-                                            <p className="ep-course-heading">{i.email}</p>
-                                        </div>
+                                        <TextField
+                                            {...params}
+                                            variant="outlined"
+                                            label="Enter some skills.."
+                                        />
+                                        <MuiThemeProvider theme={theme}>
+                                            <ButtonGroup variant="contained" color="primary"
+                                                         aria-label="contained primary button group">
+                                                <Button onClick={this.handleSearch} variant="contained" color="primary" style={{'minWidth':'73px'}}>
+                                                    <SearchIcon/>
+                                                </Button>
+                                            </ButtonGroup>
+                                        </MuiThemeProvider>
                                     </div>
-                                    <div style={{'overflow':'hidden'}}>
-                                        <p className="ep-course-heading italicised" style={{float:'left', 'margin-top':'15px'}}>
-                                            Skills: {i["matching skills"]}
-                                        </p>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                                )}
+                            />
                         </div>
-                    )
-                })}
+                    </div>
                 </div>
+                <div className="center-align-container" style={{'margin':'15px 0px 150px 0px'}}>
+                    <div style={{'display':'inline-block'}}>
+                        <div style={{'overflow':'hidden'}}>
+                            <p className="ep-course-heading italicised" style={{float:'left','font-style':'normal','marginBottom':'10px'}}>
+                                {this.state.searchMessage}
+                            </p>
+                        </div>
+                        {this.state.candidateList.map(i => {
+                            return (
+                                <div style={{marginBottom:'15px'}}>
+                                    <Card style={{width:'750px'}}>
+                                        <CardContent>
+                                            <div style={{'overflow':'hidden'}}>
+                                                <h4 style={{margin:'10px 0px 10px 0px',float:'left','text-decoration':'none'}}>
+                                                    <a href={'./view-eportfolio/' + i.email} target="_blank" style={{'text-decoration':'none', color:'#2D9CDB'}}>
+                                                        {i.name}
+                                                    </a>
+                                                </h4>
+                                            </div>
+                                            <div style={{'overflow':'hidden'}}>
+                                                <p className="ep-course-heading italicised" style={{float:'left','font-style':'normal'}}>{i.degree} Student</p>
+                                            </div>
+                                            <div className="row-container">
+                                                <div className="row-container">
+                                                    <EmailIcon className="smaller-icon-padded" style={{'font-size':'15px'}}/>
+                                                    <p className="ep-course-heading">{i.email}</p>
+                                                </div>
+                                            </div>
+                                            <div style={{'overflow':'hidden'}}>
+                                                <p className="ep-course-heading italicised" style={{float:'left', 'margin-top':'15px'}}>
+                                                    Skills: {i["matching skills"]}
+                                                </p>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                            )
+                        })}
+                    </div>
+                </div>
+                </body>
+                <footer className="Home-footer">
+                    <p>Yuppies 2020 </p>
+                </footer>
             </div>
-            </body>
         );
     }
 }

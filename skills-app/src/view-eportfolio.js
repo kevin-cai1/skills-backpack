@@ -76,6 +76,9 @@ class View_EPortfolio extends React.Component{
     render() {
         return (
             <div>
+                <header className="App-header">
+                    <h1>Skills Backpack</h1>
+                </header>
                 <body className="column-container">
                 <div className="center-align-container">
                     <div style={{'display': 'inline-block', 'padding-top':'50px'}}>
@@ -160,6 +163,9 @@ class View_EPortfolio extends React.Component{
                     </MuiThemeProvider>
                 </div>
                 </body>
+                <footer className="Home-footer">
+                    <p>Yuppies 2020 </p>
+                </footer>
             </div>
         );
     }

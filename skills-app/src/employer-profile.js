@@ -19,11 +19,9 @@ import SearchBox from './search-box';
 import {Alert} from "@material-ui/lab";
 import Autocomplete from "@material-ui/lab/Autocomplete/Autocomplete";
 import {Link} from "react-router-dom";
-import InsertPhotoIcon from '@material-ui/icons/InsertPhoto';
-import SchoolIcon from '@material-ui/icons/School';
 import EmailIcon from '@material-ui/icons/Email';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
-import LanguageIcon from '@material-ui/icons/Language';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
 class Employer_Profile extends React.Component{
     constructor(props) {
@@ -199,10 +197,13 @@ class Employer_Profile extends React.Component{
     render() {
         return (
             <div>
+                <header className="App-header">
+                    <h1>Skills Backpack</h1>
+                </header>
                 <body className="column-container">
                 <div className="center-align-container">
                     <div style={{'display': 'inline-block', 'padding-top':'50px'}}>
-                        <div><InsertPhotoIcon style={{ fontSize: 100 }}/></div>
+                        <div><AccountCircleIcon style={{ fontSize: 100 }}/></div>
                         <div style={{color: 'dimgrey'}}><h2>{SessionDetails.getName()}</h2></div>
                         <div className="row-container">
                             {/*<div className="user-profile-details-row">*/}
@@ -231,6 +232,9 @@ class Employer_Profile extends React.Component{
                     </MuiThemeProvider>
                 </div>
                 </body>
+                <footer className="Home-footer">
+                    <p>Yuppies 2020 </p>
+                </footer>
                 <MuiThemeProvider theme={theme}>
                     <Dialog
                         aria-labelledby="form-dialog-title"
