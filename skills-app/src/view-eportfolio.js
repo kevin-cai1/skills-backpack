@@ -12,18 +12,10 @@ import {
     Card, CardContent, Typography, CardActions
 } from "@material-ui/core";
 import {theme} from "./App";
-import Box from "@material-ui/core/Box";
-import Button from "@material-ui/core/Button";
-import { FormControlLabel, Checkbox } from "@material-ui/core";
-import SearchBox from './search-box';
-import {Alert} from "@material-ui/lab";
-import Autocomplete from "@material-ui/lab/Autocomplete/Autocomplete";
-import {Link} from "react-router-dom";
-import InsertPhotoIcon from '@material-ui/icons/InsertPhoto';
 import SchoolIcon from '@material-ui/icons/School';
-import EmailIcon from '@material-ui/icons/Email';
-import AddCircleIcon from '@material-ui/icons/AddCircle';
-import LanguageIcon from '@material-ui/icons/Language';
+import EmailIcon from '@material-ui/icons/Email';import LanguageIcon from '@material-ui/icons/Language';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+
 
 const chipNames = [
     {name: 'css'},
@@ -87,7 +79,7 @@ class View_EPortfolio extends React.Component{
                 <body className="column-container">
                 <div className="center-align-container">
                     <div style={{'display': 'inline-block', 'padding-top':'50px'}}>
-                        <div><InsertPhotoIcon style={{ fontSize: 100 }}/></div>
+                        <div><AccountCircleIcon style={{ fontSize: 100 }}/></div>
                         <div style={{color: 'dimgrey', "margin":"15px 0px 15px 0px"}}><h2>{this.state.profile.name}</h2></div>
                         <h5 style={{"margin":"5px 0px 5px 0px"}}>{this.state.profile.degree} &middot; {this.state.profile.gradYear} Graduate</h5>
                         <div className="row-container">

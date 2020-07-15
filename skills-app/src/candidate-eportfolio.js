@@ -26,6 +26,7 @@ import AddCircleIcon from '@material-ui/icons/AddCircle';
 import LanguageIcon from '@material-ui/icons/Language';
 import EditIcon from '@material-ui/icons/Edit';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const chipNames = [
     {name: 'css'},
@@ -78,6 +79,7 @@ class Candidate_EPortfolio extends React.Component{
         this.handleEditAccountModal = this.handleEditAccountModal.bind(this);
         this.handleEditAccountModalClose = this.handleEditAccountModalClose.bind(this);
         this.handleEditAccount = this.handleEditAccount.bind(this);
+        this.handleDeleteEmployment = this.handleDeleteEmployment.bind(this);
     }
 
     componentDidMount() {
@@ -285,6 +287,24 @@ class Candidate_EPortfolio extends React.Component{
             .catch(err => console.log('Error:', err));
     }
 
+    handleDeleteEmployment(id) {
+        let url = 'http://localhost:5000/employment/' + id;
+        fetch(url, {
+            method: 'DELETE',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            }
+        }).then(response => {
+            console.log(response)
+            console.log('response ' + response.status)
+            return response.ok && response.json();
+        })
+            .catch(err => console.log('Error:', err));
+        this.componentDidMount();
+        this.forceUpdate();
+    }
+
     handleClearStatus() {
         this.state.addSkillSuccess = false;
         this.state.newSkill = '';
@@ -448,14 +468,20 @@ class Candidate_EPortfolio extends React.Component{
                                     <div style={{marginBottom:'15px'}}>
                                         <Card style={{maxWidth:'750px'}}>
                                             <CardContent>
-                                                <h4 style={{margin:'10px 0px 10px 0px'}}>{i.job_title}</h4>
+                                                <div className="row-container" style={{'justify-content':'space-between'}}>
+                                                    <h4 style={{margin:'10px 0px 10px 0px'}}>{i.job_title}</h4>
+                                                    <div>
+                                                        <div>
+                                                            <DeleteIcon
+                                                                style={{'cursor':'pointer','color':'#ad4e3d'}}
+                                                                onClick={() => this.handleDeleteEmployment(i.id)}/>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <p className="ep-course-heading italicised">{i.employer}</p>
                                                 <p className="ep-course-heading">{i.start_date} - {i.end_date}</p>
                                                 <p>{i.description}</p>
                                             </CardContent>
-                                            <CardActions>
-                                                <Button size="small">Edit</Button>
-                                            </CardActions>
                                         </Card>
                                     </div>
                                 )
