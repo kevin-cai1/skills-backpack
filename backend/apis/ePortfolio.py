@@ -14,6 +14,10 @@ add_course_details = api.model('course details', {
     'university' : fields.String(description = 'The university corresponding to the course being added', required = True)
 })
 
+link_body = api.model('link_body', {
+    'tag': fields.String(description= 'Tag to describe invite link')
+})
+
 @api.route('/<string:email>')
 class ePortfolio(Resource):
     @api.doc(description="get ePortfolio details for specified user")
@@ -182,20 +186,23 @@ class GetTokens(Resource):
         return return_val
     
     @api.doc(description="Generate and add a new link to an ePortfolio")
+    @api.expect(link_body)
     def post(self, email):
+        req = request.get_json(force=True)
         conn = db.get_conn()
         c = conn.cursor()
 
         link = generateLink(20)
 
-        c.execute("INSERT INTO Candidate_Links (link, email) VALUES (?,?)", (link, email,))
+        c.execute("INSERT INTO Candidate_Links (link, email, tag) VALUES (?,?,?)", (link, email, req['tag'],))
         conn.commit()
         conn.close()
 
         return_val = {
             'ok': True,
             'email': email,
-            'link': link
+            'link': link,
+            'tag': req['tag']
         }
 
         return return_val
