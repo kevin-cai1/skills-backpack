@@ -14,7 +14,7 @@ import {
     InputLabel, MenuItem, Select,
     TextField,
     Chip,
-    Card, CardContent, Typography, CardActions
+    Card, CardContent, Typography, CardActions, ButtonGroup
 } from "@material-ui/core";
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { Alert } from '@material-ui/lab';
@@ -111,9 +111,24 @@ class Home_Candidate extends React.Component {
         <header className="App-header">
             <h1>Skills Backpack</h1>
         </header>
-        <body className="A-body">
-            <h1>Welcome to the homepage { SessionDetails.getEmail()}</h1>
-            <p>Logged in as: Candidate</p>
+        <body className="column-container">
+            <div style={{'padding-top':'50px','overflow':'hidden'}}>
+                <div style={{'float':'right', 'marginRight':'90px'}}>
+                    <MuiThemeProvider theme={theme}>
+                        <ButtonGroup variant="contained"
+                                     aria-label="contained primary button group">
+                            <Button href='./my-eportfolio' style={{textTransform:"none"}}>
+                                My E-Portfolio
+                            </Button>
+                        </ButtonGroup>
+                    </MuiThemeProvider>
+                </div>
+            </div>
+            <div className="center-align-container">
+                <div style={{'display': 'inline-block'}}>
+                    <p>Logged in as: Candidate</p>
+                </div>
+            </div>
             <div className="A-buttons">
               <MuiThemeProvider theme={theme}>
                 <Box m={3}>
@@ -123,7 +138,6 @@ class Home_Candidate extends React.Component {
                 </Box>
               </MuiThemeProvider>
             </div>
-            <p><a href='./login' onClick={this.handleLogout}>Logout</a></p>
         </body>
         <footer className="Home-footer">
           <p>Yuppies 2020 </p>
