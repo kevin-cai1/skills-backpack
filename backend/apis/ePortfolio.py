@@ -117,7 +117,13 @@ class ePortfolio(Resource):
         req = request.get_json()
         conn = db.get_conn()
         c = conn.cursor()
-        c.execute('INSERT INTO ePortfolio_Courses(EP_ID, code, university) VALUES(?, ?, ?)', (email, req['code'], req['university']))
+        
+        try:
+            c.execute('INSERT INTO ePortfolio_Courses(EP_ID, code, university) VALUES(?, ?, ?)', (email, req['code'], req['university']))
+        except db.sqlite3.Error as e:
+            api.abort(400, 'invalid query {}'.format(e), ok = False)
+            print(e)
+
         conn.commit()
         conn.close()
         return_val = {
@@ -210,8 +216,12 @@ class GetTokens(Resource):
         c = conn.cursor()
 
         link = generateLink(20)
-
-        c.execute("INSERT INTO Candidate_Links (link, email, tag) VALUES (?,?,?)", (link, email, req['tag'],))
+        try:
+            c.execute("INSERT INTO Candidate_Links (link, email, tag) VALUES (?,?,?)", (link, email, req['tag'],))
+        except db.sqlite3.Error as e:
+            api.abort(400, 'invalid query {}'.format(e), ok = False)
+            print(e)
+            
         conn.commit()
         conn.close()
 

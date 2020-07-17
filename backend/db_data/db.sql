@@ -157,7 +157,7 @@ CREATE TABLE ePortfolio_Courses (
 -- Maps each link to the candidate that generated it
 DROP TABLE IF EXISTS Candidate_Links;
 CREATE TABLE Candidate_Links (
-	link TEXT NOT NULL,
+	link TEXT NOT NULL UNIQUE,
 	email TEXT NOT NULL,
 	tag TEXT,
 	FOREIGN KEY (email)
