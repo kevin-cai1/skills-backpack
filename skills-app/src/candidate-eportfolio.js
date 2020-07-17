@@ -139,20 +139,19 @@ class Candidate_EPortfolio extends React.Component{
     }
 
     handleEditAccount() {
-        // return this.postNewAccountDetails().then( (response) => {
-        //     console.log(response);
-            // let status = response["ok"];
-            let status = true;
+        return this.postNewAccountDetails().then( (response) => {
+            console.log(response);
+            let status = response["ok"];
             if (status) {
                 this.setState({accountUpdated: true});
             }
             this.componentDidMount();
-        // });
+        });
     }
 
     postNewAccountDetails() {
         let data = JSON.stringify({
-            "user": SessionDetails.getEmail(),
+            "email": SessionDetails.getEmail(),
             "name": this.state.userName,
             "university": this.state.userUni,
             "degree": this.state.userDegree,

@@ -25,51 +25,85 @@ class Home_Candidate extends React.Component {
       super(props);
       this.state = {
         ep_links_open: false,
+        add_links_open: false,
         EP_Links: [{"link": "link1", "tag": "CBA"}, {"link": "link2", "tag": "Macquarie"}],
       };
       this.handleLogout = this.handleLogout.bind(this);
-      this.handleFormSubmit = this.handleFormSubmit.bind(this);
       this.handleEPLinksModal = this.handleEPLinksModal.bind(this);
       this.handleEPLinksModalClose = this.handleEPLinksModalClose.bind(this);
+      this.handleAddLinksModal = this.handleAddLinksModal.bind(this);
+      this.handleAddLinksModalClose = this.handleAddLinksModalClose.bind(this);
   }
 
   handleEPLinksModal() {
       this.setState({ep_links_open: true});
+      this.getEportfolioLinks().then( (response) => {
+        console.log(response)
+        this.setState({EP_Links: response.links})
+      });
   }
 
   handleEPLinksModalClose() {
       this.setState({ep_links_open: false});
   }
 
+  handleAddLinksModal() {
+      this.setState({add_links_open: true});
+  }
+
+  handleAddLinksModalClose() {
+    this.setState({add_links_open: false});
+  }
+
   handleLogout() {
       SessionDetails.removeEmail();
   }
+  
+  handleEPAdd(e) {
+      const password = e.target.tag.value;
+      console.log("add ep");
+      const response = this.sendEPLink(e).then( (response) => {
+          console.log(response);
+      });
+  }
 
+  sendEPLink(e) {
+    let data = JSON.stringify({
+        "tag": e.target.tag.value
+    });
+    let url = 'http://127.0.0.1:5000/ePortfolio/link/' + SessionDetails.getEmail();
+    console.log('Sending to ' + url + ': ' + data);
 
-  handleFormSubmit = (e) => {
-      e.preventDefault();
-      const email = e.target.email.value;
-      const errors = this.validateEmail(email);
-      if (errors.length == 0) {
-          const response = this.sendSiteAdmin(e).then( (response) => {
-              console.log('Final response?: ', response);
-              this.setState({ name_details: response.account.name })
-              this.setState({ email_details: response.account.email })
-              this.setState({ password_details: response.account.password })
-          });
-          if (response === false) {
-            alert("Something went wrong. Try again later.");
-          }
-          else{
-            this.handleSiteAdminModalClose();
-            this.handleDetailsOpen();
-          }
+    return fetch(url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: data
+    }).then(response => {
+        return response.ok && response.json();
+    })
+        .catch(err => console.log('Error:', err));
+  }
 
-      }
-      else {
-          alert(errors);
-      }
-  };
+  getEportfolioLinks() {
+    let url = 'http://127.0.0.1:5000/ePortfolio/link/' + SessionDetails.getEmail();
+
+    console.log('Sending to ' + url);
+
+    return fetch(url, {
+        method: 'GET',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        }
+    }).then(response => {
+        console.log(response)
+        return response.json();
+        console.log('response ' + response.status)
+    }).catch(err => console.log('Error:', err));
+}
 
   render() {
     return (
@@ -119,13 +153,11 @@ class Home_Candidate extends React.Component {
             <div>
                 {this.state.EP_Links.map(i => {
                     return (
-                        <div style={{marginBottom:'15px'}}>
+                        <div>
                             <Card>
                                 <CardContent>
-                                    <h4>TEST </h4>
-                                    <p className="ep-course-heading italicised">{i.link}</p>
+                                    <h4 className="ep-course-heading italicised">{i.link}</h4>
                                     <p className="ep-course-heading">{i.tag}</p>
-                                    <p>{i.description}</p>
                                 </CardContent>
                                 <CardActions>
                                     <Button size="small">Edit</Button>
@@ -135,6 +167,42 @@ class Home_Candidate extends React.Component {
                     )
                 })}
             </div>
+            <div>
+              <Button variant="contained" color="primary" onClick={this.handleAddLinksModal}>
+                Create new link
+              </Button>
+            </div>
+          </Dialog>
+          <Dialog
+            aria-labelledby="form-dialog-title"
+            fullWidth='false'
+            maxWidth='md'
+            open={this.state.add_links_open}
+            onClose={this.handleAddLinksModalClose}
+          >
+            <DialogContent>
+              <form onSubmit={(e) => this.handleEPAdd(e)}>
+                <Alert severity="info">
+                  Add a tag to keep track of your links
+                </Alert>
+                <TextField
+                  autoFocus
+                  required
+                  margin="dense"
+                  id="tag"
+                  name="tag"
+                  label="Link Tag"
+                  type="text"
+                  fullWidth
+                />
+                <Button onClick={this.handleAddLinksModalClose} color="primary">
+                  Cancel
+                </Button>
+                <Button type="submit" color="primary">
+                  Send
+                </Button>
+              </form>
+            </DialogContent>
           </Dialog>
         </MuiThemeProvider>
       </div>

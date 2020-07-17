@@ -14,6 +14,10 @@ add_course_details = api.model('course details', {
     'university' : fields.String(description = 'The university corresponding to the course being added', required = True)
 })
 
+link_body = api.model('link_body', {
+    'tag': fields.String(description= 'Tag to describe invite link')
+})
+
 @api.route('/<string:email>')
 class ePortfolio(Resource):
     @api.doc(description="get ePortfolio details for specified user")
@@ -113,7 +117,13 @@ class ePortfolio(Resource):
         req = request.get_json()
         conn = db.get_conn()
         c = conn.cursor()
-        c.execute('INSERT INTO ePortfolio_Courses(EP_ID, code, university) VALUES(?, ?, ?)', (email, req['code'], req['university']))
+        
+        try:
+            c.execute('INSERT INTO ePortfolio_Courses(EP_ID, code, university) VALUES(?, ?, ?)', (email, req['code'], req['university']))
+        except db.sqlite3.Error as e:
+            api.abort(400, 'invalid query {}'.format(e), ok = False)
+            print(e)
+
         conn.commit()
         conn.close()
         return_val = {
@@ -124,6 +134,23 @@ class ePortfolio(Resource):
         }
         return return_val
     
+    @api.doc(description = 'Delete course from ePortfolio')
+    @api.expect(add_course_details)
+    def post(self, email):
+        req = request.get_json()
+        conn = db.get_conn()
+        c = conn.cursor()
+        try:
+            c.execute('DELETE FROM ePortfolio_Courses WHERE EP_ID = ? and code = ? and university = ?', (email, req['code'], req['university']))
+        except db.sqlite3.Error as e:
+            print(e)
+            api.abort(400, 'course does not exist', ok = False)
+        conn.commit()
+        conn.close()
+        returnVal = {
+                'ok' : True
+        }
+        return returnVal
 
 @api.route('/candidate/<string:link>')
 class InviteToken(Resource):
@@ -182,20 +209,27 @@ class GetTokens(Resource):
         return return_val
     
     @api.doc(description="Generate and add a new link to an ePortfolio")
+    @api.expect(link_body)
     def post(self, email):
+        req = request.get_json(force=True)
         conn = db.get_conn()
         c = conn.cursor()
 
         link = generateLink(20)
-
-        c.execute("INSERT INTO Candidate_Links (link, email) VALUES (?,?)", (link, email,))
+        try:
+            c.execute("INSERT INTO Candidate_Links (link, email, tag) VALUES (?,?,?)", (link, email, req['tag'],))
+        except db.sqlite3.Error as e:
+            api.abort(400, 'invalid query {}'.format(e), ok = False)
+            print(e)
+            
         conn.commit()
         conn.close()
 
         return_val = {
             'ok': True,
             'email': email,
-            'link': link
+            'link': link,
+            'tag': req['tag']
         }
 
         return return_val

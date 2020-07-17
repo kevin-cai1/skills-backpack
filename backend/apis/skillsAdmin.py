@@ -87,7 +87,11 @@ class updateAccountP(Resource):
         
         password = query[0]
         hashed_password = generate_password_hash(req['new_password'], "sha256")
-        c.execute("UPDATE SkillsBackpackAdmin SET password = ?, newAccount = 0 WHERE email = ?", (hashed_password, email,))
+        try:
+            c.execute("UPDATE SkillsBackpackAdmin SET password = ?, newAccount = 0 WHERE email = ?", (hashed_password, email,))
+        except db.sqlite3.Error as e:
+            api.abort(400, 'invalid query {}'.format(e), ok = False)
+            print(e)
         conn.commit()
         
         conn.close()
