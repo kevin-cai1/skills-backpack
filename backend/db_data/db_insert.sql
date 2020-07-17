@@ -24,6 +24,7 @@ VALUES
 INSERT INTO SkillsBackpackAdmin (name, email, password)
 VALUES
 	('sbadmin1', 'sbadmin1@gmail.com', 'sbadmin1'),
+	('admin', 'skillsbackpack@gmail.com', 'password'),
 	('sbadmin2', 'sbadmin2@gmail.com', 'sbadmin2');
 
 -- Inserting data into Course table
@@ -108,8 +109,8 @@ VALUES
 -- Inserting data into Candidate_Links table
 INSERT INTO Candidate_Links (link, email, tag)
 VALUES
-	('link1', 'charmaineleung@unsw.edu.au', 'CBA'),
-	('link2', 'mirannakamura@usyd.edu.au', 'UNSW');
+	('DhcYTRw9sOW5S9kWCacw', 'charmaineleung@unsw.edu.au', 'CBA'),
+	('2fTDuxArAR4G5Z1FEbJj', 'mirannakamura@usyd.edu.au', 'UNSW');
 
 --INSERT INTO Skill (id, name)
 --VALUES

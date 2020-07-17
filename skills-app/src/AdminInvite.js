@@ -116,7 +116,10 @@ class AdminInvite extends React.Component {
                 this.forceUpdate();
             } else {
                 let email = response["account"]["email"];
+                let name = response["account"]["name"];
                 SessionDetails.setEmail(email);
+                SessionDetails.setType("courseAdmin");
+                SessionDetails.setName(name);
                 this.state.formSuccess = true;
                 this.forceUpdate();
             }
