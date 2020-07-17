@@ -287,6 +287,10 @@ class Candidate_EPortfolio extends React.Component{
             .catch(err => console.log('Error:', err));
     }
 
+    handleDeleteCourse(uni, code) {
+        alert("Placeholder for deleting " + uni + code);
+    }
+
     handleDeleteEmployment(id) {
         let url = 'http://localhost:5000/employment/' + id;
         fetch(url, {
@@ -430,7 +434,17 @@ class Candidate_EPortfolio extends React.Component{
                                 <div style={{marginBottom:'15px'}}>
                                     <Card style={{maxWidth:'750px'}}>
                                         <CardContent>
-                                            <h4 style={{margin:'10px 0px 10px 0px'}}>{i.name} | {i.code}</h4>
+                                            <div className="row-container" style={{'justify-content':'space-between'}}>
+                                                <h4 style={{margin:'10px 0px 10px 0px'}}>{i.name} | {i.code}</h4>
+                                                <div>
+                                                    <DeleteIcon
+                                                        style={{'cursor':'pointer','color':'#ad4e3d'}}
+                                                        onClick={() => {if(window.confirm('Are you sure you want to delete?')){
+                                                          this.handleDeleteCourse(i.university, i.code);
+                                                        }}}
+                                                      />
+                                                </div>
+                                            </div>
                                             <p className="ep-course-heading italicised">{i.faculty} Faculty &middot; {i.university}</p>
                                             <div className="row-container">
                                                 <div className="row-container" style={{marginRight:'20px'}}>
@@ -474,7 +488,10 @@ class Candidate_EPortfolio extends React.Component{
                                                         <div>
                                                             <DeleteIcon
                                                                 style={{'cursor':'pointer','color':'#ad4e3d'}}
-                                                                onClick={() => this.handleDeleteEmployment(i.id)}/>
+                                                                onClick={() => {if(window.confirm('Are you sure you want to delete?')){
+                                                                  () => this.handleDeleteEmployment(i.id);
+                                                                }}}
+                                                            />
                                                         </div>
                                                     </div>
                                                 </div>
