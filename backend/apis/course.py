@@ -35,7 +35,7 @@ delete_course_details = api.model('delete_course', {
     'university' : fields.String(required = True, description = 'University that the course belongs to'),
     })
 
-# getting list of gradoutcomes based on the inputted uni
+# getting info based on inputted uni
 @api.route('/<university>', methods=['GET'])
 class getgradoutcomes(Resource):
     def get(self, university):
@@ -52,9 +52,23 @@ class getgradoutcomes(Resource):
         outcomes = c.fetchall()
         for o in outcomes:
             gradoutcomes.append(o[0])
+
+        courselist = []
+        # get all the courses as well
+        try:
+            for r in c.execute('SELECT code, name FROM Course WHERE university = ?', (university,)):
+                new_course_entry = {
+                        'code' : r[0],
+                        'name' : r[1],
+                }
+                courselist.append(new_course_entry)
+        except db.sqlite3.Error as e:
+            api.abort(400, 'invalid university', ok=False)
+
         returnval = {
                 'ok' : True,
-                'gradoutcomes' : gradoutcomes
+                'gradoutcomes' : gradoutcomes,
+                'courselist' : courselist
             }
         conn.commit()
         conn.close()

@@ -128,6 +128,23 @@ class ePortfolio(Resource):
         }
         return return_val
     
+    @api.doc(description = 'Delete course from ePortfolio')
+    @api.expect(add_course_details)
+    def post(self, email):
+        req = request.get_json()
+        conn = db.get_conn()
+        c = conn.cursor()
+        try:
+            c.execute('DELETE FROM ePortfolio_Courses WHERE EP_ID = ? and code = ? and university = ?', (email, req['code'], req['university']))
+        except db.sqlite3.Error as e:
+            print(e)
+            api.abort(400, 'course does not exist', ok = False)
+        conn.commit()
+        conn.close()
+        returnVal = {
+                'ok' : True
+        }
+        return returnVal
 
 @api.route('/candidate/<string:link>')
 class InviteToken(Resource):
