@@ -457,7 +457,7 @@ class Candidate_EPortfolio extends React.Component{
         var i;
         codes.forEach((code, index) => {
           const name = names[index];
-          items.push(<option value={code}>{code} - {name}</option>);
+          items.push(<MenuItem value={code}>{code} - {name}</MenuItem>);
         });
 
         return items;
