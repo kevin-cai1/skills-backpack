@@ -166,8 +166,8 @@ class Home_Candidate extends React.Component {
                         <div>
                             <Card>
                                 <CardContent>
-                                    <div style={{cursor: "pointer"}} id ={`${i.link}`} onClick={this.handleEPLinkRedirect} className="ep-course-heading italicised">{window.location.origin.toString()}/eportfolio/{i.link}</div>
-                                    <p className="ep-course-heading">{i.tag}</p>
+                                    <span id ={`${i.link}`} onClick={this.handleEPLinkRedirect} className="ep-link">{window.location.origin.toString()}/eportfolio/{i.link}</span>
+                                    <p className="ep-link-heading">{i.tag}</p>
                                 </CardContent>
                                 <CardActions>
                                     <Button size="small">Edit</Button>
