@@ -136,7 +136,7 @@ class ePortfolio(Resource):
     
     @api.doc(description = 'Delete course from ePortfolio')
     @api.expect(add_course_details)
-    def post(self, email):
+    def delete(self, email):
         req = request.get_json()
         conn = db.get_conn()
         c = conn.cursor()
