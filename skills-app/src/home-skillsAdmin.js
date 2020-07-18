@@ -109,6 +109,7 @@ class Home_skillsAdmin extends React.Component {
           headers: {
               Accept: 'application/json',
               'Content-Type': 'application/json',
+              'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
           },
           body: data
       }).then(response => {
