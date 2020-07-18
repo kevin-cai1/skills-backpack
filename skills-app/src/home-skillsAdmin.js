@@ -134,7 +134,12 @@ class Home_skillsAdmin extends React.Component {
           console.log("sendSiteAdminPassword");
           const response = this.sendSiteAdminPassword(e).then( (response) => {
               console.log(response);
-              alert("Password successfully updated.");
+              if(response==false){
+                  alert("Something went wrong. Contact skillsbackpack@gmail.com");
+              }
+              else{
+                  alert("Password successfully changed");
+              }
               this.setState({ change_password: false });
           });
       }
