@@ -6,6 +6,7 @@ import Box from '@material-ui/core/Box';
 import { FormControl, InputLabel, Input, FormHelperText, MenuItem, Select, Tabs, Tab, AppBar } from '@material-ui/core';
 import "react-tabs/style/react-tabs.css";
 import Button from '@material-ui/core/Button';
+import { Alert } from '@material-ui/lab';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import { theme } from './App.js'
 import { DatePicker, InlineDatePicker } from "@material-ui/pickers";
@@ -13,6 +14,7 @@ import ReactCSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 
 
 class Register extends React.Component {
+
     constructor(props){
        super(props);
 
@@ -182,59 +184,15 @@ class Register extends React.Component {
 
     ItemOne = theme => {
       return (
-        <div>
-          <form onSubmit={(e) => this.handleFormSubmit(e, "courseAdmin")}>
-            <FormControl style={{minWidth:100}} required={true} margin='normal'>
-              <InputLabel htmlFor="title-select">Title</InputLabel>
-              <Select name="title" labelId="title-select" id="select">
-                <MenuItem value="Dr">Dr</MenuItem>
-                <MenuItem value="Prof">Prof</MenuItem>
-                <MenuItem value="Mr">Mr</MenuItem>
-                <MenuItem value="Mrs">Mrs</MenuItem>
-                <MenuItem value="Ms">Ms</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl fullWidth={true} required={true} margin='normal'>
-              <InputLabel htmlFor="input-name">Full Name</InputLabel>
-              <Input name="name" type="text" id="input-name"/>
-            </FormControl>
-            <FormControl fullWidth={true} required={true} margin='normal'>
-              <InputLabel htmlFor="input-email">Email address</InputLabel>
-              <Input name="email" type="email" id="input-email" aria-describedby="my-helper-text"/>
-              <FormHelperText id="my-helper-text">University e-mail</FormHelperText>
-            </FormControl>
-            <FormControl fullWidth={true} required={true} margin='normal'>
-              <InputLabel htmlFor="uni-select">University</InputLabel>
-              <Select name="uni" labelId="uni-select" id="select">
-                <MenuItem value="University of New South Wales">University of New South Wales</MenuItem>
-                <MenuItem value="University of Sydney">University of Sydney</MenuItem>
-                <MenuItem value="University of Technology Sydney">University of Technology Sydney</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl fullWidth={true} required={true} margin='normal'>
-              <InputLabel htmlFor="input-password">Password</InputLabel>
-              <Input name="password" id="input-password" type="password" aria-describedby="my-helper-text"/>
-              <FormHelperText id="my-helper-text">min. 8 characters with at least one lower case and upper case letter and number</FormHelperText>
-            </FormControl>
-            <FormControl fullWidth={true} required={true} margin='normal'>
-              <InputLabel htmlFor="input-confirm">Confirm Password</InputLabel>
-              <Input name="confirm" id="input-confirm" type="password" aria-describedby="my-helper-text" />
-            </FormControl>
-            <MuiThemeProvider theme={theme}>
-              <Box m={3}>
-                <Button type="submit" variant="contained" color="primary">
-                  Sign Up
-                </Button>
-              </Box>
-            </MuiThemeProvider>
-          </form>
+        <div className="Error-body">
+          <Alert severity="error">Contact skillsbackpack@gmail.com to receive an invitation to a course admin account</Alert>
         </div>
       );
     }
 
     ItemTwo = theme => {
       return (
-        <div>
+        <div className="Register-body">
           <form onSubmit={(e) => this.handleFormSubmit(e, "candidate")}>
             <FormControl fullWidth={true} required={true} margin='normal'>
               <InputLabel htmlFor="input-name">Full Name</InputLabel>
@@ -286,7 +244,7 @@ class Register extends React.Component {
 
     ItemThree = theme => {
       return (
-        <div>
+        <div className="Register-body">
           <form onSubmit={(e) => this.handleFormSubmit(e, "employer")}>
             <FormControl fullWidth={true} required={true} margin='normal'>
               <InputLabel htmlFor="input-name">Full Name</InputLabel>
@@ -353,7 +311,7 @@ class Register extends React.Component {
                         </Tabs>
                       </AppBar>
                     </div>
-                    <div className="Register-body">
+                    <div>
                       <Switch>
                         <Route path="/one" component={PageShell(this.ItemOne)} />
                         <Route path="/two" component={PageShell(this.ItemTwo)} />

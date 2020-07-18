@@ -19,3 +19,12 @@
   width: 33vw !important;
   font-size: 9px;
 }
+
+.Error-body {
+  margin: auto;
+  align-items: center;
+  justify-content: center;
+  padding: 3vw;
+  width: 33vw !important;
+  min-height: 40vh;
+}
