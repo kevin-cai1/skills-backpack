@@ -94,5 +94,3 @@ class search(Resource):
             'outcomes': res
         }
         return returnVal
-
-
