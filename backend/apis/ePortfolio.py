@@ -189,9 +189,6 @@ class GetTokens(Resource):
         
         conn.close()
 
-        if (linkResult == []):
-            api.abort(400, "No links found for user '{}'".format(email), ok=False)
-
         links = []
         for r in linkResult:
             entry = {

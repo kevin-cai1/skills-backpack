@@ -27,7 +27,6 @@ class AllSkills(Resource):
         entries = []
         entry_count = 0
         for r in results:
-            print(r)
             entry = {
                 'id': r[0],
                 'name': r[1],
