@@ -23,9 +23,20 @@ Form input (email, password, confirm password) validation working.
 Worked with Charmaine and Kevin on connecting back-end APIs to the front-end form UIs we have created.
 
 Week 5
-Added front-end components (buttons, text, routes, etc) for all home landing pages after skillsbackpack admin and course admin logins. 
-For course admins, added front-end to enable creation of new courses! Took a bit to get the "Graduate Outcomes" form to render correctly. 
+Added front-end components (buttons, text, routes, etc) for all home landing pages after skillsbackpack admin and course admin logins.
+For course admins, added front-end to enable creation of new courses! Took a bit to get the "Graduate Outcomes" form to render correctly.
 For skillsbackpack admins, linked the back-end that Kevin wrote to email invite links to course admins to a front-end modal form.
 Further for skillsbackpack admins, created a form for them to register an additional skillsbackpack admin with a temporary password + prompt for this new admin to change password on initial login.
 Something got broken in the registration form over the week but quickly fixed.
 Finished this week by refactoring the homepage file home.js for better edit-ability.
+
+Week 6
+Where appropriate, changed all prompts to material-ui Alerts to make Charmaine's and my frontend components more consistent.
+Created frontend form for course admin to create a new course + Added some form validation to this.
+Also created a frontend page to "manage" (view) all courses that the course admin created.
+Added modal on top of this page to "edit" and "delete" existing courses created by current course admin
+
+Week 7
+Went through all frontend again to create a confirm dialog for any deleting capabilities.
+Made some changes to candidate e-portfolio courses as well as adding capability for candidate to delete courses that were added to their EP with backend help from Gordon.
+Added modal on the page for candidate to add more courses, also with backend help from Gordon.
