@@ -25,6 +25,7 @@ class Invite(Resource):
     @api.doc(description="sends an email invite to the specified email")
     @api.expect(email_details)
     def post(self):
+        print("SENDING COURSE ADMIN INVITE")
         req = request.get_json()
         skills_email = req['skills_email']
         course_email = req['course_email']

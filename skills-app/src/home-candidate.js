@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import './home.css'
 import SessionDetails from './SessionDetails';
 import allRoutes from './routes';
-import {Link, Redirect} from 'react-router-dom';
+import {Link, Redirect, withRouter} from 'react-router-dom';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import { spacing } from '@material-ui/system';
@@ -33,6 +33,16 @@ class Home_Candidate extends React.Component {
       this.handleEPLinksModalClose = this.handleEPLinksModalClose.bind(this);
       this.handleAddLinksModal = this.handleAddLinksModal.bind(this);
       this.handleAddLinksModalClose = this.handleAddLinksModalClose.bind(this);
+      this.handleEPLinkRedirect = this.handleEPLinkRedirect.bind(this);
+  }
+
+  handleEPLinkRedirect(e) {
+    console.log("URL REDIRECT")
+    var link = e.target.id
+    console.log(link)
+    var new_link = "/eportfolio/" + link;
+    console.log(new_link)
+    this.props.history.push(new_link)
   }
 
   handleEPLinksModal() {
@@ -156,8 +166,8 @@ class Home_Candidate extends React.Component {
                         <div>
                             <Card>
                                 <CardContent>
-                                    <h4 className="ep-course-heading italicised">{i.link}</h4>
-                                    <p className="ep-course-heading">{i.tag}</p>
+                                    <span id ={`${i.link}`} onClick={this.handleEPLinkRedirect} className="ep-link">{window.location.origin.toString()}/eportfolio/{i.link}</span>
+                                    <p className="ep-link-heading">{i.tag}</p>
                                 </CardContent>
                                 <CardActions>
                                     <Button size="small">Edit</Button>
@@ -210,4 +220,4 @@ class Home_Candidate extends React.Component {
   }
 }
 
-export default Home_Candidate;
+export default withRouter(Home_Candidate);
