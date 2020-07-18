@@ -26,7 +26,7 @@ class Home_Candidate extends React.Component {
       this.state = {
         ep_links_open: false,
         add_links_open: false,
-        EP_Links: [{"link": "link1", "tag": "CBA"}, {"link": "link2", "tag": "Macquarie"}],
+        EP_Links: [],
       };
       this.handleLogout = this.handleLogout.bind(this);
       this.handleEPLinksModal = this.handleEPLinksModal.bind(this);

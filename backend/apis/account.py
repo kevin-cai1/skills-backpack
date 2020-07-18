@@ -121,8 +121,8 @@ class createAccount(Resource):
             try:
                 c.execute("INSERT INTO Candidate values (?,?,?,?,?,?)",(req['email'], req['name'], req['university'], hashed_password, req['degree'], req['gradYear'],))
             except db.sqlite3.Error as e:
-                api.abort(400, 'invalid query {}'.format(e), ok = False)
                 print(e)
+                api.abort(400, 'invalid query {}'.format(e), ok = False)
 
             conn.commit()
             conn.close()
