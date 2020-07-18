@@ -93,7 +93,7 @@ class AddEmployment(Resource):
         employmentID = generate_employmentID()
         employment = (employmentID, req['user'], req['job_title'], req['description'], req['start_date'], req['end_date'], req['employer'],)
         try:
-            c.execute("INSERT INTO Employment (id, job_title, candidate_email, description, startDate, endDate, employer) VALUES (?,?,?,?,?,?,?)", employment)
+            c.execute("INSERT INTO Employment (id, candidate_email, job_title, description, startDate, endDate, employer) VALUES (?,?,?,?,?,?,?)", employment)
         except db.sqlite3.Error as e:
             api.abort(400, 'invalid query {}'.format(e), ok = False)
             print(e)
