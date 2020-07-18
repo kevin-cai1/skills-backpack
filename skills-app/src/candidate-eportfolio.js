@@ -202,6 +202,7 @@ class Candidate_EPortfolio extends React.Component{
             if (status) {
                 this.setState({jobAdded: true});
                 this.clearEmploymentFields();
+                this.componentDidMount();
             }
         });
     }
@@ -608,7 +609,7 @@ class Candidate_EPortfolio extends React.Component{
                                                     </div>
                                                 </div>
                                                 <p className="ep-course-heading italicised">{i.employer}</p>
-                                                <p className="ep-course-heading">{i.start_date} - {i.end_date}</p>
+                                                <p className="ep-course-heading">{i.start_date} - {i.end_date || 'Present'}</p>
                                                 <p>{i.description}</p>
                                             </CardContent>
                                         </Card>
