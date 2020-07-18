@@ -63,7 +63,7 @@ class Email(Resource):
         unsorted_candidates = {}
         res = []
         employer_email = req['employer_email']
-        sender_email = 'z5164478@unsw.edu.au'
+        sender_email = 'skillsbackpack@gmail.com'
 
         for a in req['criteria']:
             for candidate_email in c.execute('SELECT email FROM Candidate'):
@@ -92,18 +92,19 @@ class Email(Resource):
                         'matching skills' : unsorted_candidates[email]
                 }
                 res.append(new_entry) # append each candidate entries to the final result
+                
                 # send email
                 message = Mail(
                     from_email=sender_email,
                     to_emails=employer_email,
                     subject='A new candidate matched your job criteria!',
-                    html_content='<h1>Congratulations {}</h1><strong> {} has matched all your job search criteria. Please login to Skills Backpack!</strong><br><br><a href="http://localhost:3000/login">Click here</a>  to view their details'.format(employer_email, candidate)
+                    html_content='<h1>Congratulations! </h1><strong> {} has matched all your job search criteria. Please login to Skills Backpack!</strong><br><br><a href="http://localhost:3000/login">Click here</a>  to view their details'.format(email)
                 )
 
                 message.dynamic_template_data = {
                     'header': "{} has matched your job search critera!".format(email),
                     'text': "To view their details, please click the link below",
-                    'c2a_link': "http://localhost:3000/login/{}".format(employer_email),
+                    'c2a_link': "http://localhost:3000/login/",
                     'c2a_button': "View details"
                 }
                 message.template_id = 'd-165f1bd189884256a10ee0c090fe3a44'
@@ -121,7 +122,6 @@ class Email(Resource):
                         'ok' : True,
                         'details' : res
                     }
-
                 except Exception as e:
                     print(e)
                     returnVal = {
@@ -131,4 +131,4 @@ class Email(Resource):
                     }
         return returnVal
 
-       
+    
