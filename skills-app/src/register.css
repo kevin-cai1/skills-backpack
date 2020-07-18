@@ -28,3 +28,11 @@
   width: 33vw !important;
   min-height: 40vh;
 }
+
+.Error-div {
+  display: flex;
+  padding: 1vw !important;
+  align-items: center;
+  justify-content: center;
+  width: 31vw !important;
+}

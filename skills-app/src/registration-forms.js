@@ -20,7 +20,9 @@ class Register extends React.Component {
 
        this.state = {
            value: 0,
-           redirect: null
+           redirect: null,
+           errors: [],
+           validation_error: false
        }
        this.handleFormSubmit = this.handleFormSubmit.bind(this);
     }
@@ -175,7 +177,8 @@ class Register extends React.Component {
 
         }
         else {
-            alert(errors);
+            this.setState({ errors: errors });
+            this.setState({ validation_error: true });
         }
         console.log(email);
         console.log(password);
@@ -193,6 +196,9 @@ class Register extends React.Component {
     ItemTwo = theme => {
       return (
         <div className="Register-body">
+          { this.state.validation_error && <div className="Error-div"><Alert severity="error">
+            { this.state.errors }
+          </Alert></div>}
           <form onSubmit={(e) => this.handleFormSubmit(e, "candidate")}>
             <FormControl fullWidth={true} required={true} margin='normal'>
               <InputLabel htmlFor="input-name">Full Name</InputLabel>
@@ -245,6 +251,9 @@ class Register extends React.Component {
     ItemThree = theme => {
       return (
         <div className="Register-body">
+          { this.state.validation_error && <div className="Error-div"><Alert severity="error">
+            { this.state.errors }
+          </Alert></div>}
           <form onSubmit={(e) => this.handleFormSubmit(e, "employer")}>
             <FormControl fullWidth={true} required={true} margin='normal'>
               <InputLabel htmlFor="input-name">Full Name</InputLabel>
