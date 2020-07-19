@@ -176,6 +176,25 @@ class InviteToken(Resource):
 
         return return_val
 
+    @api.doc(description="Delete the specified link")
+    def delete(self, link):
+        conn = db.get_conn()
+        c = conn.cursor()
+
+        print(link)
+        try:
+            c.execute("DELETE FROM Candidate_Links WHERE link = ?", (link,))
+        except db.sqlite3.Error as e:
+            api.abort(400, 'invalid query {}'.format(e), ok = False)
+            print(e)
+        conn.commit()
+        conn.close()
+        return_val = {
+            'ok': True
+        }
+
+        return return_val
+
 @api.route('/link/<string:email>')
 class GetTokens(Resource):
     @api.doc(description="Get all invite links for the given user")
