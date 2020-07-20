@@ -1,3 +1,4 @@
+  
 from flask_restplus import Namespace, Resource, fields
 from flask import request, jsonify
 
@@ -25,12 +26,13 @@ class Invite(Resource):
     @api.doc(description="sends an email invite to the specified email")
     @api.expect(email_details)
     def post(self):
+        print("SENDING COURSE ADMIN INVITE")
         req = request.get_json()
         skills_email = req['skills_email']
         course_email = req['course_email']
 
         # temporary line for sendgrid to always work v
-        skills_email = 'z5165218@unsw.edu.au'
+        skills_email = 'skillsbackpack@gmail.com'
 
         message = Mail(
             from_email=skills_email,
@@ -38,7 +40,7 @@ class Invite(Resource):
             subject='Join Skills Backpack platform!',
             html_content='<h1>Welcome {}</h1><strong> {} has invited you to join Skills Backpack!</strong><br><br><a href="http://localhost:3000/register">Click here</a> to join'.format(course_email, skills_email)
         )
-        
+
         encrypted_email = encrypt_email(course_email)
 
         message.dynamic_template_data = {
@@ -63,7 +65,7 @@ class Invite(Resource):
         except Exception as e:
             print(e)
             api.abort(400, 'Email failed to send', ok=False)
-        
+
         return return_val
 
 @api.route('/email/decode')
@@ -92,14 +94,14 @@ def decrypt_email(token):
     email = f.decrypt(token.encode())
     return email.decode()
 
-# account stuff       
+# account stuff
 @api.route('/all')
 class accounts(Resource):
     def get(self):
         conn = db.get_conn()
         c = conn.cursor()
         c.execute("SELECT * FROM CourseAdmin")
-        
+
 course_admin_details = api.model('course admin details', {
     'email' : fields.String(description='university email for account identification', required=True),
     # 'password'  : fields.String(description='password for account access', required=True),
@@ -113,11 +115,11 @@ class accountInfo(Resource):
     def get(self, account):
         conn = db.get_conn()
         c = conn.cursor()
-        
+
 
         c.execute("SELECT EXISTS(SELECT email FROM CourseAdmin WHERE email = ?)", (account,))
         account_check = c.fetchone()[0]
-        
+
         if (account_check == 0):
             api.abort(404, "Account '{}' doesn't exist".format(account), ok=False)
 
@@ -127,8 +129,8 @@ class accountInfo(Resource):
             'email' : account
         }
         return return_val
-        
-    
+
+
     @api.doc(description="Delete specified account")
     def delete(self, account):
         conn = db.get_conn()
@@ -136,12 +138,12 @@ class accountInfo(Resource):
 
         c.execute("SELECT EXISTS(SELECT email FROM CourseAdmin WHERE email = ?)", (account,))
         account_check = c.fetchone()[0]
-        
+
         if (account_check == 0):
             api.abort(404, "Account '{}' doesn't exist".format(account), ok=False)
 
         c.execute("DELETE FROM CourseAdmin WHERE email = ?)", (account,))
-        
+
         conn.commit()
         conn.close()
         return_val = {
@@ -155,16 +157,16 @@ class accountInfo(Resource):
         conn = db.get_conn()
         c = conn.cursor()
         req = request.get_json()
-        
+
         c.execute("SELECT EXISTS(SELECT email FROM CourseAdmin WHERE email = ?)", (account,))
-        account_check = c.fetchone()[0] 
-        
+        account_check = c.fetchone()[0]
+
         # if account does not exist abort
         if (account_check == 0):
             api.abort(404, "Account '{}' doesn't exist".format(account), ok=False)
-        
+
         # change account details if account exists
-        elif (account_check == 1):  
+        elif (account_check == 1):
             # hashed_password = generate_password_hash(req['password'], "sha256")
             # getting api input
             # edit_details = request.get_json()
@@ -179,8 +181,8 @@ class accountInfo(Resource):
             #     api.abort(400, "User '{}' not found".format(account), ok=False)
             # password = query[0]
             # if req['password'] == password:
-            
-            # update 
+
+            # update
             c.execute("UPDATE CourseAdmin SET (name, university) = (?,?) WHERE email = ?",(req['name'], req['university'], req['email'],))
             conn.commit()
             conn.close()
@@ -190,10 +192,10 @@ class accountInfo(Resource):
                 'name' : req['name'],
                 'university' : req['university']
             }
-            # else:   
+            # else:
             #     api.abort(400, "Password incorrect", ok=False)
 
-        else: 
+        else:
             api.abort(400, "Update Error")
             conn.close()
         return_val = {

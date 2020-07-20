@@ -5,7 +5,7 @@ from sendgrid.helpers.mail import Mail
 from cryptography.fernet import Fernet
 from werkzeug.security import generate_password_hash
 
-import os, db
+import os, db, ssl
 
 api = Namespace('Match', description='Matching employees with candidates that meet all the criterias')
 
@@ -18,6 +18,9 @@ candidate_criteria = api.model('candidate criteria', {
 # helper function to iterate through all attributes and find matches
 # searches if a candidate matches a specific skill
 def findEPs(candidate_email, attribute, c, res):
+    
+    
+    
     
     # iterate through each grad outcome associated with the specified candidate email
     # change the search variable to lowercase to make search case insensitive
@@ -64,7 +67,7 @@ class Email(Resource):
         res = []
         employer_email = req['employer_email']
         sender_email = 'skillsbackpack@gmail.com'
-
+        
         for a in req['criteria']:
             for candidate_email in c.execute('SELECT email FROM Candidate'):
                 # iterates through all candidates and their attributes. appends matches to the dictionary 
@@ -74,11 +77,11 @@ class Email(Resource):
         # sorting the dictionary by length of each value list
         sorted_keys = sorted(unsorted_candidates, key=lambda i: len(unsorted_candidates[i]), reverse=True) 
         
-    
+        # count = 0
         # iterating through sorted list of candidates with matching criterias
         # (first entry has the most matches, last entry has the least)
         for candidate in sorted_keys: 
-
+            # count = count + 1
             # if the number of attributes a candidate has is the same and number of attributes
             # and employer wants, send the employer and email
             if (len(unsorted_candidates[candidate]) == len(req['criteria'])):
@@ -92,7 +95,9 @@ class Email(Resource):
                         'matching skills' : unsorted_candidates[email]
                 }
                 res.append(new_entry) # append each candidate entries to the final result
-                
+        
+        for candidate in res:
+
                 # send email
                 message = Mail(
                     from_email=sender_email,
@@ -120,15 +125,26 @@ class Email(Resource):
                     returnVal = {
                         'status_code' : response.status_code,
                         'ok' : True,
-                        'details' : res
+                        'details' : res,
                     }
                 except Exception as e:
                     print(e)
                     returnVal = {
-                        'status_code' : 'email not sent',
+                        'status_code' : 'email not sent, check valid emplohyer email',
                         'ok' : False,
-                        'details' : res
+                        'details' : res,
                     }
-        return returnVal
+        if len(res) == 0:
+            returnVal = {
+            'status_code' : 'no users match all criteria',
+            'ok' : False,
+        } 
+        
+        returnV = {
+            'return Val' : returnVal,
+            # 'count' : count,
+            'res' : len(res)
+        }        
+        return returnV
 
     
