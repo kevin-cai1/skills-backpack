@@ -139,6 +139,8 @@ VALUES
 INSERT INTO ePortfolio_Skill (candidate, skillID)
 VALUES
 	('charmaineleung@unsw.edu.au', 1),
-	('mirannakamura@usyd.edu.au', 2),
+	('charmaineleung@unsw.edu.au', 2),
 	('charmaineleung@unsw.edu.au', 3),
+	('mirannakamura@usyd.edu.au', 2),
+	('mirannakamura@usyd.edu.au', 3),
 	('mirannakamura@usyd.edu.au', 4);
