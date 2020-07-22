@@ -6,6 +6,7 @@ import {Link, Redirect, withRouter} from 'react-router-dom';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import { spacing } from '@material-ui/system';
+import DeleteIcon from '@material-ui/icons/Delete';
 import {
     Dialog,
     DialogActions,
@@ -19,6 +20,9 @@ import {
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { Alert } from '@material-ui/lab';
 import { theme } from './App.js';
+import MaterialTable from 'material-table';
+import { CopyToClipboard } from 'react-copy-to-clipboard'; 
+
 
 class Home_Candidate extends React.Component {
   constructor(props) {
@@ -27,6 +31,13 @@ class Home_Candidate extends React.Component {
         ep_links_open: false,
         add_links_open: false,
         EP_Links: [],
+        linkTag: '',
+        access_times: [],
+        columns: [
+          {title: 'Tag', field: 'tag'},
+          {title: 'Link', field: 'link'},
+          {title: 'Last Accessed', field: 'last_accessed'}
+        ]
       };
       this.handleLogout = this.handleLogout.bind(this);
       this.handleEPLinksModal = this.handleEPLinksModal.bind(this);
@@ -34,11 +45,19 @@ class Home_Candidate extends React.Component {
       this.handleAddLinksModal = this.handleAddLinksModal.bind(this);
       this.handleAddLinksModalClose = this.handleAddLinksModalClose.bind(this);
       this.handleEPLinkRedirect = this.handleEPLinkRedirect.bind(this);
+      this.handleDeleteLink = this.handleDeleteLink.bind(this);
+      this.handleChange = this.handleChange.bind(this);
+      this.handleEPAdd = this.handleEPAdd.bind(this);
+  }
+
+  componentDidMount() {
+    this.fetchLinks();
+    this.fetchAccessTimes();
   }
 
   handleEPLinkRedirect(e) {
     console.log("URL REDIRECT")
-    var link = e.target.id
+    var link = e
     console.log(link)
     var new_link = "/eportfolio/" + link;
     console.log(new_link)
@@ -47,10 +66,6 @@ class Home_Candidate extends React.Component {
 
   handleEPLinksModal() {
       this.setState({ep_links_open: true});
-      this.getEportfolioLinks().then( (response) => {
-        console.log(response)
-        this.setState({EP_Links: response.links})
-      });
   }
 
   handleEPLinksModalClose() {
@@ -68,18 +83,54 @@ class Home_Candidate extends React.Component {
   handleLogout() {
       SessionDetails.removeEmail();
   }
+
+  handleChange(event) {
+    const fieldName = event.target.name;
+    const fieldValue = event.target.value;
+    console.log('fn: ' + fieldName + ', fv: ' + fieldValue);
+    this.setState({[fieldName]: fieldValue});
+    this.componentDidMount();
+  }
+
+  handleDeleteLink(object) {
+    console.log(object.link)
+    return this.deleteLink(object.link).then( (repsonse) => {
+      this.componentDidMount();
+    });
+  }
   
-  handleEPAdd(e) {
-      const password = e.target.tag.value;
-      console.log("add ep");
-      const response = this.sendEPLink(e).then( (response) => {
+  deleteLink(id) {
+    let url = 'http://localhost:5000/ePortfolio/candidate/' + id;
+    return fetch(url, {
+        method: 'DELETE',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        }
+    }).then(response => {
+        console.log(response)
+        console.log('response ' + response.status)
+        return response.ok && response.json();
+    })
+        .catch(err => console.log('Error:', err));
+  }
+
+  handleEPAdd() {
+      return this.sendEPLink().then( (response) => {
           console.log(response);
+          this.clearModalFields();
+          this.handleAddLinksModalClose();
+          this.componentDidMount();
       });
   }
 
-  sendEPLink(e) {
+  clearModalFields() {
+    this.setState({linkTag: ''});
+  }
+
+  sendEPLink() {
     let data = JSON.stringify({
-        "tag": e.target.tag.value
+        "tag": this.state.linkTag
     });
     let url = 'http://127.0.0.1:5000/ePortfolio/link/' + SessionDetails.getEmail();
     console.log('Sending to ' + url + ': ' + data);
@@ -95,6 +146,40 @@ class Home_Candidate extends React.Component {
         return response.ok && response.json();
     })
         .catch(err => console.log('Error:', err));
+  }
+
+  fetchLinks() {
+    return this.getEportfolioLinks().then( (response) => {
+      if (response["ok"]) {
+        console.log(response.links)
+        this.setState({EP_Links: response.links})
+      }
+    });
+  }
+
+  fetchAccessTimes() {
+    return this.getEPAccessTimes().then( (response) => {
+      if (response['ok']) {
+        console.log(response.tracking_info)
+        this.setState({access_times: response.tracking_info})
+      }
+    })
+  }
+
+  getEPAccessTimes() {
+    let url = 'http://127.0.0.1:5000/link/info/' + SessionDetails.getEmail();
+
+    console.log('Sending to ' + url);
+
+    return fetch(url, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      }
+    }).then(response => {
+      return response.json();
+    }).catch(err => console.log('Error:', err));
   }
 
   getEportfolioLinks() {
@@ -113,7 +198,13 @@ class Home_Candidate extends React.Component {
         return response.json();
         console.log('response ' + response.status)
     }).catch(err => console.log('Error:', err));
-}
+  }
+
+  copyToClipboard(text) {
+    var copyText = text;
+    copyText.select()
+    document.execCommand('copy');
+  };
 
   render() {
     return (
@@ -127,8 +218,11 @@ class Home_Candidate extends React.Component {
                     <MuiThemeProvider theme={theme}>
                         <ButtonGroup variant="contained"
                                      aria-label="contained primary button group">
-                            <Button href='./my-eportfolio' style={{textTransform:"none"}}>
+                            <Button variant="contained" color="primary" href='./my-eportfolio' style={{textTransform:"none"}}>
                                 My E-Portfolio
+                            </Button>
+                            <Button variant="contained" color="primary" onClick={this.handleAddLinksModal}>
+                              Create new link
                             </Button>
                         </ButtonGroup>
                     </MuiThemeProvider>
@@ -139,14 +233,70 @@ class Home_Candidate extends React.Component {
                     <p>Logged in as: Candidate</p>
                 </div>
             </div>
-            <div className="A-buttons">
-              <MuiThemeProvider theme={theme}>
-                <Box m={3}>
-                  <Button variant="contained" color="primary" onClick={this.handleEPLinksModal}>
-                    View ePortfolio Links
-                  </Button>
-                </Box>
-              </MuiThemeProvider>
+            <div className="main-table">
+              <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+              <MaterialTable
+                title="E-Portfolio Links"
+                columns={this.state.columns}
+                data={this.state.access_times}
+                detailPanel={[
+                  {
+                    tooltip: 'Show Access Times',
+                    render: rowData => { 
+                      return (
+                        <div className="link_times">
+                          <h3>Link Access Times</h3>
+                          {this.state.access_times.filter(i => i.link === rowData.link).map(filteredLink => {
+                            return (
+                              filteredLink.times.map(i => {
+                                if (i.time){
+                                  return (
+                                    <Chip label={i.time} className="skills-chip"/>
+                                  )
+                                } else {
+                                  return (
+                                    <i>Not accessed yet</i>
+                                  )
+                                }
+                              })
+                            )
+                          })}
+                          <p></p>
+                          
+                        </div>
+                      )
+                    },
+                  },
+                ]}
+                onRowClick={(event, rowData) => this.handleEPLinkRedirect(rowData.link)}
+                actions={[
+                  {
+                    icon: 'delete',
+                    tooltip: 'Delete Link',
+                    onClick: (event, rowData) => {if(window.confirm('Are you sure you want to delete this link?')){
+                      this.handleDeleteLink(rowData);
+                    }}
+                  },
+                  {
+                    icon: 'content_copy',
+                    tooltip: 'Copy to clipboard',
+                    onClick: (event, rowData) => navigator.clipboard.writeText(window.location.origin.toString() + '/eportfolio/' + rowData.link).then(
+                      alert("Copied to clipboard!")
+                    )
+                  },
+                  {
+                    icon: 'add',
+                    tooltip: 'Add link',
+                    isFreeAction: true,
+                    onClick: (event) => this.handleAddLinksModal()
+                  }
+                ]}
+                options={{
+                  actionsColumnIndex: -1,
+                  paging: false,
+                  search: false,
+                }}
+              />
             </div>
         </body>
         <footer className="Home-footer">
@@ -170,7 +320,11 @@ class Home_Candidate extends React.Component {
                                     <p className="ep-link-heading">{i.tag}</p>
                                 </CardContent>
                                 <CardActions>
-                                    <Button size="small">Edit</Button>
+                                  <div>
+                                      <DeleteIcon
+                                          style={{'cursor':'pointer','color':'#ad4e3d'}}
+                                          onClick={() => this.handleDeleteLink(i.link)}/>
+                                  </div>
                                 </CardActions>
                             </Card>
                         </div>
@@ -191,27 +345,24 @@ class Home_Candidate extends React.Component {
             onClose={this.handleAddLinksModalClose}
           >
             <DialogContent>
-              <form onSubmit={(e) => this.handleEPAdd(e)}>
+              <form>
                 <Alert severity="info">
                   Add a tag to keep track of your links
                 </Alert>
-                <TextField
-                  autoFocus
-                  required
-                  margin="dense"
-                  id="tag"
-                  name="tag"
-                  label="Link Tag"
-                  type="text"
-                  fullWidth
-                />
-                <Button onClick={this.handleAddLinksModalClose} color="primary">
-                  Cancel
-                </Button>
-                <Button type="submit" color="primary">
-                  Send
-                </Button>
+                <FormControl fullWidth={true} required={true} margin='normal'>
+                    <TextField required label="Tag"
+                                name="linkTag"
+                                onChange={this.handleChange}
+                                value={this.state.linkTag}
+                    />
+                </FormControl>
               </form>
+              <Button onClick={this.handleAddLinksModalClose} color="primary">
+                Cancel
+              </Button>
+              <Button onClick={this.handleEPAdd} color="primary">
+                Create
+              </Button>
             </DialogContent>
           </Dialog>
         </MuiThemeProvider>

@@ -9,6 +9,7 @@ import InsertPhotoIcon from '@material-ui/icons/InsertPhoto';
 import SchoolIcon from '@material-ui/icons/School';
 import EmailIcon from '@material-ui/icons/Email';
 import LanguageIcon from '@material-ui/icons/Language';
+import SessionDetails from './SessionDetails';
 
 const chipNames = [
     {name: 'css'},
@@ -37,8 +38,33 @@ class Link_EPortfolio extends React.Component{
             console.log(response)
             this.setState({email: response.email})
             this.fetchEportfolioDetails();
+            console.log(SessionDetails.getEmail())
+            console.log("LOGGED IN ACCOUNT ^")
+            console.log("PROFILE SHOWING v")
+            console.log(this.state.email)
+            if (SessionDetails.getEmail() !== response.email){
+                this.postTracking(params.link);
+            }
         });
-        console.log(this.state.email)
+        console.log(this.state.email);
+    }
+
+    postTracking(link) {
+        let url = 'http://localhost:5000/link/' + link;
+        console.log('Sending to ' + url);
+
+        return fetch(url, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+        }).then(response => {
+            console.log(response)
+            console.log('response ' + response.status)
+            return response.ok && response.json();
+        })
+            .catch(err => console.log('Error:', err));
     }
 
     getAllDetails() {

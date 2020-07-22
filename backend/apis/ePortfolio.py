@@ -88,7 +88,6 @@ class ePortfolio(Resource):
         employment_results = c.fetchall()
         if (employment_results != []):
             for r in employment_results:
-                print(r)
                 entry = {
                     'id': r[0],
                     'description': r[1],
@@ -172,6 +171,24 @@ class InviteToken(Resource):
         return_val = {
             'ok': True,
             'email': email
+        }
+
+        return return_val
+
+    @api.doc(description="Delete the specified link")
+    def delete(self, link):
+        conn = db.get_conn()
+        c = conn.cursor()
+
+        try:
+            c.execute("DELETE FROM Candidate_Links WHERE link = ?", (link,))
+        except db.sqlite3.Error as e:
+            api.abort(400, 'invalid query {}'.format(e), ok = False)
+            print(e)
+        conn.commit()
+        conn.close()
+        return_val = {
+            'ok': True
         }
 
         return return_val
