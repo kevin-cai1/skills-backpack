@@ -35,27 +35,46 @@ class TrackingInfo(Resource):
         c = conn.cursor()
 
         try:
-            c.execute("SELECT link, time FROM TrackingInfo WHERE link IN (SELECT link FROM Candidate_Links WHERE email = ?)", (user,))
+            c.execute("SELECT c.link, t.time, c.tag FROM Candidate_Links c LEFT OUTER JOIN TrackingInfo t ON t.link = c.link WHERE c.email = ?", (user,))
             results = c.fetchall()
+            print("RESUTLSSS")
+            print(results)
         except db.sqlite3.Error as e:
             api.abort(400, 'invalid query {}'.format(e), ok = False)
             print(e)
         
         conn.close()
-
+        print(results)
+        print("ASDHFASDFASDFADFASDFASDF")
         grouped_results = sorted(results, key=lambda tup: tup[0])
         entries = []
 
         for key, group in groupby(grouped_results, lambda x: x[0]):
             times = []
+            tag = ""
             for item in group:
-                times.append(item[1])
+                print(item)
+                print(type(item))
+                print(type(item[1]))
+                time = {
+                    'time': item[1]
+                }
+                times.append(time)
+                tag = item[2]
             entry = {
                 'link': key,
-                'time': times
+                'tag': tag,
+                'times': times                
             }
             entries.append(entry)
 
+        #for r in results:
+        #    entry = {
+        #        'link': r[0],
+        #        'tag': r[2],
+        #        'access-time': r[1]
+        #    }
+        #    entries.append(entry)
 
         return_val = {
             'ok': True,
@@ -63,8 +82,3 @@ class TrackingInfo(Resource):
             'tracking_info': entries
         }
         return return_val
-#endpoint to post new tracking info
-#   need link
-
-# endpoint to get tracking info
-#   need email

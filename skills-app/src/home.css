@@ -25,3 +25,8 @@
   color: blue;
   cursor: pointer;
 }
+
+.main-table {
+  margin: auto;
+  width: 80%;
+}

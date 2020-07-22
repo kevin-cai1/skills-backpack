@@ -20,6 +20,8 @@ import {
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { Alert } from '@material-ui/lab';
 import { theme } from './App.js';
+import MaterialTable from 'material-table';
+
 
 class Home_Candidate extends React.Component {
   constructor(props) {
@@ -29,6 +31,11 @@ class Home_Candidate extends React.Component {
         add_links_open: false,
         EP_Links: [],
         linkTag: '',
+        access_times: [],
+        columns: [
+          {title: 'Tag', field: 'tag'},
+          {title: 'Link', field: 'link'},
+        ]
       };
       this.handleLogout = this.handleLogout.bind(this);
       this.handleEPLinksModal = this.handleEPLinksModal.bind(this);
@@ -43,11 +50,12 @@ class Home_Candidate extends React.Component {
 
   componentDidMount() {
     this.fetchLinks();
+    this.fetchAccessTimes();
   }
 
   handleEPLinkRedirect(e) {
     console.log("URL REDIRECT")
-    var link = e.target.id
+    var link = e
     console.log(link)
     var new_link = "/eportfolio/" + link;
     console.log(new_link)
@@ -82,8 +90,9 @@ class Home_Candidate extends React.Component {
     this.componentDidMount();
   }
 
-  handleDeleteLink(id) {
-    return this.deleteLink(id).then( (repsonse) => {
+  handleDeleteLink(object) {
+    console.log(object.link)
+    return this.deleteLink(object.link).then( (repsonse) => {
       this.componentDidMount();
     });
   }
@@ -146,6 +155,31 @@ class Home_Candidate extends React.Component {
     });
   }
 
+  fetchAccessTimes() {
+    return this.getEPAccessTimes().then( (response) => {
+      if (response['ok']) {
+        console.log(response.tracking_info)
+        this.setState({access_times: response.tracking_info})
+      }
+    })
+  }
+
+  getEPAccessTimes() {
+    let url = 'http://127.0.0.1:5000/link/info/' + SessionDetails.getEmail();
+
+    console.log('Sending to ' + url);
+
+    return fetch(url, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      }
+    }).then(response => {
+      return response.json();
+    }).catch(err => console.log('Error:', err));
+  }
+
   getEportfolioLinks() {
     let url = 'http://127.0.0.1:5000/ePortfolio/link/' + SessionDetails.getEmail();
 
@@ -176,8 +210,14 @@ class Home_Candidate extends React.Component {
                     <MuiThemeProvider theme={theme}>
                         <ButtonGroup variant="contained"
                                      aria-label="contained primary button group">
-                            <Button href='./my-eportfolio' style={{textTransform:"none"}}>
+                            <Button variant="contained" color="primary" href='./my-eportfolio' style={{textTransform:"none"}}>
                                 My E-Portfolio
+                            </Button>
+                            <Button variant="contained" color="primary" onClick={this.handleEPLinksModal}>
+                              View ePortfolio Links
+                            </Button>
+                            <Button variant="contained" color="primary" onClick={this.handleAddLinksModal}>
+                              Create new link
                             </Button>
                         </ButtonGroup>
                     </MuiThemeProvider>
@@ -188,14 +228,56 @@ class Home_Candidate extends React.Component {
                     <p>Logged in as: Candidate</p>
                 </div>
             </div>
-            <div className="A-buttons">
-              <MuiThemeProvider theme={theme}>
-                <Box m={3}>
-                  <Button variant="contained" color="primary" onClick={this.handleEPLinksModal}>
-                    View ePortfolio Links
-                  </Button>
-                </Box>
-              </MuiThemeProvider>
+            <div className="main-table">
+              <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+              <MaterialTable
+                title="E-Portfolio Links"
+                columns={this.state.columns}
+                data={this.state.access_times}
+                detailPanel={[
+                  {
+                    tooltip: 'Show Access Times',
+                    render: rowData => { 
+                      return (
+                        <div>
+                          <p>Link access time</p>
+                          {rowData.link}
+                          {this.state.access_times.filter(i => i.link === rowData.link).map(filteredLink => {
+                            return (
+                              filteredLink.times.map(i => {
+                                return (
+                                  <p>{i.time}</p>
+                                )
+                              })
+                            )
+                          })}
+                          
+                        </div>
+                      )
+                    },
+                  },
+                ]}
+                onRowClick={(event, rowData) => this.handleEPLinkRedirect(rowData.link)}
+                actions={[
+                  {
+                    icon: 'delete',
+                    tooltip: 'Delete Link',
+                    onClick: (event, rowData) => {if(window.confirm('Are you sure you want to delete this link?')){
+                      this.handleDeleteLink(rowData);
+                    }}
+                  },
+                  {
+                    icon: 'content_copy',
+                    tooltip: 'Copy to clipboard',
+                    onClick: (event, rowData) => alert("Copied to clipboard")
+                  }
+                ]}
+                options={{
+                  actionsColumnIndex: -1,
+                  paging: false,
+                  search: false,
+                }}
+              />
             </div>
         </body>
         <footer className="Home-footer">

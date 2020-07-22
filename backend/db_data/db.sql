@@ -208,4 +208,5 @@ CREATE TABLE TrackingInfo (
 	PRIMARY KEY(link, time),
 	FOREIGN KEY (link)
 		REFERENCES Candidate_Links (link)
+		ON DELETE CASCADE
 )
