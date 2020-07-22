@@ -70,3 +70,14 @@ Week 7
 - submitted retro
 - started handling errors for sql queries to fix database locking issue
 
+18/07/20
+- held weekly meeting, went over the demo
+- found and fixed some issues with changing password and entering new courses into the db
+
+Week 8
+21/07/20
+- Completed demo, went pretty well
+- went through retro, discussed improvements that could be made and how things went from last retro
+- started the final sprint, got assigned to complete the backend for searching for employers
+- started the final report, got assigned to cover functionality and part of hte user guide
+
