@@ -12,6 +12,7 @@ from .employer import api as ns9
 from .ePortfolio import api as ns10
 from .search import api as ns11
 from .password import api as ns12
+from .links import api as ns13
 
 api = Api(
         title="Skills Backpack",
@@ -31,3 +32,4 @@ api.add_namespace(ns9, path='/employer')
 api.add_namespace(ns10, path='/ePortfolio')
 api.add_namespace(ns11, path='/search')
 api.add_namespace(ns12, path='/password')
+api.add_namespace(ns13, path='/link')

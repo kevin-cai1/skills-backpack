@@ -88,7 +88,6 @@ class ePortfolio(Resource):
         employment_results = c.fetchall()
         if (employment_results != []):
             for r in employment_results:
-                print(r)
                 entry = {
                     'id': r[0],
                     'description': r[1],
@@ -181,7 +180,6 @@ class InviteToken(Resource):
         conn = db.get_conn()
         c = conn.cursor()
 
-        print(link)
         try:
             c.execute("DELETE FROM Candidate_Links WHERE link = ?", (link,))
         except db.sqlite3.Error as e:

@@ -38,7 +38,26 @@ class Link_EPortfolio extends React.Component{
             this.setState({email: response.email})
             this.fetchEportfolioDetails();
         });
-        console.log(this.state.email)
+        this.postTracking(params.link);
+        console.log(this.state.email);
+    }
+
+    postTracking(link) {
+        let url = 'http://localhost:5000/link/' + link;
+        console.log('Sending to ' + url);
+
+        return fetch(url, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+        }).then(response => {
+            console.log(response)
+            console.log('response ' + response.status)
+            return response.ok && response.json();
+        })
+            .catch(err => console.log('Error:', err));
     }
 
     getAllDetails() {

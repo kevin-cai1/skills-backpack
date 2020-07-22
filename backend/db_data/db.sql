@@ -200,3 +200,12 @@ CREATE TABLE Employer_Skill (
 		ON DELETE CASCADE,
 	PRIMARY KEY (employer, skillID)
 );
+
+DROP TABLE IF EXISTS TrackingInfo;
+CREATE TABLE TrackingInfo (
+	link TEXT,
+	time TEXT NOT NULL,
+	PRIMARY KEY(link, time),
+	FOREIGN KEY (link)
+		REFERENCES Candidate_Links (link)
+)
