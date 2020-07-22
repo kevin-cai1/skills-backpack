@@ -36,6 +36,7 @@ class Home_Candidate extends React.Component {
         columns: [
           {title: 'Tag', field: 'tag'},
           {title: 'Link', field: 'link'},
+          {title: 'Last Accessed', field: 'last_accessed'}
         ]
       };
       this.handleLogout = this.handleLogout.bind(this);
@@ -220,9 +221,6 @@ class Home_Candidate extends React.Component {
                             <Button variant="contained" color="primary" href='./my-eportfolio' style={{textTransform:"none"}}>
                                 My E-Portfolio
                             </Button>
-                            <Button variant="contained" color="primary" onClick={this.handleEPLinksModal}>
-                              View ePortfolio Links
-                            </Button>
                             <Button variant="contained" color="primary" onClick={this.handleAddLinksModal}>
                               Create new link
                             </Button>
@@ -246,18 +244,24 @@ class Home_Candidate extends React.Component {
                     tooltip: 'Show Access Times',
                     render: rowData => { 
                       return (
-                        <div>
-                          <p>Link access time</p>
-                          {rowData.link}
+                        <div className="link_times">
+                          <h3>Link Access Times</h3>
                           {this.state.access_times.filter(i => i.link === rowData.link).map(filteredLink => {
                             return (
                               filteredLink.times.map(i => {
-                                return (
-                                  <p>{i.time}</p>
-                                )
+                                if (i.time){
+                                  return (
+                                    <Chip label={i.time} className="skills-chip"/>
+                                  )
+                                } else {
+                                  return (
+                                    <i>Not accessed yet</i>
+                                  )
+                                }
                               })
                             )
                           })}
+                          <p></p>
                           
                         </div>
                       )
@@ -279,6 +283,12 @@ class Home_Candidate extends React.Component {
                     onClick: (event, rowData) => navigator.clipboard.writeText(window.location.origin.toString() + '/eportfolio/' + rowData.link).then(
                       alert("Copied to clipboard!")
                     )
+                  },
+                  {
+                    icon: 'add',
+                    tooltip: 'Add link',
+                    isFreeAction: true,
+                    onClick: (event) => this.handleAddLinksModal()
                   }
                 ]}
                 options={{

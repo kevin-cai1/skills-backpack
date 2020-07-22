@@ -14,7 +14,7 @@ class Tracker(Resource):
     def post(self, link):
         conn = db.get_conn()
         c = conn.cursor()
-        time = datetime.now().strftime('%d-%m-%Y %H:%M:%S')
+        time = datetime.now().strftime('%H:%M %d-%m-%Y')
         try:
             c.execute("INSERT INTO TrackingInfo (link, time) VALUES (?, ?)", (link, time,))
         except db.sqlite3.Error as e:
@@ -52,6 +52,7 @@ class TrackingInfo(Resource):
         for key, group in groupby(grouped_results, lambda x: x[0]):
             times = []
             tag = ""
+            last_accessed = ""
             for item in group:
                 print(item)
                 print(type(item))
@@ -61,10 +62,15 @@ class TrackingInfo(Resource):
                 }
                 times.append(time)
                 tag = item[2]
+                last_accessed = item[1]
+ 
+            if (last_accessed == None):
+                last_accessed = "-"
             entry = {
                 'link': key,
                 'tag': tag,
-                'times': times                
+                'times': times,
+                'last_accessed': last_accessed                
             }
             entries.append(entry)
 
@@ -79,6 +85,6 @@ class TrackingInfo(Resource):
         return_val = {
             'ok': True,
             'user': user,
-            'tracking_info': entries
+            'tracking_info': entries,
         }
         return return_val
