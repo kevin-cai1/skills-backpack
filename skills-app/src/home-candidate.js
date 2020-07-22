@@ -21,6 +21,7 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { Alert } from '@material-ui/lab';
 import { theme } from './App.js';
 import MaterialTable from 'material-table';
+import { CopyToClipboard } from 'react-copy-to-clipboard'; 
 
 
 class Home_Candidate extends React.Component {
@@ -196,7 +197,13 @@ class Home_Candidate extends React.Component {
         return response.json();
         console.log('response ' + response.status)
     }).catch(err => console.log('Error:', err));
-}
+  }
+
+  copyToClipboard(text) {
+    var copyText = text;
+    copyText.select()
+    document.execCommand('copy');
+  };
 
   render() {
     return (
@@ -269,7 +276,9 @@ class Home_Candidate extends React.Component {
                   {
                     icon: 'content_copy',
                     tooltip: 'Copy to clipboard',
-                    onClick: (event, rowData) => alert("Copied to clipboard")
+                    onClick: (event, rowData) => navigator.clipboard.writeText(window.location.origin.toString() + '/eportfolio/' + rowData.link).then(
+                      alert("Copied to clipboard!")
+                    )
                   }
                 ]}
                 options={{
