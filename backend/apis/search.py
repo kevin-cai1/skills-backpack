@@ -9,6 +9,10 @@ search_variables = api.model('search variables', {
     'attributes' : fields.List(fields.String, description = 'gradoutcomes or employability skills that the employer is searching for in EPs',)
 })
 
+employer_name = api.model('employer name', {
+    'employer_name' : fields.String(required = True, description = 'name of the company (e.g. macquarie group, google) that you are searching for')
+})
+
 # helper function to iterate through all attributes and find matches
 def findmatches(candidate_email, attribute, c, res):
     # iterate through each gradoutcome associated with the specified candidate email
@@ -122,4 +126,62 @@ class search(Resource):
         conn.close()
         return returnVal
 
+# api which returns all employer names in one list
+@api.route('/searchemployers')
+class employers(Resource):
+    @api.doc(description = 'returns list of all employers in the system')
+    def get(self):
+        conn = db.get_conn()
+        c = conn.cursor()
+        res = []
+
+        try:
+            employers = c.execute('SELECT company FROM Employer').fetchall()
+            for e in employers:
+                res.append(e[0])
+        except db.sqlite3.Error as e:
+            api.abort(400, 'invalid query {}'.format(e), ok = False)
+
+        returnVal = {
+                'ok' : True,
+                'employers' : res
+        }
+        conn.commit()
+        conn.close()
+        return returnVal
+
+    @api.doc(description = 'takes in the name of an employer, returns the employer details')
+    @api.expect(employer_name)
+    def post(self):
+        conn = db.get_conn()
+        c = conn.cursor()
+        req = request.get_json()
+        res = {} 
+        company_name = req['employer_name']
+
+        try:
+            employer_details = c.execute('SELECT company, name, email FROM Employer WHERE company = ?', (company_name,)).fetchone()
+            if employer_details:
+                res = {
+                        'company' : employer_details[0],
+                        'name' : employer_details[1],
+                        'email' : employer_details[2]
+                }
+            else:
+                api.abort(400, 'company name {} does not exist'.format(company_name,), ok = False)
+        except db.sqlite3.Error as e:
+            api.abort(400, 'invalid query {}'.format(e), ok = False)
+
+        conn.commit()
+        conn.close()
+        if not res:
+            returnVal = {
+                    'ok' : False,
+                    'employer_details' : 'employer does not exist or problem with query'
+            }
+        returnVal = {
+                'ok' : True,
+                'employer_details' : res
+        }
+        return returnVal
 
