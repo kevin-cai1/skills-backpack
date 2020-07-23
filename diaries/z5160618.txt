@@ -81,3 +81,5 @@ Week 8
 - started the final sprint, got assigned to complete the backend for searching for employers
 - started the final report, got assigned to cover functionality and part of hte user guide
 
+23/07/20
+- implemented backend apis for searching for employers, merged to master
