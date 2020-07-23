@@ -83,3 +83,5 @@ Week 8
 
 23/07/20
 - implemented backend apis for searching for employers, merged to master
+- added API documentation in confluence
+- half finished functionality section of final report
