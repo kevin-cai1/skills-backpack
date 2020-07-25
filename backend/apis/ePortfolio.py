@@ -98,7 +98,6 @@ class ePortfolio(Resource):
                     'job_title': r[5]
                 }
                 employment.append(entry)
-        emailMatches(email)
         return_val = {
             'ok': True,
             'profile': user_entry,

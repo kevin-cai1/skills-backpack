@@ -169,7 +169,7 @@ def emailMatches(candidate_email):
         employer_email = employer
         # clears list for every new employer search
         employer_criteria = []
-
+        
         employer_attributes = c.execute('SELECT graduateCriteria FROM Employer where company = ?', (employer)).fetchall
         # get the attributes for employers
         for job_criteria in employer_attributes:
@@ -180,6 +180,11 @@ def emailMatches(candidate_email):
             # adds matched criterias
             findEPs(candidate_email, job_criteria, c, matched_criterias)
         
+        employer_skillID = c.execute('SELECT skillID FROM Employer_Skill where employer = ?', (employer)).fetchall
+        for id in employer_skillID:
+            skillname = c.execute('SELECT name FROM Skill where id = ?', (id))
+            employer_criteria.append(skillname)
+
         if (len(matched_criterias) == len(employer_criteria)):
             
             # send email
