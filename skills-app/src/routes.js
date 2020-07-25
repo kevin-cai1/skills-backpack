@@ -20,6 +20,8 @@ import Home_Employer from './home-employer';
 import View_EPortfolio from './view-eportfolio';
 import Link_EPortfolio from './link-eportfolio';
 import Home_Candidate from './home-candidate.js';
+import SearchEmployer from './searchEmployer';
+import View_Employer from './view-employer';
 
 const allRoutes = () => (
     <Router>
@@ -39,7 +41,9 @@ const allRoutes = () => (
         <PrivateRoute exact path="/manage_courses" component={Manage_Courses}/>
         <PrivateRoute exact path="/my-eportfolio" component={Candidate_EPortfolio}/>
         <PrivateRoute exact path="/view-eportfolio/:user" component={View_EPortfolio}/>
+            <PrivateRoute exact path="/view-company/:user" component={View_Employer}/>
         <PrivateRoute exact path="/my-profile" component={Employer_Profile}/>
+        <PrivateRoute exact path="/search-company" component={SearchEmployer}/>
     </Router>
 );
 
