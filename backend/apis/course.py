@@ -35,7 +35,7 @@ delete_course_details = api.model('delete_course', {
     'university' : fields.String(required = True, description = 'University that the course belongs to'),
     })
 
-# getting list of gradoutcomes based on the inputted uni
+# getting info based on inputted uni
 @api.route('/<university>', methods=['GET'])
 class getgradoutcomes(Resource):
     def get(self, university):
@@ -43,15 +43,35 @@ class getgradoutcomes(Resource):
             api.abort(400, 'Please enter a university', ok = False)
         conn = db.get_conn()
         c = conn.cursor()
-        c.execute('SELECT g_outcome from GraduateOutcomes WHERE university = ?', (university,))
+        try:
+            c.execute('SELECT g_outcome from GraduateOutcomes WHERE university = ?', (university,))
+        except db.sqlite3.Error as e:
+            print(e)
+            api.abort(400, 'input error, {}, please enter a valid univeristy'.format(e), ok = False)
         gradoutcomes = []
         outcomes = c.fetchall()
         for o in outcomes:
             gradoutcomes.append(o[0])
+
+        courselist = []
+        # get all the courses as well
+        try:
+            for r in c.execute('SELECT code, name FROM Course WHERE university = ?', (university,)):
+                new_course_entry = {
+                        'code' : r[0],
+                        'name' : r[1],
+                }
+                courselist.append(new_course_entry)
+        except db.sqlite3.Error as e:
+            api.abort(400, 'invalid university', ok=False)
+
         returnval = {
                 'ok' : True,
-                'gradoutcomes' : gradoutcomes
+                'gradoutcomes' : gradoutcomes,
+                'courselist' : courselist
             }
+        conn.commit()
+        conn.close()
         return returnval
 
 # getting course info 
@@ -77,16 +97,29 @@ class getcourse(Resource):
         conn = db.get_conn()
         c = conn.cursor()
 
-        c.execute(course_query, code_uni)
+        try:
+            c.execute(course_query, code_uni)
+        except db.sqlite3.Error as e:
+            api.abort(400, 'invalid query {}'.format(e), ok = False)
+            print(e)
         course_info = c.fetchall()
         if course_info == None: # check if the course exists
             api.abort(400, 'Course with code {} at university {} does not exist'.format(code, university), ok = False)
          
-        c.execute(learnoutcome_query, code_uni)
+        try:
+            c.execute(learnoutcome_query, code_uni)
+        except db.sqlite3.Error as e:
+            api.abort(400, 'invalid query {}'.format(e), ok = False)
+            print(e)
         res = c.fetchall()
         for l in res:
             learning_outcomes.append(l[0])
-        c.execute(gradoutcome_query, code_uni)
+        try:
+            c.execute(gradoutcome_query, code_uni)
+        except db.sqlite3.Error as e:
+            api.abort(400, 'invalid query {}'.format(e), ok = False)
+            print(e)
+
         res = c.fetchall()
         for l in res:
             graduate_outcomes.append(l[0])
@@ -97,6 +130,8 @@ class getcourse(Resource):
                     'gradoutcomes' : graduate_outcomes,
                     'learnoutcomes' : learning_outcomes
             }
+        conn.commit()
+        conn.close()
         return returnVal
 
 
@@ -118,7 +153,12 @@ class addcourse(Resource):
 
         if res == None: # course doesn't already exist so we can insert this one into the db
             # inserting course details into course table
-            c.execute('INSERT INTO Course(code, university, faculty, description, name, link, courseAdminEmail) VALUES(?, ?, ?, ?, ?, ?, ?)', infolist)
+            try:
+                c.execute('INSERT INTO Course(code, university, faculty, description, name, link, courseAdminEmail) VALUES(?, ?, ?, ?, ?, ?, ?)', infolist)
+            except db.sqlite3.Error as e:
+                api.abort(400, 'invalid query {}'.format(e), ok = False)
+                print(e)
+
             course = {
                 'code' : req['code'],
                 'university' : req['university'],
@@ -131,6 +171,7 @@ class addcourse(Resource):
             
             # inserting outcomes into their respective tables and relationships
             for learning_outcome in req['learningOutcomes'].split(','):
+                learning_outcome = learning_outcome.strip()
                 try:
                     c.execute('INSERT INTO LearningOutcomes(l_outcome) VALUES(?)', (learning_outcome,))
                     c.execute('INSERT INTO Course_LearnOutcomes(l_outcome, code, university) VALUES ((SELECT last_insert_rowid()), ?, ?)', (req['code'], req['university']))
@@ -162,6 +203,7 @@ class addcourse(Resource):
             }
             return returnVal
         else:
+            conn.close()
             api.abort(400, 'Course {} at {} already exists.'.format(req['code'], req['university']), ok = False) 
 
 # deleting courses
@@ -177,10 +219,16 @@ class deletecourse(Resource):
         # check if course exists
         check_query = 'SELECT * FROM Course WHERE code = ? and university = ?'
         code_course = (req['code'], req['university'])
-        c.execute(check_query, code_course)
+        try:
+            c.execute(check_query, code_course)
+        except db.Sqlite3.Error as e:
+            api.abort(400, 'invalid query {}'.format(e), ok = False)
+            print(e)
+
         res = c.fetchone()
         if res == None:
-             api.abort(400, 'Course {} at {} does not exist.'.format(req['code'], req['university']), ok = False) 
+            conn.close()
+            api.abort(400, 'Course {} at {} does not exist.'.format(req['code'], req['university']), ok = False) 
         else:
              # THIS IS FOR IF WE DECIDE TO DELETE LEARNINGOUTCOMES ASSOCIATED WITH THE COURSE (need to account for when 2 courses share learningoutcomes though)
          #   c.execute('SELECT l_outcome FROM course_learnoutcomes WHERE code = ? AND university = ?', (req['code'], req['university']))
@@ -188,7 +236,11 @@ class deletecourse(Resource):
          #   for i in outcome_ids:
          #       c.execute('DELETE FROM learningOutcomes WHERE id = ?', i[0])
             delete_query = 'DELETE FROM Course WHERE code = ? and university = ?' # this delete query should cascade to delete all relevant relos
-            c.execute(delete_query, code_course)
+            try:
+                c.execute(delete_query, code_course)
+            except db.Sqlite3.Error as e:
+                api.abort(400, 'invalid query {}'.format(e), ok = False)
+                print(e)
             conn.commit()
             conn.close()
             returnVal = {
@@ -209,39 +261,77 @@ class editcourse(Resource):
         # check that the course exists
         check_query = 'SELECT * FROM Course WHERE code = ? and university = ?'
         code_course = (req['code'], req['university'])
-        c.execute(check_query, code_course)
+        try:
+            c.execute(check_query, code_course)
+        except db.Sqlite3.Error as e:
+            api.abort(400, 'invalid query {} {}'.format(check_query, e), ok = False)
+            print(e)
+
         res = c.fetchone()
         if res == None:
-             api.abort(400, 'Course {} at {} does not exist.'.format(req['code'], req['university']), ok = False) 
+            conn.close()
+            api.abort(400, 'Course {} at {} does not exist.'.format(req['code'], req['university']), ok = False) 
 
         # check that the admin is legit
         check_admin_query = 'SELECT * FROM CourseAdmin WHERE email = ?'
-        c.execute(check_admin_query, (req['admin_email'],))
+        try:
+            c.execute(check_admin_query, (req['admin_email'],))
+        except db.Sqlite3.Error as e:
+            api.abort(400, 'invalid query {}'.format(e), ok = False)
+            print(e)
+
         res = c.fetchone()
         if res == None:
+            conn.close()
             api.abort(400, 'Course Admin email ? does not exist.'.format(req['admin_email']), ok = False) 
        
         # if the course admin has removed some outcomes, we must first delete those outcomes and their relos
-        c.execute('SELECT l_outcome FROM Course_LearnOutcomes WHERE code = ? and university = ?', (req['code'], req['university']))
+        try:
+            c.execute('SELECT l_outcome FROM Course_LearnOutcomes WHERE code = ? and university = ?', (req['code'], req['university']))
+        except db.Sqlite3.Error as e:
+            api.abort(400, 'invalid query {}'.format(e), ok = False)
+            print(e)
+
         ids = c.fetchall() # get all the ids of the existing learning outcomes for the particular course
         for i in ids:
-            c.execute('SELECT l_outcome, id FROM LearningOutcomes WHERE id = ?', i) 
+            try:
+                c.execute('SELECT l_outcome, id FROM LearningOutcomes WHERE id = ?', i) 
+            except db.Sqlite3.Error as e:
+                api.abort(400, 'invalid query {}'.format(e), ok = False)
+                print(e)
+
             l = c.fetchone()
             if l[0] not in req['learningOutcomes']: # if the learning outcome is not in the new (edited) list of outcomes, delete it
-                c.execute('DELETE FROM LearningOutcomes WHERE id = ?', (l[1],)) # this should cascade to delete course_learnoutcome relo
+                try:
+                    c.execute('DELETE FROM LearningOutcomes WHERE id = ?', (l[1],)) # this should cascade to delete course_learnoutcome relo
+                except db.Sqlite3.Error as e:
+                    api.abort(400, 'invalid query {}'.format(e), ok = False)
+                    print(e)
+
 
         # since grad outcomes are tied to the uni, not the course, all we have to do is remove the course_gradoutcome relo. The outcome can stay. 
         c.execute('SELECT g_outcome FROM Course_GradOutcomes WHERE code = ? and university = ?', (req['code'], req['university']))
         ids = c.fetchall() # get all the ids of the existing graduate outcomes for the particular course
         for i in ids:
-            c.execute('SELECT g_outcome, id FROM GraduateOutcomes WHERE id = ?', i) 
+            try:
+                c.execute('SELECT g_outcome, id FROM GraduateOutcomes WHERE id = ?', i) 
+            except db.Sqlite3.Error as e:
+                api.abort(400, 'invalid query {}'.format(e), ok = False)
+                print(e)
+
             l = c.fetchone()
             if l[0] not in req['gradOutcomes']: # if the gradoutcome is not in the new (edited) list of outcomes, delete it
-                c.execute('DELETE FROM Course_GradOutcomes WHERE g_outcome = ?', (l[1],)) 
+                try:
+                    c.execute('DELETE FROM Course_GradOutcomes WHERE g_outcome = ?', (l[1],)) 
+                except db.Sqlite3.Error as e:
+                    api.abort(400, 'invalid query {}'.format(e), ok = False)
+                    print(e)
+
 
 
         # now that we've removed edited out outcomes, we can add all the learning/grad outcomes to their respective tables. Should automatically filter out duplicates.
         for learning_outcome in req['learningOutcomes'].split(','):
+            learning_outcome = learning_outcome.strip()
             try:
                 c.execute('INSERT INTO LearningOutcomes(l_outcome) VALUES(?)', (learning_outcome,))
                 c.execute('INSERT INTO Course_LearnOutcomes(l_outcome, code, university) VALUES ((SELECT last_insert_rowid()), ?, ?)', (req['code'], req['university']))
@@ -266,7 +356,12 @@ class editcourse(Resource):
         # finally update the course details
         update_query = 'UPDATE Course SET faculty = ?, description = ?, name = ?, link = ?, courseAdminEmail = ? WHERE code = ? and university = ?'
         infolist = (req['faculty'], req['description'], req['name'], req['link'], req['admin_email'], req['code'], req['university']) 
-        c.execute(update_query, infolist)
+        try:
+            c.execute(update_query, infolist)
+        except db.Sqlite3.Error as e:
+            api.abort(400, 'invalid query {}'.format(e), ok = False)
+            print(e)
+
         
         conn.commit()
         conn.close()

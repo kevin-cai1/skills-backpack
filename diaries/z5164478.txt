@@ -33,3 +33,10 @@ updating user details where they no longer need a password verification to edit 
 company, etc. since they will already be logged in. I also broke out password into its own api so that it can be easily accessed
 from a frontend perspective. This will still require password verification just for better security. For the next sprint I've
 started working on the candidate EPs and I'll also be finalising the retrospective which is due in next week.
+
+Week 7
+This week we submitted our retrospective which helped us reflect on our previous demo to identify to areas we did well in as
+well as areas we can improve in. We made sure to also assign each team member a goal to check up on to make sure that the 
+team is achieving them for the next demo. I also completed the email employers task which will send an email to the specific
+employer if a candidate matches all the critera for the job that they posted. I'm also in the process of working on notifying
+the employers within the website if a candidate matches all the critera.

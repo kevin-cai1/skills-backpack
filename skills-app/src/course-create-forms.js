@@ -78,7 +78,7 @@ class Course_Create extends React.Component {
       let dict = JSON.stringify({
         "admin_email": SessionDetails.getEmail(),
         "code": e.target.code.value,
-        "university": this.fullUniversity(e.target.uni.value),
+        "university": e.target.uni.value,
         "faculty": e.target.faculty.value,
         "description": e.target.description.value,
         "name": e.target.name.value,

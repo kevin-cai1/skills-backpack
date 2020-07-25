@@ -1,21 +1,15 @@
 import React from 'react';
-import SessionDetails from "./SessionDetails";
 import {
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText, FormControl, FormHelperText, Input,
-    InputLabel, MenuItem,
-    MuiThemeProvider, Select,
-    TextField,
+    MuiThemeProvider,
     Chip,
     Card, CardContent, Typography, CardActions
 } from "@material-ui/core";
 import {theme} from "./App";
+import InsertPhotoIcon from '@material-ui/icons/InsertPhoto';
 import SchoolIcon from '@material-ui/icons/School';
-import EmailIcon from '@material-ui/icons/Email';import LanguageIcon from '@material-ui/icons/Language';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-
+import EmailIcon from '@material-ui/icons/Email';
+import LanguageIcon from '@material-ui/icons/Language';
+import SessionDetails from './SessionDetails';
 
 const chipNames = [
     {name: 'css'},
@@ -25,10 +19,11 @@ const chipNames = [
     {name: 'communication'},
 ]
 
-class View_EPortfolio extends React.Component{
+class Link_EPortfolio extends React.Component{
     constructor(props) {
         super(props);
         this.state = {
+            email: '',
             candidateJobSkills: [],
             candidateEmpSkills: [],
             candidateCourses: [],
@@ -38,11 +33,44 @@ class View_EPortfolio extends React.Component{
     }
 
     componentDidMount() {
-        this.fetchEportfolioDetails();
+        const { match: { params } } = this.props;
+        this.getUserFromToken(params.link).then( (response) => {
+            console.log(response)
+            this.setState({email: response.email})
+            this.fetchEportfolioDetails();
+            console.log(SessionDetails.getEmail())
+            console.log("LOGGED IN ACCOUNT ^")
+            console.log("PROFILE SHOWING v")
+            console.log(this.state.email)
+            if (SessionDetails.getEmail() !== response.email){
+                this.postTracking(params.link);
+            }
+        });
+        console.log(this.state.email);
+    }
+
+    postTracking(link) {
+        let url = 'http://localhost:5000/link/' + link;
+        console.log('Sending to ' + url);
+
+        return fetch(url, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+        }).then(response => {
+            console.log(response)
+            console.log('response ' + response.status)
+            return response.ok && response.json();
+        })
+            .catch(err => console.log('Error:', err));
     }
 
     getAllDetails() {
-        let url = 'http://localhost:5000/ePortfolio/' + this.props.match.params.user;
+        var user = this.state.email;
+        console.log(user)
+        let url = 'http://localhost:5000/ePortfolio/' + user;
         console.log('Fetching data from: ' + url);
 
         return fetch(url, {
@@ -73,16 +101,31 @@ class View_EPortfolio extends React.Component{
         });
     }
 
+    getUserFromToken(token) {
+        console.log(token)
+        let url = 'http://127.0.0.1:5000/ePortfolio/candidate/' + token;
+        console.log('Fetching data from: ' + url);
+
+        return fetch(url, {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            }
+        }).then(response => {
+            console.log(response)
+            return response.ok && response.json();
+        })
+            .catch(err => console.log('Error:', err));
+    }
+
     render() {
         return (
             <div>
-                <header className="App-header">
-                    <h1>Skills Backpack</h1>
-                </header>
                 <body className="column-container">
                 <div className="center-align-container">
                     <div style={{'display': 'inline-block', 'padding-top':'50px'}}>
-                        <div><AccountCircleIcon style={{ fontSize: 100 }}/></div>
+                        <div><InsertPhotoIcon style={{ fontSize: 100 }}/></div>
                         <div style={{color: 'dimgrey', "margin":"15px 0px 15px 0px"}}><h2>{this.state.profile.name}</h2></div>
                         <h5 style={{"margin":"5px 0px 5px 0px"}}>{this.state.profile.degree} &middot; {this.state.profile.gradYear} Graduate</h5>
                         <div className="row-container">
@@ -163,12 +206,9 @@ class View_EPortfolio extends React.Component{
                     </MuiThemeProvider>
                 </div>
                 </body>
-                <footer className="Home-footer">
-                    <p>Yuppies 2020 </p>
-                </footer>
             </div>
         );
     }
 }
 
-export default View_EPortfolio;
+export default Link_EPortfolio;

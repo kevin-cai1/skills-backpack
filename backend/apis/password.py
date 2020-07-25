@@ -3,7 +3,7 @@ from flask import request, jsonify
 
 import db
 
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 
 api = Namespace('Password', description='Users can change password')
 
@@ -19,21 +19,21 @@ class accountInfo(Resource):
     def put(self, account):
         conn = db.get_conn()
         c = conn.cursor()
-        req = request.get_json()
+        req = request.get_json(force=True)
 
         # check if user is a candidate and match passworord before changing password 
         c.execute("SELECT EXISTS(SELECT email FROM Candidate WHERE email = ?)", (account,))
         candidate_check = c.fetchone()[0]
         if (candidate_check == 1):
             # userType = "candidate"
-            # hashed_password = generate_password_hash(req['new_password'], "sha256")
+            hashed_password = generate_password_hash(req['new_password'], "sha256")
 
             c.execute("SELECT password FROM Candidate WHERE email = ?", (account,))
             query = c.fetchone()
             password = query[0]
-            if req['password'] == password:
+            if check_password_hash(password, req['password']):
 
-                c.execute("UPDATE Candidate SET password = ? WHERE email = ?",(req['new_password'], req['email'],))
+                c.execute("UPDATE Candidate SET password = ? WHERE email = ?",(hashed_password, req['email'],))
                 conn.commit()
                 conn.close()
                 return_val = {
@@ -49,14 +49,14 @@ class accountInfo(Resource):
             c.execute("SELECT EXISTS(SELECT email FROM Employer WHERE email = ?)", (account,))
             employer_check = c.fetchone()[0]
             if (employer_check == 1):
-                # hashed_password = generate_password_hash(req['new_password'], "sha256")
+                hashed_password = generate_password_hash(req['new_password'], "sha256")
 
                 c.execute("SELECT password FROM Employer WHERE email = ?", (account,))
                 query = c.fetchone()
                 password = query[0]
-                if req['password'] == password:
+                if check_password_hash(password, req['password']):
 
-                    c.execute("UPDATE Employer SET password = ? WHERE email = ?",(req['new_password'], req['email'],))
+                    c.execute("UPDATE Employer SET password = ? WHERE email = ?",(hashed_password, req['email'],))
                     conn.commit()
                     conn.close()
                     return_val = {
@@ -72,14 +72,14 @@ class accountInfo(Resource):
             c.execute("SELECT EXISTS(SELECT email FROM SkillsBackpackAdmin WHERE email = ?)", (account,))
             skillsadmin_check = c.fetchone()[0]
             if (skillsadmin_check == 1):
-                # hashed_password = generate_password_hash(req['new_password'], "sha256")
+                hashed_password = generate_password_hash(req['new_password'], "sha256")
 
                 c.execute("SELECT password FROM SkillsBackpackAdmin WHERE email = ?", (account,))
                 query = c.fetchone()
                 password = query[0]
-                if req['password'] == password:
+                if check_password_hash(password, req['password']):
 
-                    c.execute("UPDATE SkillsBackpackAdmin SET password = ? WHERE email = ?",(req['new_password'], req['email'],))
+                    c.execute("UPDATE SkillsBackpackAdmin SET password = ? WHERE email = ?",(hashed_password, req['email'],))
                     conn.commit()
                     conn.close()
                     return_val = {
@@ -96,14 +96,14 @@ class accountInfo(Resource):
             c.execute("SELECT EXISTS(SELECT email FROM CourseAdmin WHERE email = ?)", (account,))
             courseadmin_check = c.fetchone()[0]
             if (courseadmin_check == 1):
-                # hashed_password = generate_password_hash(req['new_password'], "sha256")
+                hashed_password = generate_password_hash(req['new_password'], "sha256")
 
                 c.execute("SELECT password FROM CourseAdmin WHERE email = ?", (account,))
                 query = c.fetchone()
                 password = query[0]
-                if req['password'] == password:
+                if check_password_hash(password, req['password']):
 
-                    c.execute("UPDATE CourseAdmin SET password = ? WHERE email = ?",(req['new_password'], req['email'],))
+                    c.execute("UPDATE CourseAdmin SET password = ? WHERE email = ?",(hashed_password, req['email'],))
                     conn.commit()
                     conn.close()
                     return_val = {

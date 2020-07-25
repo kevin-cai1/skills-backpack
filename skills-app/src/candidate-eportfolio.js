@@ -24,6 +24,9 @@ import SchoolIcon from '@material-ui/icons/School';
 import EmailIcon from '@material-ui/icons/Email';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import LanguageIcon from '@material-ui/icons/Language';
+import EditIcon from '@material-ui/icons/Edit';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const chipNames = [
     {name: 'css'},
@@ -39,6 +42,7 @@ class Candidate_EPortfolio extends React.Component{
         this.state = {
             search_skills_open: false,
             add_employment_open: false,
+            edit_account_open: false,
             newSkill: '',
             addSkillSuccess: false,
             addSkillSuccessMessage: '',
@@ -56,6 +60,16 @@ class Candidate_EPortfolio extends React.Component{
             candidateCourses: [],
             candidateEmpHistory: [],
             profile: [],
+            userName: '',
+            userUni: '',
+            userDegree: '',
+            userGradYear: '',
+            accountUpdated: false,
+            add_course_open: false,
+            addedUni: '',
+            all_course_codes: [],
+            all_course_names: [],
+            courseAddSuccess: false
         };
         this.handleSearchSkillsModal = this.handleSearchSkillsModal.bind(this);
         this.handleSearchSkillsModalClose = this.handleSearchSkillsModalClose.bind(this);
@@ -67,6 +81,16 @@ class Candidate_EPortfolio extends React.Component{
         this.handleChange = this.handleChange.bind(this);
         this.handleAddJob = this.handleAddJob.bind(this);
         this.handleDeleteSkill = this.handleDeleteSkill.bind(this);
+        this.handleEditAccountModal = this.handleEditAccountModal.bind(this);
+        this.handleEditAccountModalClose = this.handleEditAccountModalClose.bind(this);
+        this.handleEditAccount = this.handleEditAccount.bind(this);
+        this.handleDeleteEmployment = this.handleDeleteEmployment.bind(this);
+        this.handleDeleteCourse = this.handleDeleteCourse.bind(this);
+        this.handleAddCourseModal = this.handleAddCourseModal.bind(this);
+        this.handleAddCourseModalClose = this.handleAddCourseCloseModal.bind(this);
+        this.handleUniSelect = this.handleUniSelect.bind(this);
+        this.handleAddCourse = this.handleAddCourse.bind(this);
+        this.createCoursesForSelect = this.createCoursesForSelect.bind(this);
     }
 
     componentDidMount() {
@@ -93,6 +117,14 @@ class Candidate_EPortfolio extends React.Component{
         this.setState({jobAdded: false});
     }
 
+    handleAddCourseModal() {
+        this.setState({add_course_open: true});
+    }
+
+    handleAddCourseCloseModal() {
+        this.setState({add_course_open: false});
+    }
+
     handleEmploymentCheckbox() {
         if (this.state.presentDate) {
             this.setState({presentDate: false});
@@ -107,8 +139,60 @@ class Candidate_EPortfolio extends React.Component{
     handleChange(event) {
         const fieldName = event.target.name;
         const fieldValue = event.target.value;
+        console.log('fn: ' + fieldName + ', fv: ' + fieldValue);
         this.setState({[fieldName]: fieldValue});
         this.componentDidMount();
+    }
+
+    handleEditAccountModal() {
+        this.state.userName = this.state.profile.name;
+        this.state.userUni = this.state.profile.university;
+        this.state.userDegree = this.state.profile.degree;
+        this.state.userGradYear = this.state.profile.gradYear;
+        this.state.accountUpdated = false;
+        this.setState({edit_account_open: true});
+    }
+
+    handleEditAccountModalClose() {
+        this.setState({edit_account_open: false});
+    }
+
+    handleEditAccount() {
+        // return this.postNewAccountDetails().then( (response) => {
+        //     console.log(response);
+            // let status = response["ok"];
+            let status = true;
+            if (status) {
+                this.setState({accountUpdated: true});
+            }
+            this.componentDidMount();
+        // });
+    }
+
+    postNewAccountDetails() {
+        let data = JSON.stringify({
+            "user": SessionDetails.getEmail(),
+            "name": this.state.userName,
+            "university": this.state.userUni,
+            "degree": this.state.userDegree,
+            "gradYear": this.state.userGradYear
+        });
+        let url = 'http://localhost:5000/candidate/' + SessionDetails.getEmail();
+        console.log('Sending to ' + url + ': ' + data);
+
+        return fetch(url, {
+            method: 'PUT',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: data
+        }).then(response => {
+            console.log(response)
+            console.log('response ' + response.status)
+            return response.ok && response.json();
+        })
+            .catch(err => console.log('Error:', err));
     }
 
     handleAddJob() {
@@ -118,6 +202,7 @@ class Candidate_EPortfolio extends React.Component{
             if (status) {
                 this.setState({jobAdded: true});
                 this.clearEmploymentFields();
+                this.componentDidMount();
             }
         });
     }
@@ -222,6 +307,47 @@ class Candidate_EPortfolio extends React.Component{
             .catch(err => console.log('Error:', err));
     }
 
+    handleDeleteCourse(uni, code) {
+        let url = 'http://localhost:5000/ePortfolio/' + SessionDetails.getEmail();
+        let data = JSON.stringify({
+            "code": code,
+            "university": uni
+        });
+        fetch(url, {
+            method: 'DELETE',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: data
+        }).then(response => {
+            console.log(response)
+            console.log('response ' + response.status)
+            return response.ok && response.json();
+        })
+            .catch(err => console.log('Error:', err));
+        this.componentDidMount();
+        this.forceUpdate();
+    }
+
+    handleDeleteEmployment(id) {
+        let url = 'http://localhost:5000/employment/' + id;
+        fetch(url, {
+            method: 'DELETE',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            }
+        }).then(response => {
+            console.log(response)
+            console.log('response ' + response.status)
+            return response.ok && response.json();
+        })
+            .catch(err => console.log('Error:', err));
+        this.componentDidMount();
+        this.forceUpdate();
+    }
+
     handleClearStatus() {
         this.state.addSkillSuccess = false;
         this.state.newSkill = '';
@@ -287,6 +413,83 @@ class Candidate_EPortfolio extends React.Component{
         });
     }
 
+    handleUniSelect = (e) => {
+      this.setState({addedUni: e.target.value});
+      this.setState({all_course_codes: []});
+      this.setState({all_course_names: []});
+      let component = this;
+      console.log("selected:", e.target.value);
+      let url = 'http://localhost:5000/course/add/' + e.target.value;
+      console.log('Sending to ' + url);
+      return fetch(url, {
+          method: 'GET',
+          headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+          }
+      }).then(function(response){ return response.json();
+      }).then(function(data) {
+            const items = data.courselist;
+            var item;
+            for(item in items){
+              const code = items[item].code;
+              const name = items[item].name;
+              console.log("code: ", code);
+              console.log("name: ", name);
+              component.setState({
+                all_course_codes: [
+                  ...component.state.all_course_codes, code
+                ]
+              })
+              component.setState({
+                all_course_names: [
+                  ...component.state.all_course_names, name
+                ]
+              })
+            }
+      })
+          .catch(err => console.log('Error:', err));
+    }
+
+    createCoursesForSelect() {
+        const items = [];
+        const codes = this.state.all_course_codes;
+        const names = this.state.all_course_names;
+        var i;
+        codes.forEach((code, index) => {
+          const name = names[index];
+          items.push(<MenuItem value={code}>{code} - {name}</MenuItem>);
+        });
+
+        return items;
+    }
+
+    handleAddCourse(e) {
+        const uni = this.state.addedUni
+        const code = e.target.course.value;
+        let url = 'http://localhost:5000/ePortfolio/' + SessionDetails.getEmail();
+        let data = JSON.stringify({
+            "code": code,
+            "university": uni
+        });
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: data
+        }).then(response => {
+            console.log(response)
+            console.log('response ' + response.status)
+            return response.ok && response.json();
+        })
+            .catch(err => console.log('Error:', err));
+        this.handleAddCourseCloseModal();
+        this.componentDidMount();
+        this.forceUpdate();
+    }
+
     callbackFunction = (childData) => {
         if (! (childData == null)) {
             if (childData.hasOwnProperty('inputValue')) {
@@ -303,10 +506,24 @@ class Candidate_EPortfolio extends React.Component{
     render() {
         return (
             <div>
+                <header className="App-header">
+                    <h1>Skills Backpack</h1>
+                </header>
                 <body className="column-container">
                 <div className="center-align-container">
                     <div style={{'display': 'inline-block', 'padding-top':'50px'}}>
-                        <div><InsertPhotoIcon style={{ fontSize: 100 }}/></div>
+                        <div className="row-container">
+                            <div className="center-align-container">
+                                <div style={{'display': 'inline-block','padding-left':'180px'}}>
+                                    <div><AccountCircleIcon style={{ fontSize: 100 }}/></div>
+                                </div>
+                            </div>
+                            <div style={{'overflow':'hidden'}}>
+                                <div style={{'float':'right','padding-left':'175px', 'color':'#2D9CDB'}}>
+                                    <div><EditIcon style={{ fontSize: 25, 'cursor': 'pointer'}} onClick={this.handleEditAccountModal}/></div>
+                                </div>
+                            </div>
+                        </div>
                         <div style={{color: 'dimgrey', "margin":"15px 0px 15px 0px"}}><h2>{this.state.profile.name}</h2></div>
                         <h5 style={{"margin":"5px 0px 5px 0px"}}>{this.state.profile.degree} &middot; {this.state.profile.gradYear} Graduate</h5>
                         <div className="row-container">
@@ -325,7 +542,7 @@ class Candidate_EPortfolio extends React.Component{
                     <MuiThemeProvider theme={theme}>
                         <div className="row-container">
                             <h3 className="ep-h3-text">Completed Courses</h3>
-                            <AddCircleIcon className="add-circle-button"/>
+                            <AddCircleIcon className="add-circle-button" onClick={this.handleAddCourseModal}/>
                         </div>
                         <div>
                             {this.state.candidateCourses.map(i => {
@@ -333,7 +550,17 @@ class Candidate_EPortfolio extends React.Component{
                                 <div style={{marginBottom:'15px'}}>
                                     <Card style={{maxWidth:'750px'}}>
                                         <CardContent>
-                                            <h4 style={{margin:'10px 0px 10px 0px'}}>{i.name} | {i.code}</h4>
+                                            <div className="row-container" style={{'justify-content':'space-between'}}>
+                                                <h4 style={{margin:'10px 0px 10px 0px'}}>{i.name} | {i.code}</h4>
+                                                <div>
+                                                    <DeleteIcon
+                                                        style={{'cursor':'pointer','color':'#ad4e3d'}}
+                                                        onClick={() => {if(window.confirm('Are you sure you want to delete?')){
+                                                          this.handleDeleteCourse(i.university, i.code);
+                                                        }}}
+                                                      />
+                                                </div>
+                                            </div>
                                             <p className="ep-course-heading italicised">{i.faculty} Faculty &middot; {i.university}</p>
                                             <div className="row-container">
                                                 <div className="row-container" style={{marginRight:'20px'}}>
@@ -347,9 +574,6 @@ class Candidate_EPortfolio extends React.Component{
                                             </div>
                                             <p>{i.description}</p>
                                         </CardContent>
-                                        <CardActions>
-                                            <Button size="small">Edit</Button>
-                                        </CardActions>
                                     </Card>
                                 </div>
                                 )
@@ -371,14 +595,23 @@ class Candidate_EPortfolio extends React.Component{
                                     <div style={{marginBottom:'15px'}}>
                                         <Card style={{maxWidth:'750px'}}>
                                             <CardContent>
-                                                <h4 style={{margin:'10px 0px 10px 0px'}}>Software Engineer</h4>
+                                                <div className="row-container" style={{'justify-content':'space-between'}}>
+                                                    <h4 style={{margin:'10px 0px 10px 0px'}}>{i.job_title}</h4>
+                                                    <div>
+                                                        <div>
+                                                            <DeleteIcon
+                                                                style={{'cursor':'pointer','color':'#ad4e3d'}}
+                                                                onClick={() => {if(window.confirm('Are you sure you want to delete?')){
+                                                                  this.handleDeleteEmployment(i.id);
+                                                                }}}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <p className="ep-course-heading italicised">{i.employer}</p>
-                                                <p className="ep-course-heading">{i.start_date} - {i.end_date}</p>
+                                                <p className="ep-course-heading">{i.start_date} - {i.end_date || 'Present'}</p>
                                                 <p>{i.description}</p>
                                             </CardContent>
-                                            <CardActions>
-                                                <Button size="small">Edit</Button>
-                                            </CardActions>
                                         </Card>
                                     </div>
                                 )
@@ -397,6 +630,9 @@ class Candidate_EPortfolio extends React.Component{
                     </MuiThemeProvider>
                 </div>
                 </body>
+                <footer className="Home-footer">
+                    <p>Yuppies 2020 </p>
+                </footer>
                 <MuiThemeProvider theme={theme}>
                     <Dialog
                         aria-labelledby="form-dialog-title"
@@ -508,6 +744,100 @@ class Candidate_EPortfolio extends React.Component{
                                 Add
                             </Button>
                         </DialogActions>
+                    </Dialog>
+                    <Dialog
+                        aria-labelledby="form-dialog-title"
+                        open={this.state.edit_account_open}
+                        onClose={this.handleEditAccountModalClose}
+                    >
+                        <DialogContent style={{"minWidth": "300px"}}>
+                            <DialogContentText type="title" id="modal-title">
+                                Edit Account Details
+                            </DialogContentText>
+                            {
+                                (this.state.accountUpdated) &&
+                                <Alert className="Login-alert" severity="success">Account has been updated.</Alert>
+                            }
+                            <div className="Course-form-body">
+                                <form style={{"minWidth": "300px"}}>
+                                    <FormControl fullWidth={true} required={true} margin='normal'>
+                                        <TextField required label="Name"
+                                                   name="userName"
+                                                   onChange={this.handleChange}
+                                                   defaultValue={this.state.profile.name}
+                                        />
+                                    </FormControl>
+                                    <FormControl fullWidth={true} required={true} margin='normal'>
+                                        <InputLabel htmlFor="uni-select">University</InputLabel>
+                                        <Select name="userUni" labelId="uni-select"
+                                                id="select" onChange={ this.handleChange }
+                                                defaultValue={this.state.profile.university}
+                                        >
+                                            <MenuItem value="UNSW">University of New South Wales</MenuItem>
+                                            <MenuItem value="USYD">University of Sydney</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                    <FormControl fullWidth={true} required={true} margin='normal'>
+                                        <TextField required label="Degree"
+                                                   name="userDegree"
+                                                   onChange={this.handleChange}
+                                                   defaultValue={this.state.profile.degree}
+                                        />
+                                    </FormControl>
+                                    <FormControl fullWidth={true} required={true} margin='normal'>
+                                        <TextField required label="Graduation Year"
+                                                   name="userGradYear"
+                                                   onChange={this.handleChange}
+                                                   defaultValue={this.state.profile.gradYear}
+                                        />
+                                    </FormControl>
+                                </form>
+                            </div>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={this.handleEditAccountModalClose} color="primary">
+                                Cancel
+                            </Button>
+                            <Button color="primary" onClick={this.handleEditAccount}>
+                                Update
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+                    <Dialog
+                        aria-labelledby="form-dialog-title"
+                        open={this.state.add_course_open}
+                        onClose={this.handleAddCourseModalClose}
+                    >
+                        <form onSubmit={this.handleAddCourse}>
+                            <DialogContent style={{"minWidth": "300px"}}>
+                                <DialogContentText type="title" id="modal-title">
+                                    Add Course
+                                </DialogContentText>
+                                <FormControl fullWidth={true} required={true} margin='normal'>
+                                    <InputLabel htmlFor="uni-select">University</InputLabel>
+                                    <Select name="uni" labelId="uni-select"
+                                            id="select" onChange={ this.handleUniSelect }
+                                    >
+                                        <MenuItem value="UNSW">University of New South Wales</MenuItem>
+                                        <MenuItem value="USYD">University of Sydney</MenuItem>
+                                    </Select>
+                                </FormControl>
+                                <FormControl fullWidth={true} required={true} margin='normal'>
+                                    <InputLabel htmlFor="course-select">Course</InputLabel>
+                                    <Select name="course" labelId="course-select"
+                                            id="select"
+                                    >
+                                        { this.createCoursesForSelect() }
+                                    </Select>
+                                </FormControl>
+                            </DialogContent>
+                            <Button onClick={this.handleAddCourseModalClose} color="primary">
+                                Cancel
+                            </Button>
+                            <Button color="primary" type="submit">
+                                Add
+                            </Button>
+                        </form>
                     </Dialog>
                 </MuiThemeProvider>
             </div>

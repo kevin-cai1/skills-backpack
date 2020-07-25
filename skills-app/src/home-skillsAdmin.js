@@ -101,7 +101,7 @@ class Home_skillsAdmin extends React.Component {
       let data = JSON.stringify({
           "new_password": e.target.password.value
       });
-      let url = 'http://localhost:5000/skills_admin/' + SessionDetails.getEmail();
+      let url = 'http://localhost:5000/skills_admin/details/' + SessionDetails.getEmail();
       console.log('Sending to ' + url + ': ' + data);
 
       return fetch(url, {
@@ -109,6 +109,7 @@ class Home_skillsAdmin extends React.Component {
           headers: {
               Accept: 'application/json',
               'Content-Type': 'application/json',
+              'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
           },
           body: data
       }).then(response => {
@@ -134,14 +135,13 @@ class Home_skillsAdmin extends React.Component {
           console.log("sendSiteAdminPassword");
           const response = this.sendSiteAdminPassword(e).then( (response) => {
               console.log(response);
-              if (response !== true) {
-                alert("Something went wrong. Contact technical support: kevin@skillsbackpack.com.");
-                this.setState({ change_password: false });
+              if(response==false){
+                  alert("Something went wrong. Contact skillsbackpack@gmail.com");
               }
               else{
-                alert("Password successfully updated.");
-                this.setState({ change_password: false });
+                  alert("Password successfully changed");
               }
+              this.setState({ change_password: false });
           });
       }
       else {

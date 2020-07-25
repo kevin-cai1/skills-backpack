@@ -2,6 +2,9 @@ from flask_restplus import Namespace, Resource, fields
 from flask import request, jsonify
 
 import db
+import secrets
+import string
+
 from pprint import pprint
 
 api = Namespace('ePortfolio', description='Endpoint to get ePortfolio information')
@@ -9,6 +12,10 @@ api = Namespace('ePortfolio', description='Endpoint to get ePortfolio informatio
 add_course_details = api.model('course details', {
     'code' : fields.String(description = 'Course code', required = True),
     'university' : fields.String(description = 'The university corresponding to the course being added', required = True)
+})
+
+link_body = api.model('link_body', {
+    'tag': fields.String(description= 'Tag to describe invite link')
 })
 
 @api.route('/<string:email>')
@@ -45,7 +52,7 @@ class ePortfolio(Resource):
                 job_skills.append(entry)
 
         employability_skills = []   # get function from gordon
-        c.execute('''select o.id, o.g_outcome from Course c JOIN Course_GradOutcomes g ON c.code = g.code 
+        c.execute('''select distinct o.id, o.g_outcome from Course c JOIN Course_GradOutcomes g ON c.code = g.code 
                 JOIN ePortfolio_Courses e ON e.code = c.code 
                 JOIN GraduateOutcomes o ON g.g_outcome = o.id WHERE e.EP_ID = ?''', (email,))
 
@@ -77,17 +84,17 @@ class ePortfolio(Resource):
                 courses.append(entry)
 
         employment = []
-        c.execute('''SELECT id, description, startDate, endDate, employer FROM Employment WHERE candidate_email = ?''', (email,))
+        c.execute('''SELECT id, description, startDate, endDate, employer, job_title FROM Employment WHERE candidate_email = ?''', (email,))
         employment_results = c.fetchall()
         if (employment_results != []):
             for r in employment_results:
-                print(r)
                 entry = {
                     'id': r[0],
                     'description': r[1],
                     'start_date': r[2],
                     'end_date': r[3],
-                    'employer': r[4]
+                    'employer': r[4],
+                    'job_title': r[5]
                 }
                 employment.append(entry)
 
@@ -109,7 +116,13 @@ class ePortfolio(Resource):
         req = request.get_json()
         conn = db.get_conn()
         c = conn.cursor()
-        c.execute('INSERT INTO ePortfolio_Courses(EP_ID, code, university) VALUES(?, ?, ?)', (email, req['code'], req['university']))
+        
+        try:
+            c.execute('INSERT INTO ePortfolio_Courses(EP_ID, code, university) VALUES(?, ?, ?)', (email, req['code'], req['university']))
+        except db.sqlite3.Error as e:
+            api.abort(400, 'invalid query {}'.format(e), ok = False)
+            print(e)
+
         conn.commit()
         conn.close()
         return_val = {
@@ -120,3 +133,123 @@ class ePortfolio(Resource):
         }
         return return_val
     
+    @api.doc(description = 'Delete course from ePortfolio')
+    @api.expect(add_course_details)
+    def delete(self, email):
+        req = request.get_json()
+        conn = db.get_conn()
+        c = conn.cursor()
+        try:
+            c.execute('DELETE FROM ePortfolio_Courses WHERE EP_ID = ? and code = ? and university = ?', (email, req['code'], req['university']))
+        except db.sqlite3.Error as e:
+            print(e)
+            api.abort(400, 'course does not exist', ok = False)
+        conn.commit()
+        conn.close()
+        returnVal = {
+                'ok' : True
+        }
+        return returnVal
+
+@api.route('/candidate/<string:link>')
+class InviteToken(Resource):
+    @api.doc(description="Get the user associated with the given token")
+    def get(self, link):
+        conn = db.get_conn()
+        c = conn.cursor()
+
+        c.execute("SELECT email FROM Candidate_Links WHERE link = ?", (link,))
+
+        email = c.fetchone()
+
+        conn.close()
+        if (email == None):
+            api.abort(400, "Link not registered to any user", ok=False)
+
+        email = email[0]
+
+        return_val = {
+            'ok': True,
+            'email': email
+        }
+
+        return return_val
+
+    @api.doc(description="Delete the specified link")
+    def delete(self, link):
+        conn = db.get_conn()
+        c = conn.cursor()
+
+        try:
+            c.execute("DELETE FROM Candidate_Links WHERE link = ?", (link,))
+        except db.sqlite3.Error as e:
+            api.abort(400, 'invalid query {}'.format(e), ok = False)
+            print(e)
+        conn.commit()
+        conn.close()
+        return_val = {
+            'ok': True
+        }
+
+        return return_val
+
+@api.route('/link/<string:email>')
+class GetTokens(Resource):
+    @api.doc(description="Get all invite links for the given user")
+    def get(self, email):
+        conn = db.get_conn()
+        c = conn.cursor()
+
+        c.execute("SELECT link, tag FROM Candidate_Links WHERE email = ?", (email,))
+
+        linkResult = c.fetchall()
+        
+        conn.close()
+
+        links = []
+        for r in linkResult:
+            entry = {
+                'link': r[0],
+                'tag': r[1]
+            }
+            links.append(entry)
+
+        return_val = {
+            'ok': True,
+            'email': email,
+            'links': links
+        }
+
+        return return_val
+    
+    @api.doc(description="Generate and add a new link to an ePortfolio")
+    @api.expect(link_body)
+    def post(self, email):
+        req = request.get_json(force=True)
+        conn = db.get_conn()
+        c = conn.cursor()
+
+        link = generateLink(20)
+        try:
+            c.execute("INSERT INTO Candidate_Links (link, email, tag) VALUES (?,?,?)", (link, email, req['tag'],))
+        except db.sqlite3.Error as e:
+            api.abort(400, 'invalid query {}'.format(e), ok = False)
+            print(e)
+            
+        conn.commit()
+        conn.close()
+
+        return_val = {
+            'ok': True,
+            'email': email,
+            'link': link,
+            'tag': req['tag']
+        }
+
+        return return_val
+
+
+def generateLink(length):
+    alphabet = string.ascii_letters + string.digits
+    link = ''.join(secrets.choice(alphabet) for i in range(length))
+    return link

@@ -27,7 +27,6 @@ class AllSkills(Resource):
         entries = []
         entry_count = 0
         for r in results:
-            print(r)
             entry = {
                 'id': r[0],
                 'name': r[1],
@@ -157,13 +156,21 @@ class UserSkills(Resource):
             c.execute("SELECT * FROM ePortfolio_Skill WHERE candidate = ? AND skillID = ?", (linkID, skillID,))
             res = c.fetchone()
             if (res == None):
-                c.execute("INSERT INTO ePortfolio_Skill (candidate, skillID) VALUES (?,?)", (linkID, skillID,))
+                try:
+                    c.execute("INSERT INTO ePortfolio_Skill (candidate, skillID) VALUES (?,?)", (linkID, skillID,))
+                except db.sqlite3.Error as e:
+                    api.abort(400, 'invalid query {}'.format(e), ok = False)
+                    print(e)
 
         else :
             c.execute("SELECT * FROM Employer_Skill WHERE employer = ? AND skillID = ?", (linkID, skillID,))
             res = c.fetchone()
             if (res == None):
-                c.execute("INSERT INTO Employer_Skill (employer, skillID) VALUES (?,?)", (linkID, skillID,))
+                try:
+                    c.execute("INSERT INTO Employer_Skill (employer, skillID) VALUES (?,?)", (linkID, skillID,))
+                except db.sqlite3.Error as e:
+                    api.abort(400, 'invalid query {}'.format(e), ok = False)
+                    print(e)
         
         conn.commit()
         conn.close()

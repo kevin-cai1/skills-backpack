@@ -118,7 +118,12 @@ class createAccount(Resource):
             api.abort(400, "User '{}' already exists".format(req['email']), ok=False)
 
         if (accountType == "candidate"):
-            c.execute("INSERT INTO Candidate values (?,?,?,?,?,?)",(req['email'], req['name'], req['university'], hashed_password, req['degree'], req['gradYear'],))
+            try:
+                c.execute("INSERT INTO Candidate values (?,?,?,?,?,?)",(req['email'], req['name'], req['university'], hashed_password, req['degree'], req['gradYear'],))
+            except db.sqlite3.Error as e:
+                print(e)
+                api.abort(400, 'invalid query {}'.format(e), ok = False)
+
             conn.commit()
             conn.close()
             account = {
@@ -131,7 +136,12 @@ class createAccount(Resource):
                 'gradYear' : req['gradYear'],
             }
         elif (accountType == "employer"):
-            c.execute("INSERT INTO Employer(email, name, password, company) values (?,?,?,?)", (req['email'], req['name'],hashed_password , req['company'],),)
+            try:
+                c.execute("INSERT INTO Employer(email, name, password, company) values (?,?,?,?)", (req['email'], req['name'],hashed_password , req['company'],),)
+            except db.sqlite3.Error as e:
+                api.abort(400, 'invalid query {}'.format(e), ok = False)
+                print(e)
+
             conn.commit()
             conn.close()
             account = {
@@ -141,7 +151,12 @@ class createAccount(Resource):
                 'company' : req['company']
             }
         elif (accountType == "courseAdmin"): 
-            c.execute("INSERT INTO CourseAdmin(name, email, university, password) values (?,?,?,?)", (req['name'], req['email'],req['university'], hashed_password,),)
+            try:
+                c.execute("INSERT INTO CourseAdmin(name, email, university, password) values (?,?,?,?)", (req['name'], req['email'],req['university'], hashed_password,),)
+            except db.sqlite3.Error as e:
+                api.abort(400, 'invalid query {}'.format(e), ok = False)
+                print(e)
+
             conn.commit()
             conn.close()
             account = {
@@ -152,8 +167,12 @@ class createAccount(Resource):
             }
         elif (accountType == "skillsAdmin"):
             new_password = generatePassword(20)
-
-            c.execute("INSERT INTO SkillsBackpackAdmin(name, email, password, newAccount) values (?,?,?,?)", (req['name'], req['email'],generate_password_hash(new_password, "sha256"),1,),)
+            try:
+                c.execute("INSERT INTO SkillsBackpackAdmin(name, email, password, newAccount) values (?,?,?,?)", (req['name'], req['email'],generate_password_hash(new_password, "sha256"),1,),)
+            except db.sqlite3.Error as e:
+                api.abort(400, 'invalid query {}'.format(e), ok = False)
+                print(e)
+                
             conn.commit()
             conn.close()
             account = {

@@ -7,13 +7,6 @@ VALUES
 	('mirannakamura@usyd.edu.au', 'Miran Nakamura', 'USYD', 'miran', 'Computer Science', 2021);
 	--('alexgu@uts.edu.au', 'Alex Gu', 'UTS', 'alex'
 
--- Inserting data in ePortfolioLink table
-INSERT INTO ePortfolioLink (link)
-VALUES
-	('link1'),
-	('link2');
-	--('link3');
-
 -- Inserting data into Employer table
 INSERT INTO Employer (email, name, graduateCriteria, password, company)
 VALUES
@@ -31,6 +24,7 @@ VALUES
 INSERT INTO SkillsBackpackAdmin (name, email, password)
 VALUES
 	('sbadmin1', 'sbadmin1@gmail.com', 'sbadmin1'),
+	('admin', 'skillsbackpack@gmail.com', 'password'),
 	('sbadmin2', 'sbadmin2@gmail.com', 'sbadmin2');
 
 -- Inserting data into Course table
@@ -38,8 +32,8 @@ INSERT INTO Course (code, university, faculty, description, name, link, courseAd
 VALUES
 	('COMP3900', 'UNSW', 'Computer Science and Engineering', 'build a project in a team', 'Computer Science Project', 'COMP3900.com', 'courseadmin1@unsw.edu.au'),
 	('COMP1000', 'USYD', 'Computer Science', 'hack the system', 'Hackerman 101', 'COMP1000.com', 'courseadmin2@usyd.edu.au'),
-	('COMP6969', 'UNSW', 'Computer Science and Engineering', 'hehexd', 'Funny course', 'COMP6969.com', 'courseadmin1@unsw.edu.au'),
-	('COMP4200', 'USYD', 'Computer Science', 'desc', 'mow the lawn', 'COMP4200.com', 'courseadmin2@usyd.edu.au');
+	('COMP1511', 'UNSW', 'Computer Science and Engineering', 'introduction to programming', 'Programming Fundamentals', 'COMP1511.com', 'courseadmin1@unsw.edu.au'),
+	('COMP4200', 'USYD', 'Computer Science', 'Low level computing', 'Computer system fundamentals', 'COMP4200.com', 'courseadmin2@usyd.edu.au');
 	
 
 -- Inserting data into LearningOutcomes table
@@ -47,16 +41,12 @@ INSERT INTO LearningOutcomes(l_outcome)
 VALUES
 	('hacking'),
 	('coding'),
-	('meming'),
-	('teeming');
+	('object oriented programming'),
+	('SQL');
 
 -- Inserting data into GraduateOutcomes table
 INSERT INTO GraduateOutcomes(g_outcome, university)
 VALUES
-	('teamwork', 'UNSW'),
-	('leadership', 'USYD'),
-	('meming', 'UNSW'),
-	('teeming', 'USYD'),
 	('Scholars capable of independent and collaborative enquiry', 'UNSW'),
 	('Scholars rigorous in their analysis', 'UNSW'),
 	('Scholars able to innovate by applying their knowledge and skills to the solution of novel problems', 'UNSW'),
@@ -83,9 +73,7 @@ VALUES
 INSERT INTO Employment(id, job_title, candidate_email, description, startDate, endDate, employer)
 VALUES
 	(1, 'Full stack developer', 'charmaineleung@unsw.edu.au', 'software development', '01/01/2020', '02/01/2020', 'Macquarie Group'),
-	(2, 'Security Analyst', 'mirannakamura@usyd.edu.au', 'hacking', '01/01/2020', '02/01/2020', 'Google'),
-	(3, 'Meme page manager', 'charmaineleung@unsw.edu.au', 'meme making', '05/06/2020', '06/06/2020', 'Meme lords'),
-	(4, 'Valorant pro', 'mirannakamura@usyd.edu.au', 'clicking on heads', '06/07/2020', '07/07/2020', 'Riot games');
+	(2, 'Security Analyst', 'mirannakamura@usyd.edu.au', 'hacking', '01/01/2020', '02/01/2020', 'Google');
 
 -- Inserting data into Course_LearnOutcomes table
 INSERT INTO Course_LearnOutcomes(l_outcome, code, university)
@@ -103,11 +91,11 @@ VALUES
 INSERT INTO Course_GradOutcomes(g_outcome, code, university)
 VALUES
 	(1, 'COMP3900', 'UNSW'),
-	(2, 'COMP1000', 'USYD'),
-	(2, 'COMP4200', 'USYD'),
-	(4, 'COMP4200', 'USYD'),
-	(3, 'COMP6969', 'UNSW'),
-	(1, 'COMP6969', 'UNSW');
+	(12, 'COMP1000', 'USYD'),
+	(14, 'COMP4200', 'USYD'),
+	(16, 'COMP4200', 'USYD'),
+	(4, 'COMP6969', 'UNSW'),
+	(2, 'COMP6969', 'UNSW');
 
 -- Inserting data into ePortfolio_courses table
 INSERT INTO ePortfolio_Courses (EP_ID, code, university)
@@ -119,17 +107,17 @@ VALUES
 
 
 -- Inserting data into Candidate_Links table
-INSERT INTO Candidate_Links (link, email)
+INSERT INTO Candidate_Links (link, email, tag)
 VALUES
-	('link1', 'charmaineleung@unsw.edu.au'),
-	('link2', 'mirannakamura@usyd.edu.au');
+	('DhcYTRw9sOW5S9kWCacw', 'charmaineleung@unsw.edu.au', 'CBA'),
+	('2fTDuxArAR4G5Z1FEbJj', 'mirannakamura@usyd.edu.au', 'UNSW');
 
-INSERT INTO Skill (id, name)
-VALUES
-	(1, 'Python'),
-	(2, 'C Programming'),
-	(3, 'Java'),
-	(4, 'MIPS');
+--INSERT INTO Skill (id, name)
+--VALUES
+--	(1, 'Python'),
+--	(2, 'C Programming'),
+--	(3, 'Java'),
+--	(4, 'MIPS');
 
 INSERT INTO Employer_Skill (employer, skillID)
 VALUES
