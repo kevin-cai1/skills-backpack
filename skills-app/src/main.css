@@ -68,3 +68,7 @@
 .italicised {
     font-style: italic;
 }
+
+.navbar-root {
+    flex-grow: 1;
+}
