@@ -1,5 +1,6 @@
 from flask_restplus import Namespace, Resource, fields
 from flask import request, jsonify
+from .match import emailMatches
 
 import db
 import secrets
@@ -97,7 +98,7 @@ class ePortfolio(Resource):
                     'job_title': r[5]
                 }
                 employment.append(entry)
-
+        emailMatches(email)
         return_val = {
             'ok': True,
             'profile': user_entry,
@@ -125,6 +126,7 @@ class ePortfolio(Resource):
 
         conn.commit()
         conn.close()
+        emailMatches(email)
         return_val = {
                 'ok' : True,
                 'account' : email,

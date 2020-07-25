@@ -11,7 +11,7 @@ from .skills import api as ns8
 from .employer import api as ns9
 from .ePortfolio import api as ns10
 from .search import api as ns11
-from .password import api as ns12s
+from .password import api as ns12
 from .links import api as ns13
 from .match import api as ns14
 

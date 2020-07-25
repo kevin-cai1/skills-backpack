@@ -18,10 +18,6 @@ candidate_criteria = api.model('candidate criteria', {
 # helper function to iterate through all attributes and find matches
 # searches if a candidate matches a specific skill
 def findEPs(candidate_email, attribute, c, res):
-    
-    
-    
-    
     # iterate through each grad outcome associated with the specified candidate email
     # change the search variable to lowercase to make search case insensitive
     lowercase_attribute = attribute.lower() 
@@ -146,5 +142,87 @@ class Email(Resource):
             'res' : len(res)
         }        
         return returnV
+
+        
+# get list of all employers giving email
+def all_employers():
+    conn = db.get_conn()
+    c = conn.cursor()
+    res = []
+
+    employers = c.execute('SELECT email FROM Employer').fetchall()
+    for e in employers:
+        res.append(e[0])
+    return res
+
+
+# send email
+def emailMatches(candidate_email):       
+    conn = db.get_conn()
+    c = conn.cursor()
+    employer_list = all_employers()
+    matched_criterias = []
+    status = False
+    sender_email = 'skillsbackpack@gmail.com'
+    
+    for employer in employer_list:
+        employer_email = employer
+        # clears list for every new employer search
+        employer_criteria = []
+
+        employer_attributes = c.execute('SELECT graduateCriteria FROM Employer where company = ?', (employer)).fetchall
+        # get the attributes for employers
+        for job_criteria in employer_attributes:
+            
+            # list of criteria for this employer
+            employer_criteria.append(job_criteria)
+            
+            # adds matched criterias
+            findEPs(candidate_email, job_criteria, c, matched_criterias)
+        
+        if (len(matched_criterias) == len(employer_criteria)):
+            
+            # send email
+            message = Mail(
+                from_email=sender_email,
+                to_emails=employer_email,
+                subject='A new candidate matched your job criteria!',
+                html_content='<h1>Congratulations! </h1><strong> {} has matched all your job search criteria. Please login to Skills Backpack!</strong><br><br><a href="http://localhost:3000/login">Click here</a>  to view their details'.format(email)
+            )
+
+            message.dynamic_template_data = {
+                'header': "A new candidate has matched your job search critera!",
+                'text': "To view their details, please click the link below",
+                'c2a_link': "http://localhost:3000/login/",
+                'c2a_button': "View details"
+            }
+            message.template_id = 'd-165f1bd189884256a10ee0c090fe3a44'
+            print(os.environ.get('SENDGRID_API_KEY'))
+            API_key = "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"
+
+            try:
+                sg = SendGridAPIClient(API_key)
+                response = sg.send(message)
+                print(response.status_code)
+                print(response.body)
+                print(response.headers)
+                status = True
+                returnVal = {
+                    'status_code' : response.status_code,
+                    'ok' : True,
+                }
+            except Exception as e:
+                print(e)
+                returnVal = {
+                    'status_code' : 'Unable to send email',
+                    'ok' : False,
+                }
+        
+    returnV = {
+        'status' : status
+        # 'count' : count,
+        #'res' : len(match)
+    }        
+    return returnV
 
     
