@@ -26,106 +26,101 @@ const theme = createMuiTheme({
     },
 });
 
+const useStyles = makeStyles((theme) => ({
+    root: {
+        flexGrow: 1,
+    },
+    menuButton: {
+        marginRight: theme.spacing(2),
+    },
+    title: {
+        flexGrow: 1,
+    },
+}));
 
-class Navbar extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            anchorEl: null,
-            setAnchorEl: null,
-            open: false,
-        }
-        this.handleClose = this.handleClose.bind(this);
-        this.handleLogout = this.handleLogout.bind(this);
-        this.handleMenu = this.handleMenu.bind(this);
-    }
+export default function Navbar() {
+    const classes = useStyles();
 
-    handleMenu(event) {
-        this.setState({
-            setAnchorEl: event.currentTarget,
-            open: true
-        });
-    }
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const open = Boolean(anchorEl);
+    const history = useHistory();
 
-    handleClose() {
-        this.setState({
-            setAnchorEl: null,
-            open: false
-        });
-    }
+    const handleMenu = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
 
-    handleLogout() {
-        this.state.setAnchorEl = null;
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleLogout = () => {
+        setAnchorEl(null);
         SessionDetails.removeEmail();
     }
 
-    changeRoute() {
-        this.props.history.push('/home');
+    const changeRoute = () => {
+        history.push("./home");
     }
 
-    render() {
-        return (
-            <div className="navbar-root">
-                <MuiThemeProvider theme={theme}>
-                    <AppBar position="static" color="primary">
-                        <Toolbar>
-                            <IconButton edge="start" color="inherit" aria-label="menu" color="secondary">
-                                <MenuIcon />
-                            </IconButton>
-                            <div onClick={this.changeRoute} style={{"overflow":"auto","cursor": "pointer"}}>
-                                <div style={{"float":"left"}}><AssignmentTurnedInIcon /></div>
-                                <div style={{"overflow":"hidden"}}>
-                                    <Typography variant="h6" className="navbar-root" color="secondary">
-                                        &nbsp;Skills Backpack
-                                    </Typography>
-                                </div>
+    return (
+        <div className={classes.root}>
+            <MuiThemeProvider theme={theme}>
+                <AppBar position="static" color="primary">
+                    <Toolbar>
+                        <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" color="secondary">
+                            <MenuIcon />
+                        </IconButton>
+                        <div onClick={changeRoute} style={{"overflow":"auto","cursor": "pointer"}}>
+                            <div style={{"float":"left"}}><AssignmentTurnedInIcon /></div>
+                            <div style={{"overflow":"hidden"}}>
+                                <Typography variant="h6" className={classes.title} color="secondary">
+                                    &nbsp;Skills Backpack
+                                </Typography>
                             </div>
-                            {
-                                (SessionDetails.getEmail() != "") ?
-                                    <div style={{"margin-left":"auto","margin-right":"0"}}>
-                                        <IconButton
-                                            aria-label="account of current user"
-                                            aria-controls="menu-appbar"
-                                            aria-haspopup="true"
-                                            onClick={this.handleMenu}
-                                            color="inherit"
-                                        >
-                                            <AccountCircleIcon />
-                                            <Typography variant="h6" className="navbar-root" color="secondary">
-                                                &nbsp;{SessionDetails.getName()}
-                                            </Typography>
-                                        </IconButton>
-                                        <Menu
-                                            id="menu-appbar"
-                                            anchorEl={this.state.anchorEl}
-                                            anchorOrigin={{
-                                                vertical: 'top',
-                                                horizontal: 'right',
-                                            }}
-                                            keepMounted
-                                            transformOrigin={{
-                                                vertical: 'top',
-                                                horizontal: 'right',
-                                            }}
-                                            open={this.state.open}
-                                            onClose={this.handleClose}
-                                        >
-                                            <MenuItem onClick={this.handleClose}><Link to='./changePassword' style={{'text-decoration':'none','color':'black'}}
-                                            >Change Password</Link></MenuItem>
-                                            <MenuItem onClick={this.handleLogout}><Link to='./' style={{'text-decoration':'none','color':'black'}}
-                                            >Logout</Link></MenuItem>
-                                        </Menu>
-                                    </div> :
-                                    <div style={{"margin-left":"auto","margin-right":"0"}}>
-                                        <Button color="secondary"><Link to='./login' className="header-button">Login</Link></Button>
-                                    </div>
-                            }
-                        </Toolbar>
-                    </AppBar>
-                </MuiThemeProvider>
-            </div>
-        );
-    }
+                        </div>
+                        {
+                            (SessionDetails.getEmail() != "") ?
+                                <div style={{"margin-left":"auto","margin-right":"0"}}>
+                                    <IconButton
+                                        aria-label="account of current user"
+                                        aria-controls="menu-appbar"
+                                        aria-haspopup="true"
+                                        onClick={handleMenu}
+                                        color="inherit"
+                                    >
+                                        <AccountCircleIcon />
+                                        <Typography variant="h6" className={classes.title} color="secondary">
+                                            &nbsp;{SessionDetails.getName()}
+                                        </Typography>
+                                    </IconButton>
+                                    <Menu
+                                        id="menu-appbar"
+                                        anchorEl={anchorEl}
+                                        anchorOrigin={{
+                                            vertical: 'top',
+                                            horizontal: 'right',
+                                        }}
+                                        keepMounted
+                                        transformOrigin={{
+                                            vertical: 'top',
+                                            horizontal: 'right',
+                                        }}
+                                        open={open}
+                                        onClose={handleClose}
+                                    >
+                                        <MenuItem onClick={handleClose}><Link to='./changePassword' style={{'text-decoration':'none','color':'black'}}
+                                        >Change Password</Link></MenuItem>
+                                        <MenuItem onClick={handleLogout}><Link to='./' style={{'text-decoration':'none','color':'black'}}
+                                        >Logout</Link></MenuItem>
+                                    </Menu>
+                                </div> :
+                                <div style={{"margin-left":"auto","margin-right":"0"}}>
+                                    <Button color="secondary"><Link to='./login' className="header-button">Login</Link></Button>
+                                </div>
+                        }
+                    </Toolbar>
+                </AppBar>
+            </MuiThemeProvider>
+        </div>
+    );
 }
-
-export default Navbar;
