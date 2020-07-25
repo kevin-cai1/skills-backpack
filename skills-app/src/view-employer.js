@@ -133,7 +133,6 @@ class View_Employer extends React.Component{
                     <MuiThemeProvider theme={theme}>
                         <div className="row-container">
                             <h3 className="ep-h3-text">Required Skills</h3>
-                            <AddCircleIcon className="add-circle-button" onClick={this.handleSearchSkillsModal}/>
                         </div>
                         <div>
                             {this.state.requiredSkills.map(i => {
