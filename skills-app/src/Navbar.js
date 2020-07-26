@@ -66,10 +66,10 @@ export default function Navbar() {
 
     const changeRoute = () => {
         if (auth) {
-            history.push("./home");
+            history.push("../home");
         }
         else {
-            history.push("./");
+            history.push("../");
         }
     }
 
@@ -116,9 +116,9 @@ export default function Navbar() {
                                         open={open}
                                         onClose={handleClose}
                                     >
-                                        <MenuItem onClick={handleClose}><Link to='./changePassword' style={{'text-decoration':'none','color':'black'}}
+                                        <MenuItem onClick={handleClose}><Link to='../changePassword' style={{'text-decoration':'none','color':'black'}}
                                         >Change Password</Link></MenuItem>
-                                        <MenuItem onClick={handleLogout}><Link to='./' style={{'text-decoration':'none','color':'black'}}
+                                        <MenuItem onClick={handleLogout}><Link to='../' style={{'text-decoration':'none','color':'black'}}
                                         >Logout</Link></MenuItem>
                                     </Menu>
                                 </div> :
