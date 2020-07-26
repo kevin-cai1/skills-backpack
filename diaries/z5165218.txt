@@ -43,3 +43,10 @@ This week I continued work on sprint 3, continuing with ePortfolio links. I focu
 view their links as well as generate new links. During this process I came across earlier portions of code that had been broken and so also worked to restore those functionalities.
 I also worked to import a bank of job skills to store within our system to provide users with a comprehensive dropdown selection.
 I finalised the sprint by looking back at previous functionalities I had implemented to ensure they were all still functional and ready for the demo.
+
+Week 8
+After a successful demo, we started our week off by completing our sprint retrospective. We made some suggestions and looked to improve our workflow for the final sprint.
+For the final sprint I continued work on the ePortfolio link functionalities. Having implemented the existing features, I was the most comfortable with extending functionalities.
+I created API endpoints to delete links as well as to manage link access tracking. I then worked on the frontend to implement the user stories. I spent a large amount of time
+overhauling some of the frontend components from last sprint to make everything more cohesive and streamlined. In the end I managed to get all the EP link functionalities working,
+even adding in little add-ons like copy to clipboard.
