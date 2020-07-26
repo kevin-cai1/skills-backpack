@@ -7,6 +7,7 @@
 .column-container {
     display: flex;
     flex-direction: column;
+    min-height: 80vh;
 }
 
 .center-align-container {
@@ -16,6 +17,11 @@
 .row-container {
     display: flex;
     flex-direction: row;
+}
+
+.col-container {
+    display: flex;
+    flex-direction: column;
 }
 
 .user-profile-details-row {

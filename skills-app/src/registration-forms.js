@@ -8,7 +8,7 @@ import "react-tabs/style/react-tabs.css";
 import Button from '@material-ui/core/Button';
 import { Alert } from '@material-ui/lab';
 import { MuiThemeProvider } from '@material-ui/core/styles';
-import { theme } from './App.js'
+import { theme } from './App'
 import { DatePicker, InlineDatePicker } from "@material-ui/pickers";
 import ReactCSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 
@@ -294,7 +294,7 @@ class Register extends React.Component {
             )
         }
         return (
-            <div className="Register-page">
+            <div className="App">
               <header className="App-header">
                   <h1>Skills Backpack</h1>
               </header>
@@ -305,7 +305,7 @@ class Register extends React.Component {
                 </div>
                 <MuiThemeProvider theme={theme}>
                   <BrowserRouter>
-                    <div className="Page-body">
+                    <div className="Contain-body">
                       <AppBar position="static" color="default" width="30%">
                         <Tabs
                           value={this.state.value}
@@ -329,7 +329,7 @@ class Register extends React.Component {
                       </Switch>
                     </div>
                   </BrowserRouter>
-                </MuiThemeProvider>
+                // </MuiThemeProvider>
               </body>
               <footer className="Home-footer">
                   <p>Yuppies 2020 </p>

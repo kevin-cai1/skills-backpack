@@ -68,7 +68,7 @@ class Home_Candidate extends React.Component {
   handleLogout() {
       SessionDetails.removeEmail();
   }
-  
+
   handleEPAdd(e) {
       const password = e.target.tag.value;
       console.log("add ep");
