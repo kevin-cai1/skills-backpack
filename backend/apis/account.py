@@ -85,7 +85,6 @@ class login(Resource):
                 c.execute('INSERT INTO LoginActivity (email, user_type, time) VALUES (?, ?, ?)', (req['email'], userType, time))
                 conn.commit()
             except db.sqlite3.Error as e:
-                api.abort(400, 'invalid query {}'.format(e), ok = False)
                 print(e)
         else:
         # if password doesn't match username
