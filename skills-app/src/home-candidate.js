@@ -22,6 +22,7 @@ import { Alert } from '@material-ui/lab';
 import { theme } from './App.js';
 import MaterialTable from 'material-table';
 import Navbar from "./Navbar";
+import SearchIcon from '@material-ui/icons/Search';
 
 
 class Home_Candidate extends React.Component {
@@ -235,19 +236,28 @@ class Home_Candidate extends React.Component {
                     <MuiThemeProvider theme={theme}>
                         <ButtonGroup variant="contained"
                                      aria-label="contained primary button group">
-                            <Button variant="contained" color="primary" href='./my-eportfolio' style={{textTransform:"none"}}>
+                            <Button variant="contained" href='./my-eportfolio' style={{textTransform:"none"}}>
                                 My E-Portfolio
                             </Button>
-                            <Button variant="contained" color="primary" onClick={this.handleAddLinksModal}>
-                              Create new link
+                        </ButtonGroup>
+                    </MuiThemeProvider>
+                </div>
+            </div>
+            <div style={{'padding-top':'10px','overflow':'hidden'}}>
+                <div style={{'float':'left', 'marginLeft':'120px'}}>
+                    <MuiThemeProvider theme={theme}>
+                        <ButtonGroup variant="contained"
+                                     aria-label="contained primary button group">
+                            <Button variant="contained" color="primary" href='./search-company' style={{textTransform:"none"}}>
+                                <SearchIcon/> Search Company
                             </Button>
                         </ButtonGroup>
                     </MuiThemeProvider>
                 </div>
             </div>
             <div className="center-align-container">
-                <div style={{'display': 'inline-block'}}>
-                    <p>Logged in as: Candidate</p>
+                <div style={{'display':'inline-block'}}>
+                    <h2>Manage E-Portfolio Links</h2>
                 </div>
             </div>
             <div className="main-table">
