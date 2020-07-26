@@ -15,13 +15,12 @@ import {
     InputLabel, MenuItem, Select,
     TextField,
     Chip,
-    Card, CardContent, Typography, CardActions, ButtonGroup
+    Card, CardContent, Typography, CardActions, ButtonGroup, Snackbar
 } from "@material-ui/core";
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { Alert } from '@material-ui/lab';
 import { theme } from './App.js';
 import MaterialTable from 'material-table';
-import { CopyToClipboard } from 'react-copy-to-clipboard'; 
 
 
 class Home_Candidate extends React.Component {
@@ -30,6 +29,7 @@ class Home_Candidate extends React.Component {
       this.state = {
         ep_links_open: false,
         add_links_open: false,
+        clipboard_open: false,
         EP_Links: [],
         linkTag: '',
         access_times: [],
@@ -48,11 +48,26 @@ class Home_Candidate extends React.Component {
       this.handleDeleteLink = this.handleDeleteLink.bind(this);
       this.handleChange = this.handleChange.bind(this);
       this.handleEPAdd = this.handleEPAdd.bind(this);
+      this.handleCopyOpen = this.handleCopyOpen.bind(this);
+      this.handleCopyClose = this.handleCopyClose.bind(this);
   }
 
   componentDidMount() {
     this.fetchLinks();
     this.fetchAccessTimes();
+  }
+
+  handleCopyOpen(rowData) {
+    navigator.clipboard.writeText(window.location.origin.toString() + '/eportfolio/' + rowData.link)
+    this.setState({clipboard_open: true});
+  }
+
+  handleCopyClose(event, reason) {
+    if (reason === 'clickaway') {
+      return;
+    }
+    
+    this.setState({clipboard_open: false});
   }
 
   handleEPLinkRedirect(e) {
@@ -280,9 +295,7 @@ class Home_Candidate extends React.Component {
                   {
                     icon: 'content_copy',
                     tooltip: 'Copy to clipboard',
-                    onClick: (event, rowData) => navigator.clipboard.writeText(window.location.origin.toString() + '/eportfolio/' + rowData.link).then(
-                      alert("Copied to clipboard!")
-                    )
+                    onClick: (event, rowData) => this.handleCopyOpen(rowData)
                   },
                   {
                     icon: 'add',
@@ -302,6 +315,11 @@ class Home_Candidate extends React.Component {
         <footer className="Home-footer">
           <p>Yuppies 2020 </p>
         </footer>
+        <div>
+          <Snackbar anchorOrigin={{vertical: 'bottom', horizontal: 'center'}} open={this.state.clipboard_open} autoHideDuration={1000} onClose={this.handleCopyClose}>
+            <Alert severity="info">Copied to clipboard!</Alert>
+          </Snackbar>
+        </div>
         <MuiThemeProvider theme={theme}>
           <Dialog
             aria-labelledby="form-dialog-title"
