@@ -259,70 +259,71 @@ class Home_Candidate extends React.Component {
                 <div style={{'display':'inline-block'}}>
                     <h2>Manage E-Portfolio Links</h2>
                 </div>
-            </div>
-            <div className="main-table">
-              <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-              <MaterialTable
-                title="E-Portfolio Links"
-                columns={this.state.columns}
-                data={this.state.access_times}
-                detailPanel={[
-                  {
-                    tooltip: 'Show Access Times',
-                    render: rowData => {
-                      return (
-                        <div className="link_times">
-                          <h3>Link Access Times</h3>
-                          {this.state.access_times.filter(i => i.link === rowData.link).map(filteredLink => {
-                            return (
-                              filteredLink.times.map(i => {
-                                if (i.time){
-                                  return (
-                                    <Chip label={i.time} className="skills-chip"/>
-                                  )
-                                } else {
-                                  return (
-                                    <i>Not accessed yet</i>
-                                  )
-                                }
-                              })
-                            )
-                          })}
-                          <p></p>
+                <div className="main-table">
+                  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+                  <MaterialTable
+                    title="E-Portfolio Links"
+                    columns={this.state.columns}
+                    data={this.state.access_times}
+                    detailPanel={[
+                      {
+                        tooltip: 'Show Access Times',
+                        render: rowData => {
+                          return (
+                            <div className="link_times">
+                              <h3>Link Access Times</h3>
+                              {this.state.access_times.filter(i => i.link === rowData.link).map(filteredLink => {
+                                return (
+                                  filteredLink.times.map(i => {
+                                    if (i.time){
+                                      return (
+                                        <Chip label={i.time} className="skills-chip"/>
+                                      )
+                                    } else {
+                                      return (
+                                        <i>Not accessed yet</i>
+                                      )
+                                    }
+                                  })
+                                )
+                              })}
+                              <p></p>
 
-                        </div>
-                      )
-                    },
-                  },
-                ]}
-                onRowClick={(event, rowData) => this.handleEPLinkRedirect(rowData.link)}
-                actions={[
-                  {
-                    icon: 'delete',
-                    tooltip: 'Delete Link',
-                    onClick: (event, rowData) => {if(window.confirm('Are you sure you want to delete this link?')){
-                      this.handleDeleteLink(rowData);
+                            </div>
+                          )
+                        },
+                      },
+                    ]}
+                    onRowClick={(event, rowData) => this.handleEPLinkRedirect(rowData.link)}
+                    actions={[
+                      {
+                        icon: 'delete',
+                        tooltip: 'Delete Link',
+                        onClick: (event, rowData) => {if(window.confirm('Are you sure you want to delete this link?')){
+                          this.handleDeleteLink(rowData);
+                        }}
+                      },
+                      {
+                        icon: 'content_copy',
+                        tooltip: 'Copy to clipboard',
+                        onClick: (event, rowData) => this.handleCopyOpen(rowData)
+                      },
+                      {
+                        icon: 'add',
+                        tooltip: 'Add link',
+                        isFreeAction: true,
+                        onClick: (event) => this.handleAddLinksModal()
+                      }
+                    ]}
+                    options={{
+                      actionsColumnIndex: -1,
+                      paging: false,
+                      search: false,
                     }}
-                  },
-                  {
-                    icon: 'content_copy',
-                    tooltip: 'Copy to clipboard',
-                    onClick: (event, rowData) => this.handleCopyOpen(rowData)
-                  },
-                  {
-                    icon: 'add',
-                    tooltip: 'Add link',
-                    isFreeAction: true,
-                    onClick: (event) => this.handleAddLinksModal()
-                  }
-                ]}
-                options={{
-                  actionsColumnIndex: -1,
-                  paging: false,
-                  search: false,
-                }}
-              />
+                  />
+                </div>
             </div>
+
         </body>
         <footer className="Home-footer">
           <p>Yuppies 2020 </p>
