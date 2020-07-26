@@ -4,6 +4,7 @@ from flask import request, jsonify
 import db
 import secrets
 import string
+from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 
 api = Namespace('Login', description='Login validation operations')
@@ -32,13 +33,7 @@ class login(Resource):
 
         conn= db.get_conn()
         c = conn.cursor()
-        print(req)
-        # check for matching username listing in db
-        #c.execute('''SELECT * FROM (
-        #                SELECT email, password, name FROM Candidate UNION ALL 
-        #                SELECT email, password, name FROM Employer UNION ALL 
-        #                SELECT email, password, name FROM SkillsBackpackAdmin UNION ALL 
-        #                SELECT email, password, name FROM CourseAdmin) WHERE email = ?''', (req['email'],))
+
         userType = ""
         c.execute("SELECT email, password, name FROM Candidate WHERE email = ?", (req['email'],))
         account = c.fetchone() # returns 1 if exists
@@ -66,7 +61,6 @@ class login(Resource):
             userType = "courseAdmin"
             details = account
         
-        conn.close()
         print("=====================================")
         # if not in database
         if (userType == "" or details == None):
@@ -85,6 +79,14 @@ class login(Resource):
                 'name' : name,
                 'user_type' : userType
             }
+            # log access
+            try:
+                time = datetime.now().strftime('%d-%m-%Y')
+                c.execute('INSERT INTO LoginActivity (email, user_type, time) VALUES (?, ?, ?)', (req['email'], userType, time))
+                conn.commit()
+            except db.sqlite3.Error as e:
+                api.abort(400, 'invalid query {}'.format(e), ok = False)
+                print(e)
         else:
         # if password doesn't match username
             return_val = {
@@ -92,6 +94,8 @@ class login(Resource):
                 'user' : req['email'],
                 'message' : "Password incorrect"
             }
+        
+        conn.close()
 
         print(return_val)
         return return_val

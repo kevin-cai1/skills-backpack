@@ -5,11 +5,15 @@ import allRoutes from './routes';
 import {Link, Redirect} from 'react-router-dom';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 import { spacing } from '@material-ui/system';
 import { Dialog, DialogContent, DialogContentText, DialogActions, TextField } from '@material-ui/core';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { Alert } from '@material-ui/lab';
 import { theme } from './App.js';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Bar, BarChart, Tooltip } from 'recharts';
 
 class Home_skillsAdmin extends React.Component {
   constructor(props) {
@@ -21,7 +25,9 @@ class Home_skillsAdmin extends React.Component {
         change_password: false,
         name_details: '',
         email_details: '',
-        password_details: ''
+        password_details: '',
+        line_data: [{name: '10/07/2020', candidate: 4, employer: 2, courseAdmin: 4, skillsAdmin: 2}, {name: '11/07/2020', candidate: 5, employer: 4, courseAdmin: 2, skillsAdmin: 1}, {name: '13/07/2020', candidate: 7, employer: 5, courseAdmin: 2, skillsAdmin: 1},],
+        bar_data: [{name: 'Candidates', count: 10}, {name: 'Employers', count: 5}, {name: 'Course Admins', count: 8}, {name: 'Skills Admins', count: 3},]
       };
       this.handleLogout = this.handleLogout.bind(this);
       this.handleFormSubmit = this.handleFormSubmit.bind(this);
@@ -43,6 +49,8 @@ class Home_skillsAdmin extends React.Component {
       this.sleep(1000).then(()=>{
         this.handleSkillsAdminLoad();
       });
+      this.fetchUserCounts();
+      this.fetchUserActivity();
   }
 
   handleCourseAdminModal() {
@@ -75,6 +83,56 @@ class Home_skillsAdmin extends React.Component {
 
   handleLogout() {
       SessionDetails.removeEmail();
+  }
+
+  fetchUserCounts() {
+    return this.getUserCounts().then( (response) => {
+      if (response['ok']) {
+        this.setState({bar_data: response.data})
+      }
+    })
+  }
+
+  getUserCounts() {
+    let url = 'http://127.0.0.1:5000/skills_admin/dash/accounts';
+
+    console.log('Sending to ' + url);
+
+    return fetch(url, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      }
+    }).then(response => {
+      console.log(response)
+      return response.json();
+    }).catch(err => console.log('Error:', err));
+  }
+
+  fetchUserActivity() {
+    return this.getUserActivity().then( (response) => {
+      if (response['ok']) {
+        this.setState({line_data: response.data})
+      }
+    })
+  }
+
+  getUserActivity() {
+    let url = 'http://127.0.0.1:5000/skills_admin/dash/activity';
+
+    console.log('Sending to ' + url);
+
+    return fetch(url, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      }
+    }).then(response => {
+      console.log(response)
+      return response.json();
+    }).catch(err => console.log('Error:', err));
   }
 
   handleInviteSend = (e) => {
@@ -241,24 +299,59 @@ class Home_skillsAdmin extends React.Component {
         <header className="App-header">
             <h1>Skills Backpack</h1>
         </header>
-        <body className="A-body">
-            <h1>Welcome to the homepage { SessionDetails.getEmail()}</h1>
-            <p>Logged in as: Skills Backpack Admin</p>
-            <div className="A-buttons">
+        <body className="B-body">
+          <div className="B-buttons">
               <MuiThemeProvider theme={theme}>
-                <Box m={3}>
-                  <Button variant="contained" color="primary" onClick={this.handleCourseAdminModal}>
+                <Box m={2}>
+                  <Button variant="contained" size="large" color="primary" onClick={this.handleCourseAdminModal}>
                     Invite Course Admins
                   </Button>
                 </Box>
-                <Box m={3}>
-                  <Button variant="contained" color="secondary" onClick={this.handleSiteAdminModal}>
+                <Box m={2}>
+                  <Button variant="contained" size="large" color="secondary" onClick={this.handleSiteAdminModal}>
                     Add Skills Backpack Admin
                   </Button>
                 </Box>
               </MuiThemeProvider>
             </div>
-            <p><a href='./login' onClick={this.handleLogout}>Logout</a></p>
+            <div className='card-grid'>
+              <Grid container justify="center" spacing={2}>
+                <Grid item md={7}>
+                  <Card>
+                    <CardContent>
+                      <h3>Site Usage - Login Counts</h3>
+                      <ResponsiveContainer width="99%" height={300}>
+                        <LineChart data={this.state.line_data} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" />
+                          <YAxis />
+                          <Tooltip />
+                          <Line type="monotone" dataKey="candidate" stroke="#2D9CDB"/>
+                          <Line type="monotone" dataKey="employer" stroke="#20BF55"/>
+                          <Line type="monotone" dataKey="courseAdmin" stroke="#ab3428"/>
+                          <Line type="monotone" dataKey="skillsAdmin" stroke="#f49e4c"/>
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </CardContent>
+                  </Card>
+                </Grid>
+                <Grid item md={5}>
+                  <Card>
+                    <CardContent>
+                    <h3>User Numbers</h3>
+                      <ResponsiveContainer width="99%" height={300}>
+                        <BarChart data={this.state.bar_data} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" />
+                          <YAxis />
+                          <Bar type="monotone" dataKey="count" fill="#2D9CDB"/>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+            </div>
         </body>
         <footer className="Home-footer">
           <p>Yuppies 2020 </p>

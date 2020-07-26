@@ -3,6 +3,8 @@ from flask import request, jsonify
 
 import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from itertools import groupby
+
 
 api = Namespace('SkillsAdmin', description='SkillsAdmin user operations')
 
@@ -203,3 +205,72 @@ class accountInfo(Resource):
             'new' : new_details
         }
         return return_val
+
+@api.route('/dash/accounts')
+class DashInfo(Resource):
+    @api.doc(description="Get account counts for skills admin dashboard")
+    def get(self):
+        conn = db.get_conn()
+        c = conn.cursor()
+
+        c.execute('''SELECT 
+                    (SELECT COUNT(*) FROM Candidate) AS candidate_count, 
+                    (SELECT COUNT(*) FROM Employer) AS employer_count,
+                    (SELECT COUNT(*) FROM CourseAdmin) AS course_admin_count,
+                    (SELECT COUNT(*) FROM SkillsBackpackAdmin) AS skills_admin_count''')
+
+        results = c.fetchone()
+        print(results)
+        
+        values = [
+            {'name': 'Candidates', 'count': results[0]},
+            {'name': 'Employers', 'count': results[1]},
+            {'name': 'Course Admins', 'count': results[2]},
+            {'name': 'Skills Admins', 'count': results[3]}]
+        
+        return_val = {
+            'ok': True,
+            'data': values
+        }
+        return return_val
+
+@api.route('/dash/activity')
+class DashActivity(Resource):
+    @api.doc(description="Get access activity for skills admin dashboard")
+    def get(self):
+        conn = db.get_conn()
+        c = conn.cursor()
+        
+        c.execute("SELECT time, user_type, count(user_type) FROM LoginActivity GROUP BY time, user_type")
+        results = c.fetchall()
+
+        grouped_results = sorted(results, key=lambda tup: tup[0])
+        values = []
+        for key, group in groupby(grouped_results, lambda x: x[0]):
+            print(key)
+            candidate_count = 0
+            employer_count = 0
+            course_admin_count = 0
+            skills_admin_count = 0
+            for item in group:
+                if (item[1] == 'candidate'):
+                    candidate_count += item[2]
+                elif (item[1] == 'employer'):
+                    employer_count += item[2]
+                elif (item[1] == 'courseAdmin'):
+                    course_admin_count += item[2]
+                elif (item[1] == 'skillsAdmin'):
+                    skills_admin_count += item[2]
+            entry = {
+                'name': key, 'candidate': candidate_count, 'employer': employer_count, 'courseAdmin': course_admin_count, 'skillsAdmin': skills_admin_count
+            }
+            values.append(entry)
+        
+        return_val = {
+            'ok': True,
+            'data': values
+        }
+
+        return return_val
+
+        
