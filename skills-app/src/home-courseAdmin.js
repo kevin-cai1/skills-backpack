@@ -7,6 +7,7 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { theme } from './App.js';
+import Navbar from "./Navbar";
 
 class Home_courseAdmin extends React.Component {
     constructor(props) {
@@ -20,6 +21,7 @@ class Home_courseAdmin extends React.Component {
     render() {
       return (
         <div className="A-page">
+          <Navbar/>
           <header className="App-header">
               <h1>Skills Backpack</h1>
           </header>

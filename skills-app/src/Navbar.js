@@ -44,6 +44,8 @@ export default function Navbar() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
     const history = useHistory();
+    const loggedIn = (SessionDetails.getEmail() != '') ? true : false;
+    const [auth, setAuth] = React.useState(loggedIn);
 
     const handleMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -56,10 +58,19 @@ export default function Navbar() {
     const handleLogout = () => {
         setAnchorEl(null);
         SessionDetails.removeEmail();
+        SessionDetails.removeName();
+        SessionDetails.removeType();
+        setAuth(false);
+        history.push("./");
     }
 
     const changeRoute = () => {
-        history.push("./home");
+        if (auth) {
+            history.push("./home");
+        }
+        else {
+            history.push("./");
+        }
     }
 
     return (
@@ -79,7 +90,7 @@ export default function Navbar() {
                             </div>
                         </div>
                         {
-                            (SessionDetails.getEmail() != "") ?
+                            (auth) ?
                                 <div style={{"margin-left":"auto","margin-right":"0"}}>
                                     <IconButton
                                         aria-label="account of current user"

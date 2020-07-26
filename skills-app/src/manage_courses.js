@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogContentText, DialogActions, TextField, For
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { Autocomplete, Alert} from '@material-ui/lab';
 import { theme } from './App.js';
+import Navbar from "./Navbar";
 
 class Manage_Courses extends React.Component {
   constructor(props) {
@@ -238,6 +239,7 @@ class Manage_Courses extends React.Component {
   render() {
     return(
       <div>
+        <Navbar/>
         <header className="App-header">
             <h1>Skills Backpack</h1>
         </header>

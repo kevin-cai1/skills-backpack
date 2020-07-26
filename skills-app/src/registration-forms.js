@@ -11,6 +11,7 @@ import { MuiThemeProvider } from '@material-ui/core/styles';
 import { theme } from './App.js'
 import { DatePicker, InlineDatePicker } from "@material-ui/pickers";
 import ReactCSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
+import Navbar from "./Navbar";
 
 
 class Register extends React.Component {
@@ -295,6 +296,7 @@ class Register extends React.Component {
         }
         return (
             <div className="Register-page">
+              <Navbar/>
               <header className="App-header">
                   <h1>Skills Backpack</h1>
               </header>

@@ -9,6 +9,7 @@ import { theme } from './App.js'
 import SessionDetails from "./SessionDetails";
 import LanguageIcon from "@material-ui/core/SvgIcon/SvgIcon";
 import EmailIcon from '@material-ui/icons/Email';
+import Navbar from "./Navbar";
 
 const filter = createFilterOptions();
 
@@ -123,6 +124,7 @@ class Home_Employer extends React.Component {
     render () {
         return (
             <div className="A-page">
+                <Navbar/>
                 <header className="App-header">
                     <h1>Skills Backpack</h1>
                 </header>

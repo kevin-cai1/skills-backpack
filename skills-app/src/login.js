@@ -12,6 +12,7 @@ import { Alert } from '@material-ui/lab';
 import './login.css';
 import { Redirect } from 'react-router-dom';
 import SessionDetails from './SessionDetails';
+import Navbar from "./Navbar";
 
 const theme = createMuiTheme({
     palette: {
@@ -128,6 +129,7 @@ class Login extends React.Component {
         } else {
             return (
                 <div className="App">
+                    <Navbar/>
                     <header className="App-header">
                         <h1>Skills Backpack</h1>
                     </header>

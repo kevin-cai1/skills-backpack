@@ -21,6 +21,7 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { Alert } from '@material-ui/lab';
 import { theme } from './App.js';
 import MaterialTable from 'material-table';
+import Navbar from "./Navbar";
 
 
 class Home_Candidate extends React.Component {
@@ -224,6 +225,7 @@ class Home_Candidate extends React.Component {
   render() {
     return (
       <div className="A-page">
+        <Navbar/>
         <header className="App-header">
             <h1>Skills Backpack</h1>
         </header>

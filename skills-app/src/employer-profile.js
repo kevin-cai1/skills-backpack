@@ -22,6 +22,7 @@ import {Link} from "react-router-dom";
 import EmailIcon from '@material-ui/icons/Email';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import Navbar from "./Navbar";
 
 class Employer_Profile extends React.Component{
     constructor(props) {
@@ -197,6 +198,7 @@ class Employer_Profile extends React.Component{
     render() {
         return (
             <div>
+                <Navbar/>
                 <header className="App-header">
                     <h1>Skills Backpack</h1>
                 </header>
