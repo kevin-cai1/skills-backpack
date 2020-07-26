@@ -159,20 +159,19 @@ class Candidate_EPortfolio extends React.Component{
     }
 
     handleEditAccount() {
-        // return this.postNewAccountDetails().then( (response) => {
-        //     console.log(response);
-            // let status = response["ok"];
-            let status = true;
+        return this.postNewAccountDetails().then( (response) => {
+            console.log(response);
+            let status = response["ok"];
             if (status) {
                 this.setState({accountUpdated: true});
             }
             this.componentDidMount();
-        // });
+        });
     }
 
     postNewAccountDetails() {
         let data = JSON.stringify({
-            "user": SessionDetails.getEmail(),
+            "email": SessionDetails.getEmail(),
             "name": this.state.userName,
             "university": this.state.userUni,
             "degree": this.state.userDegree,
@@ -514,19 +513,15 @@ class Candidate_EPortfolio extends React.Component{
                 <body className="column-container">
                 <div className="center-align-container">
                     <div style={{'display': 'inline-block', 'padding-top':'50px'}}>
-                        <div className="row-container">
-                            <div className="center-align-container">
-                                <div style={{'display': 'inline-block','padding-left':'180px'}}>
-                                    <div><AccountCircleIcon style={{ fontSize: 100 }}/></div>
+                        <div><AccountCircleIcon style={{ fontSize: 100 }}/></div>
+                        <div style={{color: 'dimgrey', "margin":"15px 0px 15px 0px", "padding-left":"20px"}}>
+                            <h2>
+                                {this.state.profile.name}&nbsp;&nbsp;&nbsp;
+                                <div style={{'display':'inline-block'}}>
+                                    <EditIcon style={{ fontSize: 25, 'cursor': 'pointer', 'color':'#2D9CDB'}} onClick={this.handleEditAccountModal}/>
                                 </div>
-                            </div>
-                            <div style={{'overflow':'hidden'}}>
-                                <div style={{'float':'right','padding-left':'175px', 'color':'#2D9CDB'}}>
-                                    <div><EditIcon style={{ fontSize: 25, 'cursor': 'pointer'}} onClick={this.handleEditAccountModal}/></div>
-                                </div>
-                            </div>
+                            </h2>
                         </div>
-                        <div style={{color: 'dimgrey', "margin":"15px 0px 15px 0px"}}><h2>{this.state.profile.name}</h2></div>
                         <h5 style={{"margin":"5px 0px 5px 0px"}}>{this.state.profile.degree} &middot; {this.state.profile.gradYear} Graduate</h5>
                         <div className="row-container">
                             <div className="user-profile-details-row">
