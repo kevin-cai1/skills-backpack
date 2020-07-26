@@ -296,6 +296,7 @@ class Register extends React.Component {
         }
         return (
             <div className="App">
+              <Navbar/>
               <header className="App-header">
                   <h1>Skills Backpack</h1>
               </header>
