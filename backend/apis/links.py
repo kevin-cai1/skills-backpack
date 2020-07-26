@@ -37,15 +37,11 @@ class TrackingInfo(Resource):
         try:
             c.execute("SELECT c.link, t.time, c.tag FROM Candidate_Links c LEFT OUTER JOIN TrackingInfo t ON t.link = c.link WHERE c.email = ?", (user,))
             results = c.fetchall()
-            print("RESUTLSSS")
-            print(results)
         except db.sqlite3.Error as e:
             api.abort(400, 'invalid query {}'.format(e), ok = False)
             print(e)
         
         conn.close()
-        print(results)
-        print("ASDHFASDFASDFADFASDFASDF")
         grouped_results = sorted(results, key=lambda tup: tup[0])
         entries = []
 

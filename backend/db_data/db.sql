@@ -209,4 +209,12 @@ CREATE TABLE TrackingInfo (
 	FOREIGN KEY (link)
 		REFERENCES Candidate_Links (link)
 		ON DELETE CASCADE
-)
+);
+
+DROP TABLE IF EXISTS LoginActivity;
+CREATE TABLE LoginActivity (
+	email TEXT,
+	user_type TEXT NOT NULL,
+	time TEXT,
+	PRIMARY KEY (email, time)
+);
