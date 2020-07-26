@@ -15,6 +15,7 @@ import {theme} from "./App";
 import SchoolIcon from '@material-ui/icons/School';
 import EmailIcon from '@material-ui/icons/Email';import LanguageIcon from '@material-ui/icons/Language';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import Navbar from "./Navbar";
 
 
 const chipNames = [
@@ -76,6 +77,7 @@ class View_EPortfolio extends React.Component{
     render() {
         return (
             <div>
+                <Navbar/>
                 <header className="App-header">
                     <h1>Skills Backpack</h1>
                 </header>

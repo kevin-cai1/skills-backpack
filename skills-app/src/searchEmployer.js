@@ -8,6 +8,7 @@ import {Button, ButtonGroup, Card, CardActions, CardContent} from '@material-ui/
 import { theme } from './App.js'
 import EmailIcon from '@material-ui/icons/Email';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
+import Navbar from "./Navbar";
 
 class SearchEmployer extends React.Component {
     constructor(props) {
@@ -112,6 +113,7 @@ class SearchEmployer extends React.Component {
     render () {
         return (
             <div className="A-page">
+                <Navbar/>
                 <header className="App-header">
                     <h1>Skills Backpack</h1>
                 </header>

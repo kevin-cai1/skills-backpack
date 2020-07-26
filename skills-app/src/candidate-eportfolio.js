@@ -27,6 +27,7 @@ import LanguageIcon from '@material-ui/icons/Language';
 import EditIcon from '@material-ui/icons/Edit';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import DeleteIcon from '@material-ui/icons/Delete';
+import Navbar from "./Navbar";
 
 const chipNames = [
     {name: 'css'},
@@ -506,6 +507,7 @@ class Candidate_EPortfolio extends React.Component{
     render() {
         return (
             <div>
+                <Navbar/>
                 <header className="App-header">
                     <h1>Skills Backpack</h1>
                 </header>

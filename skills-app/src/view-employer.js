@@ -23,6 +23,7 @@ import EmailIcon from '@material-ui/icons/Email';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
+import Navbar from "./Navbar";
 
 class View_Employer extends React.Component{
     constructor(props) {
@@ -109,6 +110,7 @@ class View_Employer extends React.Component{
     render() {
         return (
             <div>
+                <Navbar/>
                 <header className="App-header">
                     <h1>Skills Backpack</h1>
                 </header>

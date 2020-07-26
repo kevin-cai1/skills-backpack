@@ -1,7 +1,8 @@
 // add new routes here
 
 import React from 'react';
-import { Route, Link, BrowserRouter as Router } from 'react-router-dom';
+import { Route, Link, Switch, BrowserRouter as Router } from 'react-router-dom';
+import SessionDetails from './SessionDetails';
 import Login from './login';
 import Register from './registration-forms';
 import App from './App';
@@ -25,7 +26,6 @@ import View_Employer from './view-employer';
 
 const allRoutes = () => (
     <Router>
-        <Navbar/>
         <Route exact path="/" component={App} />
         <Route exact path="/login" component={Login} />
         <Route exact path="/register" component={Register} />

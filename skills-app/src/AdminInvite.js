@@ -15,6 +15,7 @@ import {
     createMuiTheme, MuiThemeProvider
 } from '@material-ui/core';
 import SessionDetails from './SessionDetails';
+import Navbar from "./Navbar";
 
 const theme = createMuiTheme({
     palette: {
@@ -173,6 +174,7 @@ class AdminInvite extends React.Component {
             console.log("RENDER")
             return (
                 <div className="App">
+                    <Navbar/>
                     <header className="App-header">
                         <h1>Skills Backpack</h1>
                     </header>
