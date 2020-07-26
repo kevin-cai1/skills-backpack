@@ -78,9 +78,6 @@ export default function Navbar() {
             <MuiThemeProvider theme={theme}>
                 <AppBar position="static" color="primary">
                     <Toolbar>
-                        <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" color="secondary">
-                            <MenuIcon />
-                        </IconButton>
                         <div onClick={changeRoute} style={{"overflow":"auto","cursor": "pointer"}}>
                             <div style={{"float":"left"}}><AssignmentTurnedInIcon /></div>
                             <div style={{"overflow":"hidden"}}>
