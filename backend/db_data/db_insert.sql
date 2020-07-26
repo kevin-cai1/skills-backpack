@@ -8,10 +8,10 @@ VALUES
 	--('alexgu@uts.edu.au', 'Alex Gu', 'UTS', 'alex'
 
 -- Inserting data into Employer table
-INSERT INTO Employer (email, name, graduateCriteria, password, company)
+INSERT INTO Employer (email, name, password, company)
 VALUES
-	('macquariegroup@gmail.com', 'Macquarie HR Rep', 'smart', 'password', 'Macquarie Group'),
-	('google@gmail.com', 'Google', 'Google HR Rep', 'password', 'Google');
+	('macquariegroup@gmail.com', 'Macquarie HR Rep', 'password', 'Macquarie Group'),
+	('google@gmail.com', 'Google HR Rep', 'password', 'Google');
 	--('atlassian@gmail.com', 'Atlassian', 'leadership', 'C++', 'atlassian')
 
 -- Inserting data into CourseAdmin table
@@ -42,6 +42,7 @@ VALUES
 	('hacking'),
 	('coding'),
 	('object oriented programming'),
+	('Python'),
 	('SQL');
 
 -- Inserting data into GraduateOutcomes table
@@ -79,10 +80,9 @@ VALUES
 INSERT INTO Course_LearnOutcomes(l_outcome, code, university)
 VALUES
 	(1, 'COMP1000', 'USYD'),
+	(2, 'COMP1511', 'UNSW'),
 	(1, 'COMP3900', 'UNSW'),
 	(2, 'COMP3900', 'UNSW'),
-	(3, 'COMP6969', 'UNSW'),
-	(4, 'COMP6969', 'UNSW'),
 	(2, 'COMP1000', 'USYD'),
 	(2, 'COMP4200', 'USYD'),
 	(3, 'COMP4200', 'USYD');
@@ -91,18 +91,16 @@ VALUES
 INSERT INTO Course_GradOutcomes(g_outcome, code, university)
 VALUES
 	(1, 'COMP3900', 'UNSW'),
+	(2, 'COMP1511', 'UNSW'),
 	(12, 'COMP1000', 'USYD'),
 	(14, 'COMP4200', 'USYD'),
-	(16, 'COMP4200', 'USYD'),
-	(4, 'COMP6969', 'UNSW'),
-	(2, 'COMP6969', 'UNSW');
+	(16, 'COMP4200', 'USYD');
 
 -- Inserting data into ePortfolio_courses table
 INSERT INTO ePortfolio_Courses (EP_ID, code, university)
 VALUES
 	('charmaineleung@unsw.edu.au', 'COMP3900', 'UNSW'),
 	('mirannakamura@usyd.edu.au', 'COMP1000', 'USYD'),
-	('charmaineleung@unsw.edu.au', 'COMP6969', 'UNSW'),
 	('mirannakamura@usyd.edu.au', 'COMP4200', 'USYD');
 
 
@@ -112,13 +110,15 @@ VALUES
 	('DhcYTRw9sOW5S9kWCacw', 'charmaineleung@unsw.edu.au', 'CBA'),
 	('2fTDuxArAR4G5Z1FEbJj', 'mirannakamura@usyd.edu.au', 'UNSW');
 
---INSERT INTO Skill (id, name)
---VALUES
---	(1, 'Python'),
---	(2, 'C Programming'),
---	(3, 'Java'),
---	(4, 'MIPS');
+-- Inserting data into Skill table
+INSERT INTO Skill (id, name)
+VALUES
+	(1, 'Python'),
+	(2, 'C Programming'),
+	(3, 'Java'),
+	(4, 'MIPS');
 
+-- Inserting data into employer_skill table
 INSERT INTO Employer_Skill (employer, skillID)
 VALUES
 	('macquariegroup@gmail.com', 1),
@@ -132,3 +132,10 @@ VALUES
 	('mirannakamura@usyd.edu.au', 2),
 	('mirannakamura@usyd.edu.au', 3),
 	('mirannakamura@usyd.edu.au', 4);
+
+INSERT INTO Employer_GradOutcomes (employerEmail, gradOutcomeID)
+VALUES
+--	('macquariegroup@gmail.com', 1),
+	('macquariegroup@gmail.com', 2),
+	('google@gmail.com', 3),
+	('google@gmail.com', 4);

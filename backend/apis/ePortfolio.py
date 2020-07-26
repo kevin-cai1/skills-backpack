@@ -116,7 +116,6 @@ class ePortfolio(Resource):
         req = request.get_json()
         conn = db.get_conn()
         c = conn.cursor()
-        
         try:
             c.execute('INSERT INTO ePortfolio_Courses(EP_ID, code, university) VALUES(?, ?, ?)', (email, req['code'], req['university']))
         except db.sqlite3.Error as e:

@@ -16,7 +16,7 @@ candidate_criteria = api.model('candidate criteria', {
 })
 
 # helper function to iterate through all attributes and find matches
-# searches if a candidate matches a specific skill
+# searches if an candidate matches a specific skill
 def findEPs(candidate_email, attribute, c, res):
     # iterate through each grad outcome associated with the specified candidate email
     # change the search variable to lowercase to make search case insensitive
@@ -153,6 +153,7 @@ def all_employers():
     employers = c.execute('SELECT email FROM Employer').fetchall()
     for e in employers:
         res.append(e[0])
+    conn.close()
     return res
 
 
@@ -160,39 +161,33 @@ def all_employers():
 def emailMatches(candidate_email):       
     conn = db.get_conn()
     c = conn.cursor()
+    c2 = conn.cursor()
     employer_list = all_employers()
-    matched_criterias = []
     status = False
     sender_email = 'skillsbackpack@gmail.com'
     
     for employer in employer_list:
         employer_email = employer
-        # clears list for every new employer search
+        # matching up gradoutcomes
         employer_criteria = []
+        matched_criterias = {}
+        for gradoutcome in c.execute('SELECT g.g_outcome FROM GraduateOutcomes g, Employer e, Employer_GradOutcomes eg WHERE g.id = eg.gradOutcomeID AND e.email = eg.employerEmail AND e.email = ?', (employer,)):
+            employer_criteria.append(gradoutcome[0])
+            findEPs(candidate_email, gradoutcome[0], c2, matched_criterias)
         
-        employer_attributes = c.execute('SELECT graduateCriteria FROM Employer where company = ?', (employer)).fetchall
-        # get the attributes for employers
-        for job_criteria in employer_attributes:
-            
-            # list of criteria for this employer
-            employer_criteria.append(job_criteria)
-            
-            # adds matched criterias
-            findEPs(candidate_email, job_criteria, c, matched_criterias)
+        # matching up job skills 
+        for employer_skillcriteria in c.execute('SELECT s.name FROM Skill s, Employer_Skill es, Employer e WHERE s.id = es.skillID AND e.email = es.employer and e.email = ?', (employer,)):
+            employer_criteria.append(employer_skillcriteria[0])
+            findEPs(candidate_email, employer_skillcriteria[0], c2, matched_criterias)
         
-        employer_skillID = c.execute('SELECT skillID FROM Employer_Skill where employer = ?', (employer)).fetchall
-        for id in employer_skillID:
-            skillname = c.execute('SELECT name FROM Skill where id = ?', (id))
-            employer_criteria.append(skillname)
-
-        if (len(matched_criterias) == len(employer_criteria)):
-            
+        print(employer, matched_criterias, employer_criteria)
+        if (len(matched_criterias[candidate_email]) == len(employer_criteria)):
             # send email
             message = Mail(
                 from_email=sender_email,
                 to_emails=employer_email,
                 subject='A new candidate matched your job criteria!',
-                html_content='<h1>Congratulations! </h1><strong> {} has matched all your job search criteria. Please login to Skills Backpack!</strong><br><br><a href="http://localhost:3000/login">Click here</a>  to view their details'.format(email)
+                html_content='<h1>Congratulations! </h1><strong> {} has matched all your job search criteria. Please login to Skills Backpack!</strong><br><br><a href="http://localhost:3000/login">Click here</a>  to view their details'.format(candidate_email)
             )
 
             message.dynamic_template_data = {
@@ -223,11 +218,3 @@ def emailMatches(candidate_email):
                     'ok' : False,
                 }
         
-    returnV = {
-        'status' : status
-        # 'count' : count,
-        #'res' : len(match)
-    }        
-    return returnV
-
-    
