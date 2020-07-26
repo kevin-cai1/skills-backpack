@@ -68,7 +68,7 @@ class Home_Candidate extends React.Component {
     if (reason === 'clickaway') {
       return;
     }
-    
+
     this.setState({clipboard_open: false});
   }
 
@@ -115,7 +115,7 @@ class Home_Candidate extends React.Component {
       this.componentDidMount();
     });
   }
-  
+
   deleteLink(id) {
     let url = 'http://localhost:5000/ePortfolio/candidate/' + id;
     return fetch(url, {
@@ -269,7 +269,7 @@ class Home_Candidate extends React.Component {
                 detailPanel={[
                   {
                     tooltip: 'Show Access Times',
-                    render: rowData => { 
+                    render: rowData => {
                       return (
                         <div className="link_times">
                           <h3>Link Access Times</h3>
@@ -289,7 +289,7 @@ class Home_Candidate extends React.Component {
                             )
                           })}
                           <p></p>
-                          
+
                         </div>
                       )
                     },
