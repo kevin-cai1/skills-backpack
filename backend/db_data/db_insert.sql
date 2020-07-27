@@ -10,7 +10,7 @@ VALUES
 -- Inserting data into Employer table
 INSERT INTO Employer (email, name, password, company)
 VALUES
-	('macquariegroup@gmail.com', 'Macquarie HR Rep', 'password', 'Macquarie Group'),
+	('gordon.xie1@hotmail.com', 'Macquarie HR Rep', 'password', 'Macquarie Group'),
 	('google@gmail.com', 'Google HR Rep', 'password', 'Google');
 	--('atlassian@gmail.com', 'Atlassian', 'leadership', 'C++', 'atlassian')
 
@@ -102,6 +102,7 @@ VALUES
 	('charmaineleung@unsw.edu.au', 'COMP3900', 'UNSW'),
 	('mirannakamura@usyd.edu.au', 'COMP1000', 'USYD'),
 	('mirannakamura@usyd.edu.au', 'COMP4200', 'USYD');
+--	('charmaineleung@unsw.edu.au', 'COMP1511', 'UNSW');
 
 
 -- Inserting data into Candidate_Links table
@@ -121,8 +122,8 @@ VALUES
 -- Inserting data into employer_skill table
 INSERT INTO Employer_Skill (employer, skillID)
 VALUES
-	('macquariegroup@gmail.com', 1),
-	('macquariegroup@gmail.com', 2),
+	('gordon.xie1@hotmail.com', 1),
+	('gordon.xie1@hotmail.com', 2),
 	('google@gmail.com', 2);
 
 INSERT INTO ePortfolio_Skill (candidate, skillID)
@@ -136,7 +137,7 @@ VALUES
 
 INSERT INTO Employer_GradOutcomes (employerEmail, gradOutcomeID)
 VALUES
-	('macquariegroup@gmail.com', 1),
-	('macquariegroup@gmail.com', 2),
+	('gordon.xie1@hotmail.com', 1),
+	('gordon.xie1@hotmail.com', 2),
 	('google@gmail.com', 3),
 	('google@gmail.com', 4);
