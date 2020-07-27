@@ -46,103 +46,6 @@ def findEPs(candidate_email, attribute, c, res):
             res[candidate_email] = new_entry
             return
     return
-
-
-# now res is a list of candidates with the skills that match inside
-
-@api.route('/match')
-class Email(Resource):
-    @api.expect(candidate_criteria)
-    @api.doc(description = 'emails employees the details of candidates who match all criteria')
-    def post(self):
-        conn = db.get_conn()
-        c = conn.cursor()
-        c2 = conn.cursor()
-        req = request.get_json()
-        unsorted_candidates = {}
-        res = []
-        employer_email = req['employer_email']
-        sender_email = 'skillsbackpack@gmail.com'
-        
-        for a in req['criteria']:
-            for candidate_email in c.execute('SELECT email FROM Candidate'):
-                # iterates through all candidates and their attributes. appends matches to the dictionary 
-                # (unsorted_candidates) with the email as the key a list of matches as the value
-                findEPs(candidate_email[0], a, c2, unsorted_candidates) 
-        
-        # sorting the dictionary by length of each value list
-        sorted_keys = sorted(unsorted_candidates, key=lambda i: len(unsorted_candidates[i]), reverse=True) 
-        
-        # count = 0
-        # iterating through sorted list of candidates with matching criterias
-        # (first entry has the most matches, last entry has the least)
-        for candidate in sorted_keys: 
-            # count = count + 1
-            # if the number of attributes a candidate has is the same and number of attributes
-            # and employer wants, send the employer and email
-            if (len(unsorted_candidates[candidate]) == len(req['criteria'])):
-                email = candidate
-                candidate_row = c.execute('SELECT name, degree FROM Candidate WHERE email = ?', (email,)).fetchone()
-                name, degree = candidate_row[0], candidate_row[1]
-                new_entry = {
-                        'email' : email,
-                        'name' : name,
-                        'degree' : degree,
-                        'matching skills' : unsorted_candidates[email]
-                }
-                res.append(new_entry) # append each candidate entries to the final result
-        
-        for candidate in res:
-
-                # send email
-                message = Mail(
-                    from_email=sender_email,
-                    to_emails=employer_email,
-                    subject='A new candidate matched your job criteria!',
-                    html_content='<h1>Congratulations! </h1><strong> {} has matched all your job search criteria. Please login to Skills Backpack!</strong><br><br><a href="http://localhost:3000/login">Click here</a>  to view their details'.format(email)
-                )
-
-                message.dynamic_template_data = {
-                    'header': "{} has matched your job search critera!".format(email),
-                    'text': "To view their details, please click the link below",
-                    'c2a_link': "http://localhost:3000/login/",
-                    'c2a_button': "View details"
-                }
-                message.template_id = 'd-165f1bd189884256a10ee0c090fe3a44'
-                print(os.environ.get('SENDGRID_API_KEY'))
-                API_key = "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"
-
-                try:
-                    sg = SendGridAPIClient(API_key)
-                    response = sg.send(message)
-                    print(response.status_code)
-                    print(response.body)
-                    print(response.headers)
-                    returnVal = {
-                        'status_code' : response.status_code,
-                        'ok' : True,
-                        'details' : res,
-                    }
-                except Exception as e:
-                    print(e)
-                    returnVal = {
-                        'status_code' : 'email not sent, check valid emplohyer email',
-                        'ok' : False,
-                        'details' : res,
-                    }
-        if len(res) == 0:
-            returnVal = {
-            'status_code' : 'no users match all criteria',
-            'ok' : False,
-        } 
-        
-        returnV = {
-            'return Val' : returnVal,
-            # 'count' : count,
-            'res' : len(res)
-        }        
-        return returnV
-
         
 # get list of all employers giving email
 def all_employers():
@@ -182,6 +85,7 @@ def emailMatches(candidate_email):
         
         print(employer, matched_criterias, employer_criteria)
         if (len(matched_criterias[candidate_email]) == len(employer_criteria)):
+            print('sending email from {} to {}'.format(sender_email, employer_email))
             # send email
             message = Mail(
                 from_email=sender_email,

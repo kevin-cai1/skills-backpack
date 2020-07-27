@@ -123,8 +123,8 @@ class ePortfolio(Resource):
             print(e)
 
         conn.commit()
-        conn.close()
         emailMatches(email)
+        conn.close()
         return_val = {
                 'ok' : True,
                 'account' : email,

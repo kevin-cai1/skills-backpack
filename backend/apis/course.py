@@ -1,5 +1,6 @@
 from flask_restplus import Namespace, Resource, fields
 from flask import request, jsonify
+from .match import emailMatches 
 
 import db
 
@@ -327,8 +328,6 @@ class editcourse(Resource):
                     api.abort(400, 'invalid query {}'.format(e), ok = False)
                     print(e)
 
-
-
         # now that we've removed edited out outcomes, we can add all the learning/grad outcomes to their respective tables. Should automatically filter out duplicates.
         for learning_outcome in req['learningOutcomes'].split(','):
             learning_outcome = learning_outcome.strip()
@@ -361,9 +360,13 @@ class editcourse(Resource):
         except db.Sqlite3.Error as e:
             api.abort(400, 'invalid query {}'.format(e), ok = False)
             print(e)
-
         
         conn.commit()
+
+        # check if existing candidates who were previously enrolled in the course now have matching skills with an employers skills criteria
+        for candidate in c.execute('SELECT c.email FROM Candidate c, ePortfolio_Courses ec, Course co WHERE c.email = ec.EP_ID AND ec.code = co.code AND ec.university = co.university AND co.code = ? AND co.university = ?', code_course):
+            emailMatches(candidate[0])
+        
         conn.close()
         course = {
             'code' : req['code'],

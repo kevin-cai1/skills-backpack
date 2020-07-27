@@ -1,5 +1,6 @@
 from flask_restplus import Namespace, Resource, fields
 from flask import request, jsonify
+from .match import emailMatches
 
 import db
 from pprint import pprint
@@ -7,7 +8,7 @@ from pprint import pprint
 api = Namespace('Skills', description='Endpoints that manage the system stored list of job skills')
 
 skill_package = api.model('skill', {
-    'id' : fields.Integer(description='id of skill to add. -1 if skill is not defined', required=True),
+    'id' : fields.Integer(description='id of skill to add. -1 if skill is not defined'),
     'name' : fields.String(description='name of the skill')
 })
 
@@ -171,9 +172,11 @@ class UserSkills(Resource):
                 except db.sqlite3.Error as e:
                     api.abort(400, 'invalid query {}'.format(e), ok = False)
                     print(e)
-        
+       
         conn.commit()
         conn.close()
+        if userType == "candidate":
+            emailMatches(email)
 
         return_val = {
             'ok': True,
@@ -269,6 +272,11 @@ class UserSkills(Resource):
             c.execute("DELETE FROM Employer_Skill WHERE employer = ? AND skillID = ?", (email, skillID,))
         
         conn.commit()
+
+        if userType != "candidate":
+            for candidate in c.execute('SELECT email FROM Candidate'):
+                emailMatches(candidate[0])
+        
         conn.close()
 
         return_val = {

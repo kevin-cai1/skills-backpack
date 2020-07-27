@@ -122,6 +122,7 @@ VALUES
 INSERT INTO Employer_Skill (employer, skillID)
 VALUES
 	('macquariegroup@gmail.com', 1),
+	('macquariegroup@gmail.com', 2),
 	('google@gmail.com', 2);
 
 INSERT INTO ePortfolio_Skill (candidate, skillID)
@@ -135,7 +136,7 @@ VALUES
 
 INSERT INTO Employer_GradOutcomes (employerEmail, gradOutcomeID)
 VALUES
---	('macquariegroup@gmail.com', 1),
+	('macquariegroup@gmail.com', 1),
 	('macquariegroup@gmail.com', 2),
 	('google@gmail.com', 3),
 	('google@gmail.com', 4);
