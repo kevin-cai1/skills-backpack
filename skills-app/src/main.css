@@ -111,3 +111,53 @@
     color: #2D9CDB;
 }
 
+.home-float-container {
+    padding-top: 50px;
+    overflow: hidden;
+}
+
+.float-right-box {
+    float: right;
+    margin-right: 90px;
+}
+
+.float-left-box {
+    float: left;
+    margin-left: 120px;
+}
+
+.search-company-container {
+    padding-top: 10px;
+    overflow: hidden;
+}
+
+.no-text-transform {
+    text-transform: none;
+}
+
+.search-style {
+    width: 500px;
+    '& > * + *': margin-top: '3px',
+}
+
+.search-results {
+    margin: 15px 0px 140px 0px;
+}
+
+.center-box {
+    display: inline-block;
+}
+
+.result-p {
+    float: left;
+    font-style: normal;
+}
+
+.align-left-box {
+    overflow: hidden;
+}
+
+.skill-list-p {
+    float: left;
+    margin-top: 15px;
+}

@@ -1,28 +1,18 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import './home.css'
 import SessionDetails from './SessionDetails';
-import allRoutes from './routes';
-import {Link, Redirect, withRouter} from 'react-router-dom';
-import Box from '@material-ui/core/Box';
+import {Link, withRouter} from 'react-router-dom';
 import Button from '@material-ui/core/Button';
-import { spacing } from '@material-ui/system';
 import DeleteIcon from '@material-ui/icons/Delete';
-import {
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText, FormControl, FormHelperText, Input,
-    InputLabel, MenuItem, Select,
-    TextField,
-    Chip,
-    Card, CardContent, Typography, CardActions, ButtonGroup, Snackbar
-} from "@material-ui/core";
+import {Dialog, DialogContent, FormControl, TextField, Chip,
+    Card, CardContent, CardActions, ButtonGroup, Snackbar} from "@material-ui/core";
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { Alert } from '@material-ui/lab';
 import { theme } from './App.js';
 import MaterialTable from 'material-table';
 import Navbar from "./Navbar";
 import SearchIcon from '@material-ui/icons/Search';
+import apiHandler from './apiHandler';
 
 
 class Home_Candidate extends React.Component {
@@ -110,30 +100,18 @@ class Home_Candidate extends React.Component {
   }
 
   handleDeleteLink(object) {
-    console.log(object.link)
-    return this.deleteLink(object.link).then( (repsonse) => {
+    let path = 'ePortfolio/candidate/' + object.link;
+    return apiHandler(path, 'DELETE').then( (repsonse) => {
       this.componentDidMount();
     });
   }
 
-  deleteLink(id) {
-    let url = 'http://localhost:5000/ePortfolio/candidate/' + id;
-    return fetch(url, {
-        method: 'DELETE',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        }
-    }).then(response => {
-        console.log(response)
-        console.log('response ' + response.status)
-        return response.ok && response.json();
-    })
-        .catch(err => console.log('Error:', err));
-  }
-
   handleEPAdd() {
-      return this.sendEPLink().then( (response) => {
+      let path = 'ePortfolio/link/' + SessionDetails.getEmail();
+      let data = JSON.stringify({
+          "tag": this.state.linkTag
+      });
+      return apiHandler(path, 'POST', data).then( (response) => {
           console.log(response);
           this.clearModalFields();
           this.handleAddLinksModalClose();
@@ -145,28 +123,9 @@ class Home_Candidate extends React.Component {
     this.setState({linkTag: ''});
   }
 
-  sendEPLink() {
-    let data = JSON.stringify({
-        "tag": this.state.linkTag
-    });
-    let url = 'http://127.0.0.1:5000/ePortfolio/link/' + SessionDetails.getEmail();
-    console.log('Sending to ' + url + ': ' + data);
-
-    return fetch(url, {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: data
-    }).then(response => {
-        return response.ok && response.json();
-    })
-        .catch(err => console.log('Error:', err));
-  }
-
   fetchLinks() {
-    return this.getEportfolioLinks().then( (response) => {
+      let path = 'ePortfolio/link/' + SessionDetails.getEmail();
+      return apiHandler(path, 'GET').then( (response) => {
       if (response["ok"]) {
         console.log(response.links)
         this.setState({EP_Links: response.links})
@@ -175,46 +134,13 @@ class Home_Candidate extends React.Component {
   }
 
   fetchAccessTimes() {
-    return this.getEPAccessTimes().then( (response) => {
+      let path = 'link/info/' + SessionDetails.getEmail();
+      return apiHandler(path, 'GET').then( (response) => {
       if (response['ok']) {
         console.log(response.tracking_info)
         this.setState({access_times: response.tracking_info})
       }
     })
-  }
-
-  getEPAccessTimes() {
-    let url = 'http://127.0.0.1:5000/link/info/' + SessionDetails.getEmail();
-
-    console.log('Sending to ' + url);
-
-    return fetch(url, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      }
-    }).then(response => {
-      return response.json();
-    }).catch(err => console.log('Error:', err));
-  }
-
-  getEportfolioLinks() {
-    let url = 'http://127.0.0.1:5000/ePortfolio/link/' + SessionDetails.getEmail();
-
-    console.log('Sending to ' + url);
-
-    return fetch(url, {
-        method: 'GET',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        }
-    }).then(response => {
-        console.log(response)
-        return response.json();
-        console.log('response ' + response.status)
-    }).catch(err => console.log('Error:', err));
   }
 
   copyToClipboard(text) {
@@ -231,8 +157,8 @@ class Home_Candidate extends React.Component {
             <h1>Skills Backpack</h1>
         </header>
         <body className="column-container">
-            <div style={{'padding-top':'50px','overflow':'hidden'}}>
-                <div style={{'float':'right', 'marginRight':'90px'}}>
+            <div className="home-float-container">
+                <div className="float-right-box">
                     <MuiThemeProvider theme={theme}>
                         <ButtonGroup variant="contained"
                                      aria-label="contained primary button group">
@@ -243,8 +169,8 @@ class Home_Candidate extends React.Component {
                     </MuiThemeProvider>
                 </div>
             </div>
-            <div style={{'padding-top':'10px','overflow':'hidden'}}>
-                <div style={{'float':'left', 'marginLeft':'120px'}}>
+            <div className="search-company-container">
+                <div className="float-left-box">
                     <MuiThemeProvider theme={theme}>
                         <ButtonGroup variant="contained"
                                      aria-label="contained primary button group">
