@@ -19,6 +19,7 @@ link_body = api.model('link_body', {
 })
 
 @api.route('/<string:email>')
+@api.doc(params={'email': 'the email of a candidate in the system'})
 class ePortfolio(Resource):
     @api.doc(description="get ePortfolio details for specified user")
     def get(self, email):
@@ -26,6 +27,7 @@ class ePortfolio(Resource):
         conn = db.get_conn()
         c = conn.cursor()
 
+        # fetch user details
         c.execute("SELECT name, university, degree, gradYear FROM Candidate WHERE email = ?", (email,))
         user = c.fetchone()
 
@@ -40,6 +42,7 @@ class ePortfolio(Resource):
             'degree': user[2]
         }
 
+        # fetch job skills linked to user
         c.execute("SELECT id, name FROM Skill WHERE id IN (SELECT skillID from ePortfolio_Skill WHERE candidate = ?)", (email,))
         skill_results = c.fetchall()
         job_skills = []
@@ -51,7 +54,8 @@ class ePortfolio(Resource):
                 }
                 job_skills.append(entry)
 
-        employability_skills = []   # get function from gordon
+        employability_skills = []
+        # fetch employability skills linked to user
         c.execute('''select distinct o.id, o.g_outcome from Course c JOIN Course_GradOutcomes g ON c.code = g.code 
                 JOIN ePortfolio_Courses e ON e.code = c.code 
                 JOIN GraduateOutcomes o ON g.g_outcome = o.id WHERE e.EP_ID = ?''', (email,))
@@ -65,6 +69,7 @@ class ePortfolio(Resource):
             employability_skills.append(entry)
 
         courses = []
+        # fetch courses linked to user
         c.execute('''SELECT c.code, c.university, c.faculty, c.description, c.name, c.link, c.courseAdminEmail 
                 FROM Course c JOIN ePortfolio_Courses e ON c.code = e.code AND c.university = e.university WHERE e.EP_ID = ?''', (email,))
 
@@ -84,6 +89,7 @@ class ePortfolio(Resource):
                 courses.append(entry)
 
         employment = []
+        # fetch employment records of user
         c.execute('''SELECT id, description, startDate, endDate, employer, job_title FROM Employment WHERE candidate_email = ?''', (email,))
         employment_results = c.fetchall()
         if (employment_results != []):
@@ -152,8 +158,9 @@ class ePortfolio(Resource):
         return returnVal
 
 @api.route('/candidate/<string:link>')
+@api.doc(params={'link': 'the specified ePortfolio link'})
 class InviteToken(Resource):
-    @api.doc(description="Get the user associated with the given token")
+    @api.doc(description="Get the user associated with the given link token")
     def get(self, link):
         conn = db.get_conn()
         c = conn.cursor()
@@ -194,12 +201,14 @@ class InviteToken(Resource):
         return return_val
 
 @api.route('/link/<string:email>')
+@api.doc(params={'email': 'the email of a user in the system'})
 class GetTokens(Resource):
     @api.doc(description="Get all invite links for the given user")
     def get(self, email):
         conn = db.get_conn()
         c = conn.cursor()
 
+        # get link records for user
         c.execute("SELECT link, tag FROM Candidate_Links WHERE email = ?", (email,))
 
         linkResult = c.fetchall()
@@ -248,7 +257,7 @@ class GetTokens(Resource):
 
         return return_val
 
-
+# helper function to generate random link string
 def generateLink(length):
     alphabet = string.ascii_letters + string.digits
     link = ''.join(secrets.choice(alphabet) for i in range(length))

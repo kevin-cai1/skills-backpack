@@ -28,45 +28,40 @@ account_package = api.model('create', {
 @api.route('/login')
 class login(Resource):
     @api.expect(login_package)
+    @api.doc(description="Endpoint to handle login validation")
     def post(self):
         req = request.get_json(force=True)
-
-        conn= db.get_conn()
+        conn= db.get_conn() # get db connection
         c = conn.cursor()
 
+        # find user type of given user
         userType = ""
         c.execute("SELECT email, password, name FROM Candidate WHERE email = ?", (req['email'],))
-        account = c.fetchone() # returns 1 if exists
+        account = c.fetchone()
         details = None
         if (account != None and userType == ""):
-            print("Candidate")
             userType = "candidate"
             details = account
         c.execute("SELECT email, password, name FROM Employer WHERE email = ?", (req['email'],))
-        account = c.fetchone() # returns 1 if exists
+        account = c.fetchone()
         if (account != None and userType == ""):
-            print("Employer")
             userType = "employer"
             details = account
         c.execute("SELECT email, password, name FROM SkillsBackpackAdmin WHERE email = ?", (req['email'],))
-        account = c.fetchone() # returns 1 if exists
+        account = c.fetchone()
         if (account != None and userType == ""):
-            print("Skills Backpack Admin")
             userType = "skillsAdmin"
             details = account
         c.execute("SELECT email, password, name FROM CourseAdmin WHERE email = ?", (req['email'],))
-        account = c.fetchone() # returns 1 if exists
+        account = c.fetchone()
         if (account != None and userType == ""):
-            print("Course Admin")
             userType = "courseAdmin"
             details = account
         
-        print("=====================================")
         # if not in database
         if (userType == "" or details == None):
             api.abort(400, "User '{}' not found".format(req['email']), logged_in=False)
         
-        print(details)
         password = details[1]
         name = details[2]
         
@@ -79,7 +74,7 @@ class login(Resource):
                 'name' : name,
                 'user_type' : userType
             }
-            # log access
+            # log site access
             try:
                 time = datetime.now().strftime('%d-%m-%Y')
                 c.execute('INSERT INTO LoginActivity (email, user_type, time) VALUES (?, ?, ?)', (req['email'], userType, time))
@@ -96,17 +91,16 @@ class login(Resource):
         
         conn.close()
 
-        print(return_val)
         return return_val
 
 @api.route('/create')
 class createAccount(Resource):
     @api.expect(account_package)
+    @api.doc(description="Create an account")
     def post(self):
-        req = request.get_json()
+        req = request.get_json(force=True)
         conn = db.get_conn()
         c = conn.cursor()
-        print(req)
         # check type of account
         accountType = req['user_type']
         password = req['password']
@@ -120,6 +114,7 @@ class createAccount(Resource):
         if (account_check == 1):    # user already exists
             api.abort(400, "User '{}' already exists".format(req['email']), ok=False)
 
+        # save user data into db
         if (accountType == "candidate"):
             try:
                 c.execute("INSERT INTO Candidate values (?,?,?,?,?,?)",(req['email'], req['name'], req['university'], hashed_password, req['degree'], req['gradYear'],))
@@ -194,6 +189,8 @@ class createAccount(Resource):
 
         return return_val
 
+
+# helper function to generate temporary password
 def generatePassword(length):
     alphabet = string.ascii_letters + string.digits
     password = ''.join(secrets.choice(alphabet) for i in range(length))

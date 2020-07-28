@@ -48,11 +48,12 @@ class SkillsAdminAccount(Resource):
 @api.route('/new/<string:email>')
 @api.doc(params={'email': 'the email of the skillsBackpack admin account'})
 class SkillsAdminInfo(Resource):
-    @api.doc(description="Gets if the admin is new or not (needs to change password)")
+    @api.doc(description="Gets if the admin is new or not (needs to change password). Returns true for first time logins")
     def get(self, email):
         conn = db.get_conn()
         c = conn.cursor()
 
+        # fetch flag for new accounts
         c.execute("SELECT newAccount FROM SkillsBackpackAdmin WHERE email = ?", (email,))
         newAccount = c.fetchone()
         
@@ -61,7 +62,6 @@ class SkillsAdminInfo(Resource):
             api.abort(400, "User '{}' not found".format(email), ok=False)
         
         newAccount = newAccount[0]
-        print(newAccount)
         if newAccount == 1:
             return {
                 'ok' : 'True',
@@ -115,15 +115,12 @@ class accounts(Resource):
         return 0
         
 
-
-
 @api.route('/<string:account>')
 class accountInfo(Resource):
     def get(self, account):
         conn = db.get_conn()
         c = conn.cursor()
         
-
         c.execute("SELECT EXISTS(SELECT email FROM SkillsBackpackAdmin WHERE email = ?)", (account,))
         account_check = c.fetchone()[0]
         
@@ -220,7 +217,6 @@ class DashInfo(Resource):
                     (SELECT COUNT(*) FROM SkillsBackpackAdmin) AS skills_admin_count''')
 
         results = c.fetchone()
-        print(results)
         
         values = [
             {'name': 'Candidates', 'count': results[0]},
@@ -241,13 +237,14 @@ class DashActivity(Resource):
         conn = db.get_conn()
         c = conn.cursor()
         
+        # select all log activity
         c.execute("SELECT time, user_type, count(user_type) FROM LoginActivity GROUP BY time, user_type")
         results = c.fetchall()
 
-        grouped_results = sorted(results, key=lambda tup: tup[0])
+        grouped_results = sorted(results, key=lambda tup: tup[0])   # sort log activity by time
         values = []
-        for key, group in groupby(grouped_results, lambda x: x[0]):
-            print(key)
+        # group log activity by time
+        for key, group in groupby(grouped_results, lambda x: x[0]): # iterate through grouped time dict
             candidate_count = 0
             employer_count = 0
             course_admin_count = 0

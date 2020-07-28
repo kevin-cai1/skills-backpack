@@ -2,6 +2,7 @@
 # handle db operations - initialising db from sql, getting db connections
 import sqlite3
 
+# handle db resource sharing
 def get_conn():
     conn = None
     try:
@@ -35,13 +36,14 @@ def insert_data(db):
     cursor = db.cursor()
     cursor.executescript(sql_script)
 
+# load skills from txt file into db
 def load_skills(db):
     f = open('./linkedin_skills.txt', "r")
     cursor = db.cursor()
     count = 0
     for line in f:
         count += 1
-        if (count % 2 == 0):
+        if (count % 2 == 0):    # half the sample data size to improve performance
             try:
                 cursor.execute("INSERT OR IGNORE INTO Skill (name) VALUES (?)", (line.rstrip(),))
             except sqlite3.IntegrityError as e:
