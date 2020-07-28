@@ -9,6 +9,7 @@ import { spacing } from '@material-ui/system';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import SessionDetails from './SessionDetails';
 import Background from './images/employer.jpg';
+import Navbar from "./Navbar";
 
 const theme = createMuiTheme({
   palette: {
@@ -29,6 +30,7 @@ function App() {
   } else {
     return (
         <div>
+            <Navbar/>
             <img src={Background} style={{width:"100%"}}></img>
             <div className="centered">
                 <h1 className="app-title">Skills Backpack</h1>

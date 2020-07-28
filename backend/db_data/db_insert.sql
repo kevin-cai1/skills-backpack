@@ -3,14 +3,17 @@
 -- Inserting data into candidate table
 INSERT INTO Candidate (email, name, university, password, degree, gradYear) 
 VALUES 
-	('charmaineleung@unsw.edu.au', 'Charmaine Leung', 'UNSW', 'charmaine', 'Computer Science', 2021),
-	('mirannakamura@usyd.edu.au', 'Miran Nakamura', 'USYD', 'miran', 'Computer Science', 2021);
+	('charmaineleung@unsw.edu.au', 'Charmaine Leung', 'UNSW', 'password', 'Computer Science', 2021),
+	('mirannakamura@usyd.edu.au', 'Miran Nakamura', 'USYD', 'password', 'Computer Science', 2021),
+	('kevincai@unsw.edu.au', 'Kevin Cai', 'UNSW', 'password', 'Computer Science', 2020),
+	('gordonxie@unsw.edu.au', 'Gordon Xie', 'UNSW', 'password', 'Computer Science', 2020),
+	('alexgu@unsw.edu.au', 'Alex Gu', 'UNSW', 'password', 'Computer Science', 2020);
 	--('alexgu@uts.edu.au', 'Alex Gu', 'UTS', 'alex'
 
 -- Inserting data into Employer table
 INSERT INTO Employer (email, name, password, company)
 VALUES
-	('gordon.xie1@hotmail.com', 'Macquarie HR Rep', 'password', 'Macquarie Group'),
+	('macquariegroup@gmail.com', 'Macquarie HR Rep', 'password', 'Macquarie Group'),
 	('google@gmail.com', 'Google HR Rep', 'password', 'Google');
 	--('atlassian@gmail.com', 'Atlassian', 'leadership', 'C++', 'atlassian')
 
@@ -122,8 +125,8 @@ VALUES
 -- Inserting data into employer_skill table
 INSERT INTO Employer_Skill (employer, skillID)
 VALUES
-	('gordon.xie1@hotmail.com', 1),
-	('gordon.xie1@hotmail.com', 2),
+	('macquariegroup@gmail.com', 1),
+	('macquariegroup@gmail.com', 2),
 	('google@gmail.com', 2);
 
 INSERT INTO ePortfolio_Skill (candidate, skillID)
@@ -137,7 +140,22 @@ VALUES
 
 INSERT INTO Employer_GradOutcomes (employerEmail, gradOutcomeID)
 VALUES
-	('gordon.xie1@hotmail.com', 1),
-	('gordon.xie1@hotmail.com', 2),
+	('macquariegroup@gmail.com', 1),
+	('macquariegroup@gmail.com', 2),
 	('google@gmail.com', 3),
 	('google@gmail.com', 4);
+
+INSERT INTO LoginActivity (email, user_type, time)
+VALUES
+	('charmaineleung@unsw.edu.au', 'candidate', '21-07-2020'),
+	('charmaineleung@unsw.edu.au', 'candidate', '22-07-2020'),
+	('charmaineleung@unsw.edu.au', 'candidate', '23-07-2020'),
+	('charmaineleung@unsw.edu.au', 'candidate', '24-07-2020'),
+	('charmaineleung@unsw.edu.au', 'candidate', '25-07-2020'),
+	('charmaineleung@unsw.edu.au', 'candidate', '26-07-2020'),
+	('sbadmin1@gmail.com', 'skillsAdmin', '21-07-2020'),
+	('sbadmin1@gmail.com', 'skillsAdmin', '23-07-2020'),
+	('sbadmin1@gmail.com', 'skillsAdmin', '24-07-2020'),
+	('sbadmin1@gmail.com', 'skillsAdmin', '26-07-2020'),
+	('sbadmin2@gmail.com', 'skillsAdmin', '24-07-2020'),
+	('sbadmin2@gmail.com', 'skillsAdmin', '26-07-2020');

@@ -35,3 +35,10 @@ Week 6
 - created the search bar for employers to search for candidates with their desired skills
 - rendered the search bar results with a list of candidates matching skills criteria
 - created a new view for employers to view candidate eportfolios, which takes in candidate email in the url
+
+Week 7 (Flexi Week)
+- added edit account details functionality
+- added delete employment history button
+
+Week 8
+- added search functionality to allow candidates to search for employers

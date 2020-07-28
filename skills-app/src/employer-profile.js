@@ -22,6 +22,7 @@ import {Link} from "react-router-dom";
 import EmailIcon from '@material-ui/icons/Email';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import Navbar from "./Navbar";
 
 class Employer_Profile extends React.Component{
     constructor(props) {
@@ -33,13 +34,17 @@ class Employer_Profile extends React.Component{
             addSkillSuccessMessage: '',
             allSkills: '',
             skillID: 0,
-            requiredSkills: []
+            requiredSkills: [],
+            candidateList: [],
+            numResults: '',
+            searchMessage: ''
         };
         this.handleSearchSkillsModal = this.handleSearchSkillsModal.bind(this);
         this.handleSearchSkillsModalClose = this.handleSearchSkillsModalClose.bind(this);
         this.handleAddSkill = this.handleAddSkill.bind(this);
         this.handleClearStatus = this.handleClearStatus.bind(this);
         this.handleDeleteSkill = this.handleDeleteSkill.bind(this);
+        this.handleSearch = this.handleSearch.bind(this);
     }
 
     componentDidMount() {
@@ -176,7 +181,64 @@ class Employer_Profile extends React.Component{
             let count = response["entry_count"];
             if (status) {
                 this.state.requiredSkills = response["entries"];
+                this.handleSearch();
                 this.forceUpdate();
+            }
+        });
+    }
+
+    postOutcomes() {
+        var valueList = [];
+        for (var value in this.state.requiredSkills) {
+            console.log("name: ", this.state.requiredSkills[value].name);
+            valueList.push(this.state.requiredSkills[value].name);
+        }
+        let data = JSON.stringify({
+            "attributes": valueList
+        });
+        let url = 'http://localhost:5000/search/search';
+        console.log('Sending to ' + url + ': ' + data);
+
+        return fetch(url, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: data
+        }).then(response => {
+            console.log(response)
+            console.log('response ' + response.status)
+            return response.ok && response.json();
+        })
+            .catch(err => console.log('Error:', err));
+    }
+
+    handleSearch() {
+        this.state.candidateList = [];
+        return this.postOutcomes().then( (response) => {
+            console.log(response);
+            let status = response["ok"];
+            if (!status) {
+                console.log("No results found.");
+                this.setState({
+                    candidateList: [],
+                    searchMessage: "0 candidate matches for current criteria."
+                });
+            } else {
+                let candidateList = response["candidates"];
+                candidateList.map( i => {
+                    i["matching skills"] = JSON.stringify(i["matching skills"]);
+                    i["matching skills"] = i["matching skills"].replace(/\"/g, '');
+                    i["matching skills"] = i["matching skills"].replace(/\[/g, '');
+                    i["matching skills"] = i["matching skills"].replace(/\]/g, '');
+                    i["matching skills"] = i["matching skills"].replace(/\,/g, '\, ');
+                });
+                this.setState({
+                    candidateList: candidateList,
+                    numResults: candidateList.length,
+                    searchMessage: candidateList.length + " result(s) for current criteria."
+                });
             }
         });
     }
@@ -197,6 +259,7 @@ class Employer_Profile extends React.Component{
     render() {
         return (
             <div>
+                <Navbar/>
                 <header className="App-header">
                     <h1>Skills Backpack</h1>
                 </header>
@@ -228,6 +291,47 @@ class Employer_Profile extends React.Component{
                                 return <Chip label={i.name} id={i.id} className="skills-chip"
                                              onDelete={() => this.handleDeleteSkill(i.id, i.name)}/>
                             })}
+                        </div>
+                        <div className="col-container">
+                            <h3 className="ep-h3-text">Matching Candidates</h3>
+                            <div style={{'display':'inline-block'}}>
+                                <div style={{'overflow':'hidden'}}>
+                                    <p className="ep-course-heading italicised" style={{float:'left','font-style':'normal','marginBottom':'10px'}}>
+                                        {this.state.searchMessage}
+                                    </p>
+                                </div>
+                                {this.state.candidateList.map(i => {
+                                    return (
+                                        <div style={{marginBottom:'15px'}}>
+                                            <Card style={{width:'750px'}}>
+                                                <CardContent>
+                                                    <div style={{'overflow':'hidden'}}>
+                                                        <h4 style={{margin:'10px 0px 10px 0px',float:'left','text-decoration':'none'}}>
+                                                            <a href={'./view-eportfolio/' + i.email} target="_blank" style={{'text-decoration':'none', color:'#2D9CDB'}}>
+                                                                {i.name}
+                                                            </a>
+                                                        </h4>
+                                                    </div>
+                                                    <div style={{'overflow':'hidden'}}>
+                                                        <p className="ep-course-heading italicised" style={{float:'left','font-style':'normal'}}>{i.degree} Student</p>
+                                                    </div>
+                                                    <div className="row-container">
+                                                        <div className="row-container">
+                                                            <EmailIcon className="smaller-icon-padded" style={{'font-size':'15px'}}/>
+                                                            <p className="ep-course-heading">{i.email}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div style={{'overflow':'hidden'}}>
+                                                        <p className="ep-course-heading italicised" style={{float:'left', 'margin-top':'15px'}}>
+                                                            Skills: {i["matching skills"]}
+                                                        </p>
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        </div>
+                                    )
+                                })}
+                            </div>
                         </div>
                     </MuiThemeProvider>
                 </div>

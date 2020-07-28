@@ -13,6 +13,7 @@ import { theme } from './App.js'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
+import Navbar from "./Navbar";
 
 // const gradOutcomes = [
 //   { title: 'Deep discipline knowledge and intellectual breadth' },
@@ -137,6 +138,7 @@ class Course_Create extends React.Component {
     }
     return(
       <div>
+        <Navbar/>
         <header className="App-header">
             <h1>Skills Backpack</h1>
         </header>

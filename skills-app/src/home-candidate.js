@@ -1,27 +1,18 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import './home.css'
 import SessionDetails from './SessionDetails';
-import allRoutes from './routes';
-import {Link, Redirect, withRouter} from 'react-router-dom';
-import Box from '@material-ui/core/Box';
+import {Link, withRouter} from 'react-router-dom';
 import Button from '@material-ui/core/Button';
-import { spacing } from '@material-ui/system';
 import DeleteIcon from '@material-ui/icons/Delete';
-import {
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText, FormControl, FormHelperText, Input,
-    InputLabel, MenuItem, Select,
-    TextField,
-    Chip,
-    Card, CardContent, Typography, CardActions, ButtonGroup
-} from "@material-ui/core";
+import {Dialog, DialogContent, FormControl, TextField, Chip,
+    Card, CardContent, CardActions, ButtonGroup, Snackbar} from "@material-ui/core";
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { Alert } from '@material-ui/lab';
 import { theme } from './App.js';
 import MaterialTable from 'material-table';
-import { CopyToClipboard } from 'react-copy-to-clipboard'; 
+import Navbar from "./Navbar";
+import SearchIcon from '@material-ui/icons/Search';
+import apiHandler from './apiHandler';
 
 
 class Home_Candidate extends React.Component {
@@ -30,6 +21,7 @@ class Home_Candidate extends React.Component {
       this.state = {
         ep_links_open: false,
         add_links_open: false,
+        clipboard_open: false,
         EP_Links: [],
         linkTag: '',
         access_times: [],
@@ -48,11 +40,26 @@ class Home_Candidate extends React.Component {
       this.handleDeleteLink = this.handleDeleteLink.bind(this);
       this.handleChange = this.handleChange.bind(this);
       this.handleEPAdd = this.handleEPAdd.bind(this);
+      this.handleCopyOpen = this.handleCopyOpen.bind(this);
+      this.handleCopyClose = this.handleCopyClose.bind(this);
   }
 
   componentDidMount() {
     this.fetchLinks();
     this.fetchAccessTimes();
+  }
+
+  handleCopyOpen(rowData) {
+    navigator.clipboard.writeText(window.location.origin.toString() + '/eportfolio/' + rowData.link)
+    this.setState({clipboard_open: true});
+  }
+
+  handleCopyClose(event, reason) {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    this.setState({clipboard_open: false});
   }
 
   handleEPLinkRedirect(e) {
@@ -93,30 +100,18 @@ class Home_Candidate extends React.Component {
   }
 
   handleDeleteLink(object) {
-    console.log(object.link)
-    return this.deleteLink(object.link).then( (repsonse) => {
+    let path = 'ePortfolio/candidate/' + object.link;
+    return apiHandler(path, 'DELETE').then( (repsonse) => {
       this.componentDidMount();
     });
   }
-  
-  deleteLink(id) {
-    let url = 'http://localhost:5000/ePortfolio/candidate/' + id;
-    return fetch(url, {
-        method: 'DELETE',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        }
-    }).then(response => {
-        console.log(response)
-        console.log('response ' + response.status)
-        return response.ok && response.json();
-    })
-        .catch(err => console.log('Error:', err));
-  }
 
   handleEPAdd() {
-      return this.sendEPLink().then( (response) => {
+      let path = 'ePortfolio/link/' + SessionDetails.getEmail();
+      let data = JSON.stringify({
+          "tag": this.state.linkTag
+      });
+      return apiHandler(path, 'POST', data).then( (response) => {
           console.log(response);
           this.clearModalFields();
           this.handleAddLinksModalClose();
@@ -128,28 +123,9 @@ class Home_Candidate extends React.Component {
     this.setState({linkTag: ''});
   }
 
-  sendEPLink() {
-    let data = JSON.stringify({
-        "tag": this.state.linkTag
-    });
-    let url = 'http://127.0.0.1:5000/ePortfolio/link/' + SessionDetails.getEmail();
-    console.log('Sending to ' + url + ': ' + data);
-
-    return fetch(url, {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: data
-    }).then(response => {
-        return response.ok && response.json();
-    })
-        .catch(err => console.log('Error:', err));
-  }
-
   fetchLinks() {
-    return this.getEportfolioLinks().then( (response) => {
+      let path = 'ePortfolio/link/' + SessionDetails.getEmail();
+      return apiHandler(path, 'GET').then( (response) => {
       if (response["ok"]) {
         console.log(response.links)
         this.setState({EP_Links: response.links})
@@ -158,46 +134,13 @@ class Home_Candidate extends React.Component {
   }
 
   fetchAccessTimes() {
-    return this.getEPAccessTimes().then( (response) => {
+      let path = 'link/info/' + SessionDetails.getEmail();
+      return apiHandler(path, 'GET').then( (response) => {
       if (response['ok']) {
         console.log(response.tracking_info)
         this.setState({access_times: response.tracking_info})
       }
     })
-  }
-
-  getEPAccessTimes() {
-    let url = 'http://127.0.0.1:5000/link/info/' + SessionDetails.getEmail();
-
-    console.log('Sending to ' + url);
-
-    return fetch(url, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      }
-    }).then(response => {
-      return response.json();
-    }).catch(err => console.log('Error:', err));
-  }
-
-  getEportfolioLinks() {
-    let url = 'http://127.0.0.1:5000/ePortfolio/link/' + SessionDetails.getEmail();
-
-    console.log('Sending to ' + url);
-
-    return fetch(url, {
-        method: 'GET',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        }
-    }).then(response => {
-        console.log(response)
-        return response.json();
-        console.log('response ' + response.status)
-    }).catch(err => console.log('Error:', err));
   }
 
   copyToClipboard(text) {
@@ -209,99 +152,113 @@ class Home_Candidate extends React.Component {
   render() {
     return (
       <div className="A-page">
+        <Navbar/>
         <header className="App-header">
             <h1>Skills Backpack</h1>
         </header>
         <body className="column-container">
-            <div style={{'padding-top':'50px','overflow':'hidden'}}>
-                <div style={{'float':'right', 'marginRight':'90px'}}>
+            <div className="home-float-container">
+                <div className="float-right-box">
                     <MuiThemeProvider theme={theme}>
                         <ButtonGroup variant="contained"
                                      aria-label="contained primary button group">
-                            <Button variant="contained" color="primary" href='./my-eportfolio' style={{textTransform:"none"}}>
+                            <Button variant="contained" href='./my-eportfolio' style={{textTransform:"none"}}>
                                 My E-Portfolio
                             </Button>
-                            <Button variant="contained" color="primary" onClick={this.handleAddLinksModal}>
-                              Create new link
+                        </ButtonGroup>
+                    </MuiThemeProvider>
+                </div>
+            </div>
+            <div className="search-company-container">
+                <div className="float-left-box">
+                    <MuiThemeProvider theme={theme}>
+                        <ButtonGroup variant="contained"
+                                     aria-label="contained primary button group">
+                            <Button variant="contained" color="primary" href='./search-company' style={{textTransform:"none"}}>
+                                <SearchIcon/> Search Company
                             </Button>
                         </ButtonGroup>
                     </MuiThemeProvider>
                 </div>
             </div>
             <div className="center-align-container">
-                <div style={{'display': 'inline-block'}}>
-                    <p>Logged in as: Candidate</p>
+                <div style={{'display':'inline-block'}}>
+                    <h2>Manage E-Portfolio Links</h2>
+                </div>
+                <div className="main-table">
+                  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+                  <MaterialTable
+                    title="E-Portfolio Links"
+                    columns={this.state.columns}
+                    data={this.state.access_times}
+                    detailPanel={[
+                      {
+                        tooltip: 'Show Access Times',
+                        render: rowData => {
+                          return (
+                            <div className="link_times">
+                              <h3>Link Access Times</h3>
+                              {this.state.access_times.filter(i => i.link === rowData.link).map(filteredLink => {
+                                return (
+                                  filteredLink.times.map(i => {
+                                    if (i.time){
+                                      return (
+                                        <Chip label={i.time} className="skills-chip"/>
+                                      )
+                                    } else {
+                                      return (
+                                        <i>Not accessed yet</i>
+                                      )
+                                    }
+                                  })
+                                )
+                              })}
+                              <p></p>
+
+                            </div>
+                          )
+                        },
+                      },
+                    ]}
+                    onRowClick={(event, rowData) => this.handleEPLinkRedirect(rowData.link)}
+                    actions={[
+                      {
+                        icon: 'delete',
+                        tooltip: 'Delete Link',
+                        onClick: (event, rowData) => {if(window.confirm('Are you sure you want to delete this link?')){
+                          this.handleDeleteLink(rowData);
+                        }}
+                      },
+                      {
+                        icon: 'content_copy',
+                        tooltip: 'Copy to clipboard',
+                        onClick: (event, rowData) => this.handleCopyOpen(rowData)
+                      },
+                      {
+                        icon: 'add',
+                        tooltip: 'Add link',
+                        isFreeAction: true,
+                        onClick: (event) => this.handleAddLinksModal()
+                      }
+                    ]}
+                    options={{
+                      actionsColumnIndex: -1,
+                      paging: false,
+                      search: false,
+                    }}
+                  />
                 </div>
             </div>
-            <div className="main-table">
-              <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-              <MaterialTable
-                title="E-Portfolio Links"
-                columns={this.state.columns}
-                data={this.state.access_times}
-                detailPanel={[
-                  {
-                    tooltip: 'Show Access Times',
-                    render: rowData => { 
-                      return (
-                        <div className="link_times">
-                          <h3>Link Access Times</h3>
-                          {this.state.access_times.filter(i => i.link === rowData.link).map(filteredLink => {
-                            return (
-                              filteredLink.times.map(i => {
-                                if (i.time){
-                                  return (
-                                    <Chip label={i.time} className="skills-chip"/>
-                                  )
-                                } else {
-                                  return (
-                                    <i>Not accessed yet</i>
-                                  )
-                                }
-                              })
-                            )
-                          })}
-                          <p></p>
-                          
-                        </div>
-                      )
-                    },
-                  },
-                ]}
-                onRowClick={(event, rowData) => this.handleEPLinkRedirect(rowData.link)}
-                actions={[
-                  {
-                    icon: 'delete',
-                    tooltip: 'Delete Link',
-                    onClick: (event, rowData) => {if(window.confirm('Are you sure you want to delete this link?')){
-                      this.handleDeleteLink(rowData);
-                    }}
-                  },
-                  {
-                    icon: 'content_copy',
-                    tooltip: 'Copy to clipboard',
-                    onClick: (event, rowData) => navigator.clipboard.writeText(window.location.origin.toString() + '/eportfolio/' + rowData.link).then(
-                      alert("Copied to clipboard!")
-                    )
-                  },
-                  {
-                    icon: 'add',
-                    tooltip: 'Add link',
-                    isFreeAction: true,
-                    onClick: (event) => this.handleAddLinksModal()
-                  }
-                ]}
-                options={{
-                  actionsColumnIndex: -1,
-                  paging: false,
-                  search: false,
-                }}
-              />
-            </div>
+
         </body>
         <footer className="Home-footer">
           <p>Yuppies 2020 </p>
         </footer>
+        <div>
+          <Snackbar anchorOrigin={{vertical: 'bottom', horizontal: 'center'}} open={this.state.clipboard_open} autoHideDuration={1000} onClose={this.handleCopyClose}>
+            <Alert severity="info">Copied to clipboard!</Alert>
+          </Snackbar>
+        </div>
         <MuiThemeProvider theme={theme}>
           <Dialog
             aria-labelledby="form-dialog-title"

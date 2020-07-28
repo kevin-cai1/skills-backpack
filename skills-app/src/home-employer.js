@@ -9,6 +9,8 @@ import { theme } from './App.js'
 import SessionDetails from "./SessionDetails";
 import LanguageIcon from "@material-ui/core/SvgIcon/SvgIcon";
 import EmailIcon from '@material-ui/icons/Email';
+import Navbar from "./Navbar";
+import apiHandler from './apiHandler';
 
 const filter = createFilterOptions();
 
@@ -31,28 +33,6 @@ class Home_Employer extends React.Component {
         this.populateDropdown();
     }
 
-    postOutcomes() {
-        let data = JSON.stringify({
-            "attributes": this.state.valueList
-        });
-        let url = 'http://localhost:5000/search/search';
-        console.log('Sending to ' + url + ': ' + data);
-
-        return fetch(url, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: data
-        }).then(response => {
-            console.log(response)
-            console.log('response ' + response.status)
-            return response.ok && response.json();
-        })
-            .catch(err => console.log('Error:', err));
-    }
-
     handleSearch() {
         this.state.candidateList = [];
         let searchValues = JSON.stringify(this.state.valueList);
@@ -60,7 +40,10 @@ class Home_Employer extends React.Component {
         searchValues = searchValues.replace(/\[/g, '');
         searchValues = searchValues.replace(/\]/g, '');
         searchValues = searchValues.replace(/\,/g, '\, ');
-        return this.postOutcomes().then( (response) => {
+        let data = JSON.stringify({
+            "attributes": this.state.valueList
+        });
+        return apiHandler('search/search', 'POST', data).then( (response) => {
             console.log(response);
             let status = response["ok"];
             if (!status) {
@@ -87,26 +70,8 @@ class Home_Employer extends React.Component {
         });
     }
 
-    getOutcomes() {
-        let url = 'http://localhost:5000/search/getoutcomes';
-        console.log('Fetching data from: ' + url);
-
-        return fetch(url, {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-        }).then(response => {
-            console.log(response)
-            console.log('response ' + response.status)
-            return response.ok && response.json();
-        })
-            .catch(err => console.log('Error:', err));
-    }
-
     populateDropdown() {
-        return this.getOutcomes().then( (response) => {
+        return apiHandler('search/getoutcomes', 'GET').then( (response) => {
             console.log(response);
             let status = response["ok"];
             if (!status) {
@@ -123,12 +88,13 @@ class Home_Employer extends React.Component {
     render () {
         return (
             <div className="A-page">
+                <Navbar/>
                 <header className="App-header">
                     <h1>Skills Backpack</h1>
                 </header>
-                <body className="column-container" style={{'min-height':'500px'}}>
-                <div style={{'padding-top':'50px','overflow':'hidden'}}>
-                    <div style={{'float':'right', 'marginRight':'90px'}}>
+                <body className="column-container">
+                <div className="home-float-container">
+                    <div className="float-right-box">
                         <MuiThemeProvider theme={theme}>
                             <ButtonGroup variant="contained"
                                          aria-label="contained primary button group">
@@ -140,14 +106,9 @@ class Home_Employer extends React.Component {
                     </div>
                 </div>
                 <div className="center-align-container">
-                    <div style={{'display': 'inline-block','padding-top':'40px'}}>
+                    <div className="search-inline">
                         <h3>Candidate Search</h3>
-                        <div style={{
-                            width: 500,
-                            '& > * + *': {
-                                marginTop: '3px',
-                            },
-                        }}>
+                        <div className="search-style">
                             <Autocomplete
                                 multiple
                                 id="tags-outlined"
@@ -160,7 +121,6 @@ class Home_Employer extends React.Component {
                                             name: newValue,
                                         });
                                     } else if (newValue && newValue.inputValue) {
-                                        // Create a new value from the user input
                                         this.state.setValue = newValue.inputValue;
                                     } else {
                                         this.state.setValue = newValue;
@@ -169,8 +129,6 @@ class Home_Employer extends React.Component {
                                 }}
                                 filterOptions={(options, params) => {
                                     const filtered = filter(options, params);
-
-                                    // Suggest the creation of a new value
                                     if (params.inputValue !== '') {
                                         filtered.push(
                                             params.inputValue
@@ -180,15 +138,12 @@ class Home_Employer extends React.Component {
                                     return filtered;
                                 }}
                                 getOptionLabel={(option) => {
-                                    // Value selected with enter, right from the input
                                     if (typeof option === 'string') {
                                         return option;
                                     }
-                                    // Add "xxx" option created dynamically
                                     if (option.inputValue) {
                                         return option.inputValue;
                                     }
-                                    // Regular option
                                     return option;
                                 }}
                                 renderOption={(option) => option}
@@ -213,10 +168,10 @@ class Home_Employer extends React.Component {
                         </div>
                     </div>
                 </div>
-                <div className="center-align-container" style={{'margin':'15px 0px 150px 0px'}}>
-                    <div style={{'display':'inline-block'}}>
-                        <div style={{'overflow':'hidden'}}>
-                            <p className="ep-course-heading italicised" style={{float:'left','font-style':'normal','marginBottom':'10px'}}>
+                <div className="center-align-container search-results">
+                    <div className="center-box">
+                        <div className="search-company-container">
+                            <p className="ep-course-heading italicised search-message">
                                 {this.state.searchMessage}
                             </p>
                         </div>
@@ -225,15 +180,15 @@ class Home_Employer extends React.Component {
                                 <div style={{marginBottom:'15px'}}>
                                     <Card style={{width:'750px'}}>
                                         <CardContent>
-                                            <div style={{'overflow':'hidden'}}>
-                                                <h4 style={{margin:'10px 0px 10px 0px',float:'left','text-decoration':'none'}}>
-                                                    <a href={'./view-eportfolio/' + i.email} target="_blank" style={{'text-decoration':'none', color:'#2D9CDB'}}>
+                                            <div className="align-left-box">
+                                                <h4 className="search-card-title">
+                                                    <a href={'./view-eportfolio/' + i.email} target="_blank" className="search-card-a">
                                                         {i.name}
                                                     </a>
                                                 </h4>
                                             </div>
-                                            <div style={{'overflow':'hidden'}}>
-                                                <p className="ep-course-heading italicised" style={{float:'left','font-style':'normal'}}>{i.degree} Student</p>
+                                            <div className="align-left-box">
+                                                <p className="ep-course-heading italicised result-p">{i.degree} Student</p>
                                             </div>
                                             <div className="row-container">
                                                 <div className="row-container">
@@ -241,8 +196,8 @@ class Home_Employer extends React.Component {
                                                     <p className="ep-course-heading">{i.email}</p>
                                                 </div>
                                             </div>
-                                            <div style={{'overflow':'hidden'}}>
-                                                <p className="ep-course-heading italicised" style={{float:'left', 'margin-top':'15px'}}>
+                                            <div className="align-left-box">
+                                                <p className="ep-course-heading italicised skill-list-p">
                                                     Skills: {i["matching skills"]}
                                                 </p>
                                             </div>

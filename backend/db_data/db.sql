@@ -225,3 +225,10 @@ CREATE TABLE Employer_GradOutcomes (
 	PRIMARY KEY(employerEmail, gradOutcomeID)
 );
 
+DROP TABLE IF EXISTS LoginActivity;
+CREATE TABLE LoginActivity (
+	email TEXT,
+	user_type TEXT NOT NULL,
+	time TEXT,
+	PRIMARY KEY (email, time)
+);

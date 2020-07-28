@@ -11,6 +11,7 @@ import {
 import { Alert } from '@material-ui/lab';
 import './login.css';
 import SessionDetails from './SessionDetails';
+import Navbar from "./Navbar";
 
 const theme = createMuiTheme({
     palette: {
@@ -134,6 +135,7 @@ class ChangePassword extends React.Component {
     render() {
         return (
             <div className="App">
+                <Navbar/>
                 <header className="App-header">
                     <h1>Skills Backpack</h1>
                 </header>

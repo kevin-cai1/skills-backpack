@@ -44,6 +44,8 @@ export default function Navbar() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
     const history = useHistory();
+    const loggedIn = (SessionDetails.getEmail() != '') ? true : false;
+    const [auth, setAuth] = React.useState(loggedIn);
 
     const handleMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -56,10 +58,19 @@ export default function Navbar() {
     const handleLogout = () => {
         setAnchorEl(null);
         SessionDetails.removeEmail();
+        SessionDetails.removeName();
+        SessionDetails.removeType();
+        setAuth(false);
+        history.push("./");
     }
 
     const changeRoute = () => {
-        history.push("./home");
+        if (auth) {
+            history.push("../home");
+        }
+        else {
+            history.push("../");
+        }
     }
 
     return (
@@ -67,9 +78,6 @@ export default function Navbar() {
             <MuiThemeProvider theme={theme}>
                 <AppBar position="static" color="primary">
                     <Toolbar>
-                        <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" color="secondary">
-                            <MenuIcon />
-                        </IconButton>
                         <div onClick={changeRoute} style={{"overflow":"auto","cursor": "pointer"}}>
                             <div style={{"float":"left"}}><AssignmentTurnedInIcon /></div>
                             <div style={{"overflow":"hidden"}}>
@@ -79,7 +87,7 @@ export default function Navbar() {
                             </div>
                         </div>
                         {
-                            (SessionDetails.getEmail() != "") ?
+                            (auth) ?
                                 <div style={{"margin-left":"auto","margin-right":"0"}}>
                                     <IconButton
                                         aria-label="account of current user"
@@ -108,9 +116,9 @@ export default function Navbar() {
                                         open={open}
                                         onClose={handleClose}
                                     >
-                                        <MenuItem onClick={handleClose}><Link to='./changePassword' style={{'text-decoration':'none','color':'black'}}
+                                        <MenuItem onClick={handleClose}><Link to='../changePassword' style={{'text-decoration':'none','color':'black'}}
                                         >Change Password</Link></MenuItem>
-                                        <MenuItem onClick={handleLogout}><Link to='./' style={{'text-decoration':'none','color':'black'}}
+                                        <MenuItem onClick={handleLogout}><Link to='../' style={{'text-decoration':'none','color':'black'}}
                                         >Logout</Link></MenuItem>
                                     </Menu>
                                 </div> :
