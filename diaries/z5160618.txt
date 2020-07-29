@@ -85,3 +85,12 @@ Week 8
 - implemented backend apis for searching for employers, merged to master
 - added API documentation in confluence
 - half finished functionality section of final report
+
+26/07/20
+- implemented email notification, but for some reason i dont always receive the email even when it's sent successfully.
+- realised we missed a story (adding gradoutcomes to employer skills criteria)
+- added missed story to sprint board
+
+29/07/20 
+- finished backend for adding gradoutcomes to employer skills criteria
+
