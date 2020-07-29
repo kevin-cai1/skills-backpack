@@ -40,3 +40,9 @@ Week 7
 Went through all frontend again to create a confirm dialog for any deleting capabilities.
 Made some changes to candidate e-portfolio courses as well as adding capability for candidate to delete courses that were added to their EP with backend help from Gordon.
 Added modal on the page for candidate to add more courses, also with backend help from Gordon.
+
+Week 8
+All working code was securely pushed to demo b branch and demo went smoothly as a result.
+Added ability to view all matching e-portfolios to criteria on employer profile page.
+Edited course admin home page so that course admin sees all their managed courses as soon as they login.
+Spent rest of week cleaning up css, making colour + font + material-ui elements consistent across the entire front-end.

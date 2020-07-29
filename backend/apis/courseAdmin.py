@@ -1,3 +1,4 @@
+  
 from flask_restplus import Namespace, Resource, fields
 from flask import request, jsonify
 
@@ -30,7 +31,7 @@ class Invite(Resource):
         skills_email = req['skills_email']
         course_email = req['course_email']
 
-        # temporary line for sendgrid to always work v
+        # temporary line for sendgrid to always work (need email account verification)
         skills_email = 'skillsbackpack@gmail.com'
 
         message = Mail(
@@ -48,17 +49,14 @@ class Invite(Resource):
             'c2a_link': "http://localhost:3000/register/{}".format(encrypted_email),
             'c2a_button': "Create account"
         }
-        message.template_id = 'd-165f1bd189884256a10ee0c090fe3a44'
-        print(os.environ.get('SENDGRID_API_KEY'))
-        API_key = "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"
+        message.template_id = 'd-165f1bd189884256a10ee0c090fe3a44' # template id
+        API_key = "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" # api key for sendgrid access
         try:
             sg = SendGridAPIClient(API_key)
-            response = sg.send(message)
-            print(response.status_code)
-            print(response.body)
-            print(response.headers)
+            response = sg.send(message) # send email request
             return_val = {
                 'status_code' : response.status_code,
+                'sendgrid_body': response.body,
                 'ok' : True
             }
         except Exception as e:
@@ -96,6 +94,7 @@ def decrypt_email(token):
 # account stuff
 @api.route('/all')
 class accounts(Resource):
+    @api.doc(description="get all account details")
     def get(self):
         conn = db.get_conn()
         c = conn.cursor()

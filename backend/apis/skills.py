@@ -1,13 +1,13 @@
 from flask_restplus import Namespace, Resource, fields
 from flask import request, jsonify
+from .match import emailMatches
 
 import db
-from pprint import pprint
 
 api = Namespace('Skills', description='Endpoints that manage the system stored list of job skills')
 
 skill_package = api.model('skill', {
-    'id' : fields.Integer(description='id of skill to add. -1 if skill is not defined', required=True),
+    'id' : fields.Integer(description='id of skill to add. -1 if skill is not defined'),
     'name' : fields.String(description='name of the skill')
 })
 
@@ -42,6 +42,7 @@ class AllSkills(Resource):
         return return_val
 
 @api.route("/<int:id>")
+@api.doc(params={'id': 'the skill id of a specific skill'})
 class SkillInfo(Resource):
     @api.doc(description="get info for specific skill by id")
     def get(self, id):
@@ -99,17 +100,13 @@ class UserSkills(Resource):
         req = request.get_json(force=True)
 
         conn= db.get_conn()
-        conn.enable_load_extension(True)
-        # conn.load_extension('./spellfix')
-        conn.enable_load_extension(False)
-
         c = conn.cursor()
 
         # check user exists
         c.execute("SELECT email from Candidate WHERE email = ?", (email,))
         account = c.fetchone()
         linkID = None
-
+        # check if given user is candidate or employer
         if (account != None):
             linkID = account[0]
             userType = "candidate"
@@ -124,24 +121,23 @@ class UserSkills(Resource):
         if (linkID == None):
             api.abort("User '{}' not found".format(email), ok=False)
 
-        # check if new record or existing record
+        # check if new record or existing record (-1 to specify new skill)
         if (req['id'] == -1):
-            # create new skill record
-            # check if similar record already exists?
-            #c.execute('SELECT id, name FROM Skill WHERE editdist3(name, ?) < 600', (req['name'],))
+            # check if similar record already exists
             c.execute('SELECT id, name FROM Skill WHERE LOWER(name) = LOWER(?)', (req['name'],))
 
             match = c.fetchone()
 
-            if (match == None):
+            if (match == None): # no existing record
                 newID = generateID()
+                # insert new skill into skills bank
                 c.execute("INSERT INTO Skill (id, name) VALUES (?,?)", (newID, req['name'],))
                 skillID = newID
             else:
-                print(match)
                 skillID = match[0]
                 
-        else:   # existing record
+        else:   
+            # existing record
             c.execute("SELECT id, name FROM Skill WHERE id = ?", (req['id'],))
             skill = c.fetchone()
 
@@ -149,7 +145,6 @@ class UserSkills(Resource):
                 api.abort(400, "Skill with id '{}' not found".format(req['id']), ok=False)
             
             skillID = skill[0]
-        # check unique constraint
 
         # link skillID to user
         if (userType == "candidate"):
@@ -171,9 +166,11 @@ class UserSkills(Resource):
                 except db.sqlite3.Error as e:
                     api.abort(400, 'invalid query {}'.format(e), ok = False)
                     print(e)
-        
+       
         conn.commit()
         conn.close()
+        if userType == "candidate":
+            emailMatches(email)
 
         return_val = {
             'ok': True,
@@ -189,7 +186,7 @@ class UserSkills(Resource):
         c.execute("SELECT email from Candidate WHERE email = ?", (email,))
         account = c.fetchone()
         linkID = None
-
+        # check account type (candidate or employer)
         if (account != None):
             linkID = account[0]
             userType = "candidate"
@@ -209,6 +206,7 @@ class UserSkills(Resource):
             
         else:
             c.execute("SELECT id, name FROM Skill WHERE id IN (SELECT skillID from Employer_Skill WHERE employer = ?)", (email,))
+        
         results = c.fetchall()
         conn.close()
         entries = []
@@ -239,7 +237,7 @@ class UserSkills(Resource):
         c.execute("SELECT email from Candidate WHERE email = ?", (email,))
         account = c.fetchone()
         linkID = None
-
+        # check account type (candidate or employer)
         if (account != None):
             linkID = account[0]
             userType = "candidate"
@@ -254,8 +252,9 @@ class UserSkills(Resource):
         if (linkID == None):
             api.abort("User '{}' not found".format(email), ok=False)
 
+        # check skill exists for given user
         if (userType == "candidate"):
-            c.execute("SELECT * FROM ePortfolio_Skill WHERE candidate = ? AND skillID = ?)", (email, skillID,))
+            c.execute("SELECT * FROM ePortfolio_Skill WHERE candidate = ? AND skillID = ?", (email, skillID,))
         else:
             c.execute("SELECT * FROM Employer_Skill WHERE employer = ? AND skillID = ?", (email, skillID,))
 
@@ -269,6 +268,11 @@ class UserSkills(Resource):
             c.execute("DELETE FROM Employer_Skill WHERE employer = ? AND skillID = ?", (email, skillID,))
         
         conn.commit()
+
+        if userType != "candidate":
+            for candidate in c.execute('SELECT email FROM Candidate'):
+                emailMatches(candidate[0])
+        
         conn.close()
 
         return_val = {
@@ -277,6 +281,7 @@ class UserSkills(Resource):
 
         return return_val
 
+# fetch id for new skill
 def generateID():
     conn = db.get_conn() 
     c = conn.cursor() #cursor to execute commands

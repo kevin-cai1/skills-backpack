@@ -8,12 +8,22 @@ from werkzeug.security import generate_password_hash
 api = Namespace('Employer', description='Employer user operations')
 
 @api.route('/all')
-class accounts(Resource):
+class SkillsCriteria(Resource):
+    @api.doc(Description = 'getting list of all graduate outcomes in the db so the employer can choose from the list to add to their criteria')
     def get(self):
+        gradoutcomes_list = []
         conn = db.get_conn()
         c = conn.cursor()
 
-        c.execute("SELECT * FROM Employer")
+        for gradoutcome in c.execute("SELECT g_outcome FROM GraduatOutcomes"):
+            gradoutcomes_list.append(gradoutcome[0])
+
+        conn.close()
+        returnVal = {
+                'ok' : True,
+                gradoutcomes : gradoutcomes_list
+        }
+        return returnVal
         
 employer_details = api.model('employer details', {
     'email' : fields.String(description='university email for account identification', required=True),
@@ -22,9 +32,13 @@ employer_details = api.model('employer details', {
     'company' : fields.String(description='company of employer')
 })
 
+GradOutcomes = api.model('GradOutcomes', {
+    'GradOutcomes' : fields.List(fields.String, description = 'List of gradoutcomes that the employer wants to add to their skills criteria', required = True)
+})
 
 @api.route('/<string:account>')
 class accountInfo(Resource):
+    @api.doc(description = 'get account email');
     def get(self, account):
         conn = db.get_conn()
         c = conn.cursor()
@@ -130,3 +144,20 @@ class accountInfo(Resource):
             'new' : new_details
         }
         return return_val
+
+    # Endpoint for adding gradoutcomes to an employer's criteria of interest.
+    # Takes in a list of strings of gradoutcomes and adds them to employer_gradoutcomes table
+    @api.doc(Description = 'Adding GradOutcomes to criteria of interest for a particular employer')
+    @api.expect(GradOutcomes)
+    def post(self, account):
+        req = request.get_json() 
+        conn = db.get_conn()
+        c = conn.cursor()
+
+        for gradoutcome in req['GradOutcomes']:
+            try:
+                c.execute('INSERT INTO 
+
+
+
+

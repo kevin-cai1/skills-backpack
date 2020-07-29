@@ -12,14 +12,10 @@ import {
     Card, CardContent, Typography, CardActions
 } from "@material-ui/core";
 import {theme} from "./App";
-import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import { FormControlLabel, Checkbox } from "@material-ui/core";
 import SearchBox from './search-box';
 import {Alert} from "@material-ui/lab";
-import Autocomplete from "@material-ui/lab/Autocomplete/Autocomplete";
-import {Link} from "react-router-dom";
-import InsertPhotoIcon from '@material-ui/icons/InsertPhoto';
 import SchoolIcon from '@material-ui/icons/School';
 import EmailIcon from '@material-ui/icons/Email';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
@@ -28,6 +24,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Navbar from "./Navbar";
+import apiHandler from './apiHandler';
 
 const chipNames = [
     {name: 'css'},
@@ -159,7 +156,15 @@ class Candidate_EPortfolio extends React.Component{
     }
 
     handleEditAccount() {
-        return this.postNewAccountDetails().then( (response) => {
+        let url = 'candidate/' + SessionDetails.getEmail();
+        let data = JSON.stringify({
+            "email": SessionDetails.getEmail(),
+            "name": this.state.userName,
+            "university": this.state.userUni,
+            "degree": this.state.userDegree,
+            "gradYear": this.state.userGradYear
+        });
+        return apiHandler(url, 'PUT', data).then( (response) => {
             console.log(response);
             let status = response["ok"];
             if (status) {
@@ -169,34 +174,16 @@ class Candidate_EPortfolio extends React.Component{
         });
     }
 
-    postNewAccountDetails() {
-        let data = JSON.stringify({
-            "email": SessionDetails.getEmail(),
-            "name": this.state.userName,
-            "university": this.state.userUni,
-            "degree": this.state.userDegree,
-            "gradYear": this.state.userGradYear
-        });
-        let url = 'http://localhost:5000/candidate/' + SessionDetails.getEmail();
-        console.log('Sending to ' + url + ': ' + data);
-
-        return fetch(url, {
-            method: 'PUT',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: data
-        }).then(response => {
-            console.log(response)
-            console.log('response ' + response.status)
-            return response.ok && response.json();
-        })
-            .catch(err => console.log('Error:', err));
-    }
-
     handleAddJob() {
-        return this.postNewEmployment().then( (response) => {
+        let data = JSON.stringify({
+            "user": SessionDetails.getEmail(),
+            "employer": this.state.employerName,
+            "job_title": this.state.jobTitle,
+            "start_date": this.state.startDate,
+            "end_date": (this.state.endDate === 'Present') ? '' : this.state.endDate,
+            "description": this.state.jobDescription
+        });
+        return apiHandler('employment/add', 'POST', data).then( (response) => {
             console.log(response);
             let status = response["ok"];
             if (status) {
@@ -216,35 +203,13 @@ class Candidate_EPortfolio extends React.Component{
         this.setState({jobDescription: ''});
     }
 
-    postNewEmployment() {
-        let data = JSON.stringify({
-            "user": SessionDetails.getEmail(),
-            "employer": this.state.employerName,
-            "job_title": this.state.jobTitle,
-            "start_date": this.state.startDate,
-            "end_date": (this.state.endDate === 'Present') ? '' : this.state.endDate,
-            "description": this.state.jobDescription
-        });
-        let url = 'http://localhost:5000/employment/add';
-        console.log('Sending to ' + url + ': ' + data);
-
-        return fetch(url, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: data
-        }).then(response => {
-            console.log(response)
-            console.log('response ' + response.status)
-            return response.ok && response.json();
-        })
-            .catch(err => console.log('Error:', err));
-    }
-
     handleAddSkill() {
-        return this.postNewSkill().then( (response) => {
+        let url = 'skills/' + SessionDetails.getEmail();
+        let data = JSON.stringify({
+            "id": this.state.skillID,
+            "name": this.state.newSkill
+        });
+        return apiHandler(url, 'POST', data).then( (response) => {
             console.log(response);
             let result = true;
             this.setState({addSkillSuccessMessage: 'Successfully added \'' + this.state.newSkill + '\'.'});
@@ -254,98 +219,36 @@ class Candidate_EPortfolio extends React.Component{
         });
     }
 
-    postNewSkill() {
-        let data = JSON.stringify({
-            "id": this.state.skillID,
-            "name": this.state.newSkill
-        });
-        let url = 'http://localhost:5000/skills/' + SessionDetails.getEmail();
-        console.log('Sending to ' + url + ': ' + data);
-
-        return fetch(url, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: data
-        }).then(response => {
-            console.log(response)
-            console.log('response ' + response.status)
-            return response.ok && response.json();
-        })
-            .catch(err => console.log('Error:', err));
-    }
-
     handleDeleteSkill(id, name) {
-        return this.deleteSkill(id, name).then( (response) => {
+        let path = 'skills/' + SessionDetails.getEmail();
+        let data = JSON.stringify({
+            "id": id,
+            "name": name
+        });
+        return apiHandler(path, 'DELETE', data).then( (response) => {
             console.log(response);
             this.componentDidMount();
         });
     }
 
-    deleteSkill(id, name) {
-        let data = JSON.stringify({
-            "id": id,
-            "name": name
-        });
-        let url = 'http://localhost:5000/skills/' + SessionDetails.getEmail();
-        console.log('Sending to ' + url + ': ' + data);
-
-        return fetch(url, {
-            method: 'DELETE',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: data
-        }).then(response => {
-            console.log(response)
-            console.log('response ' + response.status)
-            return response.ok && response.json();
-        })
-            .catch(err => console.log('Error:', err));
-    }
-
     handleDeleteCourse(uni, code) {
-        let url = 'http://localhost:5000/ePortfolio/' + SessionDetails.getEmail();
+        let path = 'ePortfolio/' + SessionDetails.getEmail();
         let data = JSON.stringify({
             "code": code,
             "university": uni
         });
-        fetch(url, {
-            method: 'DELETE',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: data
-        }).then(response => {
-            console.log(response)
-            console.log('response ' + response.status)
-            return response.ok && response.json();
-        })
-            .catch(err => console.log('Error:', err));
-        this.componentDidMount();
-        this.forceUpdate();
+        return apiHandler(path, 'DELETE', data).then( (response) => {
+            this.componentDidMount();
+            this.forceUpdate();
+        });
     }
 
     handleDeleteEmployment(id) {
-        let url = 'http://localhost:5000/employment/' + id;
-        fetch(url, {
-            method: 'DELETE',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            }
-        }).then(response => {
-            console.log(response)
-            console.log('response ' + response.status)
-            return response.ok && response.json();
-        })
-            .catch(err => console.log('Error:', err));
-        this.componentDidMount();
-        this.forceUpdate();
+        let path = 'employment/' + id;
+        return apiHandler(path, 'DELETE').then( (response) => {
+            this.componentDidMount();
+            this.forceUpdate();
+        });
     }
 
     handleClearStatus() {
@@ -355,24 +258,8 @@ class Candidate_EPortfolio extends React.Component{
         this.forceUpdate();
     }
 
-    getAllSkills() {
-        let url = 'http://localhost:5000/skills/all';
-        console.log('Fetching data from: ' + url);
-
-        return fetch(url, {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            }
-        }).then(response => {
-            return response.ok && response.json();
-        })
-            .catch(err => console.log('Error:', err));
-    }
-
     fetchSkills(event) {
-        return this.getAllSkills().then( (response) => {
+        return apiHandler('skills/all', 'GET').then( (response) => {
             let status = response["ok"];
             let count = response["entry_count"];
             if (status && count > 0) {
@@ -381,24 +268,9 @@ class Candidate_EPortfolio extends React.Component{
         });
     }
 
-    getAllDetails() {
-        let url = 'http://localhost:5000/ePortfolio/' + SessionDetails.getEmail();
-        console.log('Fetching data from: ' + url);
-
-        return fetch(url, {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            }
-        }).then(response => {
-            return response.ok && response.json();
-        })
-            .catch(err => console.log('Error:', err));
-    }
-
     fetchEportfolioDetails() {
-        return this.getAllDetails().then( (response) => {
+        let path = 'ePortfolio/' + SessionDetails.getEmail();
+        return apiHandler(path, 'GET').then( (response) => {
             console.log(response);
             let status = response["ok"];
             let count = response["entry_count"];
@@ -465,29 +337,16 @@ class Candidate_EPortfolio extends React.Component{
     }
 
     handleAddCourse(e) {
-        const uni = this.state.addedUni
-        const code = e.target.course.value;
-        let url = 'http://localhost:5000/ePortfolio/' + SessionDetails.getEmail();
+        let path = 'ePortfolio/' + SessionDetails.getEmail();
         let data = JSON.stringify({
-            "code": code,
-            "university": uni
+            "code": e.target.course.value,
+            "university": this.state.addedUni
         });
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: data
-        }).then(response => {
-            console.log(response)
-            console.log('response ' + response.status)
-            return response.ok && response.json();
-        })
-            .catch(err => console.log('Error:', err));
-        this.handleAddCourseCloseModal();
-        this.componentDidMount();
-        this.forceUpdate();
+        return apiHandler(path, 'POST', data).then( (response) => {
+            this.handleAddCourseCloseModal();
+            this.componentDidMount();
+            this.forceUpdate();
+        });
     }
 
     callbackFunction = (childData) => {

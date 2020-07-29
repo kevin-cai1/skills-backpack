@@ -18,9 +18,8 @@ DROP TABLE IF EXISTS Employer;
 CREATE TABLE Employer (
 	email TEXT PRIMARY KEY,
 	name TEXT NOT NULL,
-	graduateCriteria TEXT,
 	password TEXT NOT NULL,
-	company TEXT NOT NULL
+	company TEXT UNIQUE NOT NULL
 );
 
 -- Create CourseAdmin table
@@ -209,6 +208,21 @@ CREATE TABLE TrackingInfo (
 	FOREIGN KEY (link)
 		REFERENCES Candidate_Links (link)
 		ON DELETE CASCADE
+);
+
+DROP TABLE IF EXISTS Employer_GradOutcomes;
+CREATE TABLE Employer_GradOutcomes (
+	employerEmail TEXT,
+	gradOutcomeID INTEGER,
+	FOREIGN KEY (employerEmail)
+		REFERENCES Employer (email)
+			ON DELETE CASCADE
+			ON UPDATE CASCADE,
+	FOREIGN KEY (gradOutcomeID)
+		REFERENCES GraduteOutcomes(id)
+			ON DELETE CASCADE
+			ON UPDATE CASCADE,
+	PRIMARY KEY(employerEmail, gradOutcomeID)
 );
 
 DROP TABLE IF EXISTS LoginActivity;

@@ -9,12 +9,14 @@ api = Namespace('Links', description='Endpoint to get link tracking information'
 
 
 @api.route('/<string:link>')
+@api.doc(params={'link': 'the specified ePortfolio link'})
 class Tracker(Resource):
     @api.doc(description="Post new tracking data for given link. Call on component mount on page view")
     def post(self, link):
         conn = db.get_conn()
         c = conn.cursor()
         time = datetime.now().strftime('%H:%M %d-%m-%Y')
+        # save link access time
         try:
             c.execute("INSERT INTO TrackingInfo (link, time) VALUES (?, ?)", (link, time,))
         except db.sqlite3.Error as e:
@@ -28,12 +30,13 @@ class Tracker(Resource):
         }
 
 @api.route('/info/<string:user>')
+@api.doc(params={'user': 'a specified candidate within the system'})
 class TrackingInfo(Resource):
     @api.doc(description="Get all tracking information for user - access times for every link")
     def get(self, user):
         conn = db.get_conn()
         c = conn.cursor()
-
+        # get all link tracking information for specific candidate
         try:
             c.execute("SELECT c.link, t.time, c.tag FROM Candidate_Links c LEFT OUTER JOIN TrackingInfo t ON t.link = c.link WHERE c.email = ?", (user,))
             results = c.fetchall()
@@ -42,17 +45,15 @@ class TrackingInfo(Resource):
             print(e)
         
         conn.close()
-        grouped_results = sorted(results, key=lambda tup: tup[0])
+        grouped_results = sorted(results, key=lambda tup: tup[0])   # sort results by link
         entries = []
 
-        for key, group in groupby(grouped_results, lambda x: x[0]):
+        # group results by link
+        for key, group in groupby(grouped_results, lambda x: x[0]): # iterate through grouped results dict
             times = []
             tag = ""
             last_accessed = ""
             for item in group:
-                print(item)
-                print(type(item))
-                print(type(item[1]))
                 time = {
                     'time': item[1]
                 }
@@ -62,6 +63,7 @@ class TrackingInfo(Resource):
  
             if (last_accessed == None):
                 last_accessed = "-"
+
             entry = {
                 'link': key,
                 'tag': tag,
@@ -69,15 +71,7 @@ class TrackingInfo(Resource):
                 'last_accessed': last_accessed                
             }
             entries.append(entry)
-
-        #for r in results:
-        #    entry = {
-        #        'link': r[0],
-        #        'tag': r[2],
-        #        'access-time': r[1]
-        #    }
-        #    entries.append(entry)
-
+            
         return_val = {
             'ok': True,
             'user': user,

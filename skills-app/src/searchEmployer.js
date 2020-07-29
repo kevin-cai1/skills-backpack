@@ -9,6 +9,7 @@ import { theme } from './App.js'
 import EmailIcon from '@material-ui/icons/Email';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
 import Navbar from "./Navbar";
+import apiHandler from './apiHandler';
 
 class SearchEmployer extends React.Component {
     constructor(props) {
@@ -27,26 +28,8 @@ class SearchEmployer extends React.Component {
         this.populateDropdown();
     }
 
-    getEmployers() {
-        let url = 'http://localhost:5000/search/searchemployers';
-        console.log('Fetching data from: ' + url);
-
-        return fetch(url, {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-        }).then(response => {
-            console.log(response)
-            console.log('response ' + response.status)
-            return response.ok && response.json();
-        })
-            .catch(err => console.log('Error:', err));
-    }
-
     populateDropdown() {
-        return this.getEmployers().then( (response) => {
+        return apiHandler('search/searchemployers', 'GET').then( (response) => {
             console.log(response);
             let status = response["ok"];
             if (!status) {
@@ -60,30 +43,11 @@ class SearchEmployer extends React.Component {
         });
     }
 
-    postEmployer() {
+    handleSearch() {
         let data = JSON.stringify({
             "employer_name": this.state.employerName
         });
-        let url = 'http://localhost:5000/search/searchemployers';
-        console.log('Sending to ' + url + ': ' + data);
-
-        return fetch(url, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: data
-        }).then(response => {
-            console.log(response)
-            console.log('response ' + response.status)
-            return response.ok && response.json();
-        })
-            .catch(err => console.log('Error:', err));
-    }
-
-    handleSearch() {
-        return this.postEmployer().then( (response) => {
+        return apiHandler('search/searchemployers', 'POST', data).then( (response) => {
             console.log(response);
             let status = response["ok"];
             if (!status) {
@@ -119,7 +83,7 @@ class SearchEmployer extends React.Component {
                 </header>
                 <body className="column-container">
                 <div className="center-align-container">
-                    <div style={{'display': 'inline-block','padding-top':'40px'}}>
+                    <div className="search-inline">
                         <h3>Company Search</h3>
                         <div className="row-container">
                             <div style={{ width: 300 }}>
@@ -145,7 +109,7 @@ class SearchEmployer extends React.Component {
                             <MuiThemeProvider theme={theme}>
                                 <ButtonGroup variant="contained" color="primary"
                                              aria-label="contained primary button group"
-                                             style={{'height':'56px','marginTop':'15px'}}>
+                                             className="search-button-group">
                                     <Button onClick={this.handleSearch} variant="contained" color="primary" style={{'minWidth':'73px'}}>
                                         <SearchIcon/>
                                     </Button>
@@ -153,10 +117,10 @@ class SearchEmployer extends React.Component {
                             </MuiThemeProvider>
                         </div>
                     </div>
-                    <div className="center-align-container" style={{'margin':'15px 0px 150px 0px'}}>
+                    <div className="center-align-container">
                         <div style={{'display':'inline-block'}}>
                             <div style={{'overflow':'hidden'}}>
-                                <p className="ep-course-heading italicised" style={{float:'left','font-style':'normal','marginBottom':'10px'}}>
+                                <p className="ep-course-heading italicised" className="search-message">
                                     {this.state.searchMessage}
                                 </p>
                             </div>
@@ -166,21 +130,21 @@ class SearchEmployer extends React.Component {
                                         <Card style={{width:'750px'}}>
                                             <CardContent>
                                                 <div style={{'overflow':'hidden'}}>
-                                                    <h4 style={{margin:'10px 0px 10px 0px',float:'left','text-decoration':'none'}}>
-                                                        <a href={'./view-company/' + i.company} target="_blank" style={{'text-decoration':'none', color:'#2D9CDB'}}>
+                                                    <h4 className="search-card-title">
+                                                        <a href={'./view-company/' + i.company} target="_blank" className="search-card-a">
                                                             {i.company}
                                                         </a>
                                                     </h4>
                                                 </div>
                                                 <div className="row-container">
                                                     <div className="row-container">
-                                                        <PersonOutlineIcon className="smaller-icon-padded" style={{'font-size':'15px'}}/>
+                                                        <PersonOutlineIcon className="smaller-icon-padded icon-smaller"/>
                                                         <p className="ep-course-heading">{i.name}</p>
                                                     </div>
                                                 </div>
                                                 <div className="row-container">
                                                     <div className="row-container">
-                                                        <EmailIcon className="smaller-icon-padded" style={{'font-size':'15px'}}/>
+                                                        <EmailIcon className="smaller-icon-padded icon-smaller"/>
                                                         <p className="ep-course-heading">{i.email}</p>
                                                     </div>
                                                 </div>

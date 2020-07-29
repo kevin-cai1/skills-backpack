@@ -3,7 +3,6 @@ from flask import request, jsonify
 
 import db
 import re
-from pprint import pprint
 
 api = Namespace('Employment', description='Endpoints relating to employment details on candidate ePortfolios')
 
@@ -143,7 +142,6 @@ class StudentEmployment(Resource):
             }
             entries.append(entry)
             entry_count += 1
-        pprint(entries)
         return_val = {
             'ok': True,
             'entry_count': entry_count,
@@ -152,7 +150,7 @@ class StudentEmployment(Resource):
 
         return return_val
 
-
+# generates id for next employment record
 def generate_employmentID():
     conn = db.get_conn() 
     c = conn.cursor() #cursor to execute commands
@@ -160,6 +158,7 @@ def generate_employmentID():
     val = c.fetchone()[0]
     return val+1
 
+# validate input format on dates
 def checkFormat(date):
     if (date == ""):
         return True
