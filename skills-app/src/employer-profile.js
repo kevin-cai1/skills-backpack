@@ -4,52 +4,65 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogContentText, FormControl, FormHelperText, Input,
-    InputLabel, MenuItem,
-    MuiThemeProvider, Select,
+    DialogContentText,
+    MuiThemeProvider,
     TextField,
     Chip,
-    Card, CardContent, Typography, CardActions
+    Card, CardContent, Divider
 } from "@material-ui/core";
 import {theme} from "./App";
-import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
-import { FormControlLabel, Checkbox } from "@material-ui/core";
 import SearchBox from './search-box';
 import {Alert} from "@material-ui/lab";
 import Autocomplete from "@material-ui/lab/Autocomplete/Autocomplete";
-import {Link} from "react-router-dom";
 import EmailIcon from '@material-ui/icons/Email';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import Navbar from "./Navbar";
+import apiHandler from './apiHandler';
 
 class Employer_Profile extends React.Component{
     constructor(props) {
         super(props);
         this.state = {
             search_skills_open: false,
+            search_outcomes_open: false,
             newSkill: '',
             addSkillSuccess: false,
+            addSkillFail: false,
+            addSkillFailMessage: '',
             addSkillSuccessMessage: '',
             allSkills: '',
             skillID: 0,
+            newOutcome: '',
+            addOutcomeSuccess: false,
+            addOutcomeSuccessMessage: '',
+            addOutcomeFail: false,
+            addOutcomeFailMessage: '',
+            allOutcomes: [],
             requiredSkills: [],
+            requiredOutcomes: [],
             candidateList: [],
             numResults: '',
             searchMessage: ''
         };
         this.handleSearchSkillsModal = this.handleSearchSkillsModal.bind(this);
         this.handleSearchSkillsModalClose = this.handleSearchSkillsModalClose.bind(this);
+        this.handleSearchOutcomesModal = this.handleSearchOutcomesModal.bind(this);
+        this.handleSearchOutcomesModalClose = this.handleSearchOutcomesModalClose.bind(this);
         this.handleAddSkill = this.handleAddSkill.bind(this);
+        this.handleAddOutcome = this.handleAddOutcome.bind(this);
         this.handleClearStatus = this.handleClearStatus.bind(this);
         this.handleDeleteSkill = this.handleDeleteSkill.bind(this);
+        this.handleDeleteOutcome = this.handleDeleteOutcome.bind(this);
         this.handleSearch = this.handleSearch.bind(this);
+        this.handleChange = this.handleChange.bind(this);
     }
 
     componentDidMount() {
         this.fetchSkills();
-        this.fetchEportfolioDetails();
+        this.fetchOutcomes();
+        this.fetchEmployerDetails();
     }
 
     handleSearchSkillsModal() {
@@ -61,10 +74,57 @@ class Employer_Profile extends React.Component{
         this.handleClearStatus();
     }
 
+    handleSearchOutcomesModal() {
+        this.setState({
+            newOutcome: '',
+            addOutcomeSuccess: false,
+            addOutcomeSuccessMessage: '',
+            addOutcomeFail: false,
+            addOutcomeFailMessage: '',
+        });
+        this.setState({search_outcomes_open: true});
+    }
+
+    handleSearchOutcomesModalClose() {
+        this.setState({search_outcomes_open: false});
+    }
+
+    handleChange = (event, values) => {
+        const fieldValue = (typeof event.target.name == 'undefined') ? values : event.target.value;
+        this.setState({ ['newOutcome']: fieldValue });
+    }
+
+    handleAddOutcome() {
+        let data = JSON.stringify({
+            "GradOutcomes": [this.state.newOutcome],
+        });
+        let path = 'employer/' + SessionDetails.getEmail();
+        console.log("outcome: " + this.state.newOutcome);
+        return apiHandler(path, 'POST', data).then( (response) => {
+            let status = response["ok"];
+            if (status) {
+                this.setState({addOutcomeSuccessMessage: 'Successfully added \'' + this.state.newOutcome + '\'.'});
+                this.state.addOutcomeSuccess = true;
+                this.state.addOutcomeFail = false;
+                this.forceUpdate();
+                this.componentDidMount();
+            }
+            else {
+                this.setState({addOutcomeFailMessage: '\'' + this.state.newOutcome + '\' already exists.'});
+                this.state.addOutcomeSuccess = false;
+                this.state.addOutcomeFail = true;
+                this.forceUpdate();
+            }
+        });
+    }
+
     handleAddSkill() {
-        return this.postNewSkill().then( (response) => {
-            console.log(response);
-            let result = true;
+        let data = JSON.stringify({
+            "id": this.state.skillID,
+            "name": this.state.newSkill
+        });
+        let path = 'skills/' + SessionDetails.getEmail();
+        return apiHandler(path, 'POST', data).then( (response) => {
             this.setState({addSkillSuccessMessage: 'Successfully added \'' + this.state.newSkill + '\'.'});
             this.state.addSkillSuccess = true;
             this.forceUpdate();
@@ -72,57 +132,27 @@ class Employer_Profile extends React.Component{
         });
     }
 
-    postNewSkill() {
-        let data = JSON.stringify({
-            "id": this.state.skillID,
-            "name": this.state.newSkill
-        });
-        let url = 'http://localhost:5000/skills/' + SessionDetails.getEmail();
-        console.log('Sending to ' + url + ': ' + data);
-
-        return fetch(url, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: data
-        }).then(response => {
-            console.log(response)
-            console.log('response ' + response.status)
-            return response.ok && response.json();
-        })
-            .catch(err => console.log('Error:', err));
-    }
-
     handleDeleteSkill(id, name) {
-        return this.deleteSkill(id, name).then( (response) => {
+        let path = 'skills/' + SessionDetails.getEmail();
+        let data = JSON.stringify({
+            "id": id,
+            "name": name
+        });
+        return apiHandler(path, 'DELETE', data).then( (response) => {
             console.log(response);
             this.componentDidMount();
         });
     }
 
-    deleteSkill(id, name) {
+    handleDeleteOutcome(name) {
+        let path = 'employer/criteria/' + SessionDetails.getEmail();
         let data = JSON.stringify({
-            "id": id,
-            "name": name
+            "GradOutcome": name
         });
-        let url = 'http://localhost:5000/skills/' + SessionDetails.getEmail();
-        console.log('Sending to ' + url + ': ' + data);
-
-        return fetch(url, {
-            method: 'DELETE',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: data
-        }).then(response => {
-            console.log(response)
-            console.log('response ' + response.status)
-            return response.ok && response.json();
-        })
-            .catch(err => console.log('Error:', err));
+        return apiHandler(path, 'DELETE', data).then( (response) => {
+            console.log(response);
+            this.componentDidMount();
+        });
     }
 
     handleClearStatus() {
@@ -132,24 +162,17 @@ class Employer_Profile extends React.Component{
         this.forceUpdate();
     }
 
-    getAllSkills() {
-        let url = 'http://localhost:5000/skills/all';
-        console.log('Fetching data from: ' + url);
-
-        return fetch(url, {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
+    fetchOutcomes(event) {
+        return apiHandler('employer/all', 'GET').then( (response) => {
+            let status = response["ok"];
+            if (status) {
+                this.state.allOutcomes = response["gradoutcomes"];
             }
-        }).then(response => {
-            return response.ok && response.json();
-        })
-            .catch(err => console.log('Error:', err));
+        });
     }
 
     fetchSkills(event) {
-        return this.getAllSkills().then( (response) => {
+        return apiHandler('skills/all', 'GET').then( (response) => {
             let status = response["ok"];
             let count = response["entry_count"];
             if (status && count > 0) {
@@ -158,29 +181,14 @@ class Employer_Profile extends React.Component{
         });
     }
 
-    getAllDetails() {
-        let url = 'http://localhost:5000/skills/' + SessionDetails.getEmail();
-        console.log('Fetching data from: ' + url);
-
-        return fetch(url, {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            }
-        }).then(response => {
-            return response.ok && response.json();
-        })
-            .catch(err => console.log('Error:', err));
-    }
-
-    fetchEportfolioDetails() {
-        return this.getAllDetails().then( (response) => {
+    fetchEmployerDetails() {
+        let path = 'employer/' + SessionDetails.getEmail();
+        return apiHandler(path, 'GET').then( (response) => {
             console.log(response);
             let status = response["ok"];
-            let count = response["entry_count"];
             if (status) {
-                this.state.requiredSkills = response["entries"];
+                this.state.requiredSkills = response["job_skills"];
+                this.state.requiredOutcomes = response["employability_skills"];
                 this.handleSearch();
                 this.forceUpdate();
             }
@@ -270,10 +278,6 @@ class Employer_Profile extends React.Component{
                         <div><AccountCircleIcon style={{ fontSize: 100 }}/></div>
                         <div style={{color: 'dimgrey'}}><h2>{SessionDetails.getName()}</h2></div>
                         <div className="row-container">
-                            {/*<div className="user-profile-details-row">*/}
-                            {/*    <SchoolIcon className="sm-icon-padded"/>*/}
-                            {/*    <h5>University of New South Wales</h5>*/}
-                            {/*</div>*/}
                             <div className="user-profile-details-row">
                                 <EmailIcon className="sm-icon-padded"/>
                                 <h5>{SessionDetails.getEmail()}</h5>
@@ -293,6 +297,18 @@ class Employer_Profile extends React.Component{
                                              onDelete={() => this.handleDeleteSkill(i.id, i.name)}/>
                             })}
                         </div>
+                        <div className="row-container">
+                            <h3 className="ep-h3-text">Required Graduate Outcomes</h3>
+                            <AddCircleIcon className="add-circle-button" onClick={this.handleSearchOutcomesModal}/>
+                        </div>
+                        <div>
+                            {this.state.requiredOutcomes.map(i => {
+                                return <Chip label={i.name} id={i.id} className="skills-chip"
+                                             onDelete={() => this.handleDeleteOutcome(i.name)}
+                                />
+                            })}
+                        </div>
+                        <Divider variant="middle" style={{margin:'40px 0px 23px 0px'}}/>
                         <div className="col-container">
                             <h3 className="ep-h3-text">Matching Candidates</h3>
                             <div style={{'display':'inline-block'}}>
@@ -368,6 +384,52 @@ class Employer_Profile extends React.Component{
                                 Cancel
                             </Button>
                             <Button color="primary" onClick={this.handleAddSkill}>
+                                Add
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+                    <Dialog
+                        aria-labelledby="form-dialog-title"
+                        open={this.state.search_outcomes_open}
+                        onClose={this.handleSearchOutcomesModalClose}
+                    >
+                        <DialogContent>
+                            <DialogContentText type="title" id="modal-title">
+                                Add Graduate Outcome
+                            </DialogContentText>
+                            { (this.state.addOutcomeSuccess) &&
+                            <Alert className="Login-alert" severity="success" style={{"marginBottom":"8px"}}>
+                                {this.state.addOutcomeSuccessMessage}
+                            </Alert>
+                            }
+                            { (this.state.addOutcomeFail) &&
+                            <Alert className="Login-alert" severity="error" style={{"marginBottom":"8px"}}>
+                                {this.state.addOutcomeFailMessage}
+                            </Alert>
+                            }
+                            <Autocomplete
+                                freeSolo
+                                id="free-solo-2-demo"
+                                disableClearable
+                                onChange={this.handleChange}
+                                options={this.state.allOutcomes.map((option) => option)}
+                                style={{ width: 300 }}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        label="Search.."
+                                        margin="normal"
+                                        onChange={this.handleChange}
+                                        InputProps={{ ...params.InputProps, type: 'search' }}
+                                    />
+                                )}
+                            />
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={this.handleSearchOutcomesModalClose} color="primary">
+                                Cancel
+                            </Button>
+                            <Button color="primary" onClick={this.handleAddOutcome}>
                                 Add
                             </Button>
                         </DialogActions>
