@@ -176,7 +176,7 @@ class accountInfo(Resource):
                 'name' : req['name'],
                 'university' : req['university']
             }
-
+            
         else:
             api.abort(400, "Update Error")
             conn.close()
@@ -188,7 +188,7 @@ class accountInfo(Resource):
 
     # returns a list of tuples of (course code, university, course name) or empty list if no associated courses
     @api.doc(description = 'Get list of registered courses associated with admin')
-    def get(self, account):
+    def getcourse(self, account):
         conn = db.get_conn()
         c = conn.cursor()
         c.execute('SELECT code, university, name FROM Course WHERE courseAdminEmail = ?', (account,))

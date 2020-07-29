@@ -21,11 +21,10 @@ class accountInfo(Resource):
         c = conn.cursor()
         req = request.get_json(force=True)
 
-        # check if user is a candidate and match passworord before changing password 
+        # check if user is a candidate and match password before changing password 
         c.execute("SELECT EXISTS(SELECT email FROM Candidate WHERE email = ?)", (account,))
         candidate_check = c.fetchone()[0]
         if (candidate_check == 1):
-            # userType = "candidate"
             hashed_password = generate_password_hash(req['new_password'], "sha256")
 
             c.execute("SELECT password FROM Candidate WHERE email = ?", (account,))
@@ -67,7 +66,8 @@ class accountInfo(Resource):
                 else: 
                     api.abort(400, "Employer assword incorrect", ok=False)
         
-        # if user is not a candidate or emplopyer, check if they are a skills backpack admin and match passworord before changing password 
+        # if user is not a candidate or emplopyer, check if they are a skills backpack admin and match 
+        # password before changing password 
         elif (employer_check == 0):
             c.execute("SELECT EXISTS(SELECT email FROM SkillsBackpackAdmin WHERE email = ?)", (account,))
             skillsadmin_check = c.fetchone()[0]
@@ -91,7 +91,8 @@ class accountInfo(Resource):
                     api.abort(400, "Skills admin Password incorrect", ok=False)
             
         
-        # if user is not a candidate or emplopyer or skills backpack admin, check if they are a course admin and match passworord before changing password 
+        # if user is not a candidate or emplopyer or skills backpack admin, check if they are a course admin and 
+        # match passworord before changing password 
         elif (skillsadmin_check == 0):
             c.execute("SELECT EXISTS(SELECT email FROM CourseAdmin WHERE email = ?)", (account,))
             courseadmin_check = c.fetchone()[0]
