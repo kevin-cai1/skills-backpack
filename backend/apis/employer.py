@@ -43,10 +43,14 @@ class SkillsCriteria(Resource):
 
 @api.route('/<string:account>')
 class accountInfo(Resource):
+    # API for getting all account details associated with employer (name, email, company, skills criteria)
     @api.doc(description = 'get account details')
     def get(self, account):
         conn = db.get_conn()
         c = conn.cursor()
+        employer_details = {}        
+        job_skills = []
+        employability_skills = []
 
         c.execute("SELECT EXISTS(SELECT email FROM Employer WHERE email = ?)", (account,))
         account_check = c.fetchone()[0]
@@ -54,28 +58,34 @@ class accountInfo(Resource):
         if (account_check == 0):
             api.abort(404, "Account '{}' doesn't exist".format(account), ok=False)
 
-        employer_details = {}        
         name = c.execute('SELECT name FROM employer WHERE email = ?', (account,)).fetchone()[0]
         company = c.execute('SELECT company FROM employer WHERE email = ?', (account,)).fetchone()[0]
         employer_details['email'] = account
         employer_details['name'] = name
         employer_details['company'] = company
 
+        for skill in c.execute('SELECT s.id, s.name FROM Skill s, Employer_Skill es WHERE s.id = es.skillID AND es.employer = ?', (account,)):
+            skill_entry = {
+                    'id' : skill[0],
+                    'name' : skill[1]
+            }
+            job_skills.append(skill_entry)
 
-        # name = account_details[1]
-        # email = account_details[0]
-        # company = account_details[6]
-        # SELECT STUFF FROM EMPLOYER
-        # FORMAT RESPONSE ????
-        
-        return_val = {
-             #'user' : name
-             'email' : account
+        for gradoutcome in c.execute('SELECT g.id, g.g_outcome FROM GraduateOutcomes g, Employer_GradOutcomes eg WHERE g.id = eg.gradOutcomeID AND eg.employerEmail = ?', (account,)):
+            gradoutcome_entry = {
+                    'id' : gradoutcome[0],
+                    'name' : gradoutcome[1],
+            }
+            employability_skills.append(gradoutcome_entry)
+
+        returnVal = {
+               'ok': True,
+               'employer_details' : employer_details,
+               'job_skills' : job_skills,
+               'employability_skills' : employability_skills
         }
-       
-        return return_val
-        
-    
+        return returnVal
+
     @api.doc(description="Delete specified account")
     def delete(self, account):
         conn = db.get_conn()
