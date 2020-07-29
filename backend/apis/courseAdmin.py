@@ -31,7 +31,7 @@ class Invite(Resource):
         skills_email = req['skills_email']
         course_email = req['course_email']
 
-        # temporary line for sendgrid to always work (need email account verification)
+        # assign skills email to be the skillsbackpack email
         skills_email = 'skillsbackpack@gmail.com'
 
         message = Mail(
@@ -49,11 +49,15 @@ class Invite(Resource):
             'c2a_link': "http://localhost:3000/register/{}".format(encrypted_email),
             'c2a_button': "Create account"
         }
-        message.template_id = 'd-165f1bd189884256a10ee0c090fe3a44' # template id
-        API_key = "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" # api key for sendgrid access
+        # template id
+        message.template_id = 'd-165f1bd189884256a10ee0c090fe3a44' 
+        # api key for sendgrid access
+        API_key = "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" 
+        
+        # send email request
         try:
             sg = SendGridAPIClient(API_key)
-            response = sg.send(message) # send email request
+            response = sg.send(message) 
             return_val = {
                 'status_code' : response.status_code,
                 'sendgrid_body': response.body,
@@ -100,13 +104,12 @@ class accounts(Resource):
         c = conn.cursor()
         c.execute("SELECT * FROM CourseAdmin")
 
+# payload needed to update course admin details
 course_admin_details = api.model('course admin details', {
     'email' : fields.String(description='university email for account identification', required=True),
-    # 'password'  : fields.String(description='password for account access', required=True),
     'name' : fields.String(description='name of user', required=True),
     'university' : fields.String(description='university of course admin')
 })
-
 
 @api.route('/<string:account>')
 class accountInfo(Resource):
@@ -114,21 +117,18 @@ class accountInfo(Resource):
         conn = db.get_conn()
         c = conn.cursor()
 
-
         c.execute("SELECT EXISTS(SELECT email FROM CourseAdmin WHERE email = ?)", (account,))
         account_check = c.fetchone()[0]
 
         if (account_check == 0):
             api.abort(404, "Account '{}' doesn't exist".format(account), ok=False)
 
-        # SELECT STUFF FROM COURSE ADMIN
-        # FORMAT RESPONSE
         return_val = {
             'email' : account
         }
         return return_val
 
-
+    # delete course admin account
     @api.doc(description="Delete specified account")
     def delete(self, account):
         conn = db.get_conn()
@@ -149,6 +149,7 @@ class accountInfo(Resource):
         }
         return return_val
 
+    # allows course admin to update their details
     @api.doc(description="Edit user details")
     @api.expect(course_admin_details)
     def put(self, account):
@@ -165,33 +166,16 @@ class accountInfo(Resource):
 
         # change account details if account exists
         elif (account_check == 1):
-            # hashed_password = generate_password_hash(req['password'], "sha256")
-            # getting api input
-            # edit_details = request.get_json()
-            # pw_edit = req.get('password')
-            # name_edit = req.get('name')
-            # uni_edit = req.get('university')
-
-            # check password matches before they can edit details
-            # c.execute("SELECT password FROM CourseAdmin WHERE email = ?", (account,))
-            # query = c.fetchone()
-            # if query == None:
-            #     api.abort(400, "User '{}' not found".format(account), ok=False)
-            # password = query[0]
-            # if req['password'] == password:
-
-            # update
+            
+            # updating details
             c.execute("UPDATE CourseAdmin SET (name, university) = (?,?) WHERE email = ?",(req['name'], req['university'], req['email'],))
             conn.commit()
             conn.close()
             new_details = {
                 'email' : account,
-                # 'password' : hashed_password,
                 'name' : req['name'],
                 'university' : req['university']
             }
-            # else:
-            #     api.abort(400, "Password incorrect", ok=False)
 
         else:
             api.abort(400, "Update Error")
