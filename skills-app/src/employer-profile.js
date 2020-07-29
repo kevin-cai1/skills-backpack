@@ -214,6 +214,7 @@ class Employer_Profile extends React.Component{
             .catch(err => console.log('Error:', err));
     }
 
+    //get all candidates who match current criteria on the employer's profile and display
     handleSearch() {
         this.state.candidateList = [];
         return this.postOutcomes().then( (response) => {

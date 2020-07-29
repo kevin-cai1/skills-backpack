@@ -46,10 +46,13 @@ class Home_courseAdmin extends React.Component {
     this.getMyCourses();
   }
 
+  //modal open, close handlers
   handleEditModalClose() {
     this.setState({ editModal: false });
   }
+  //end handlers
 
+  //on home page load, get details for all courses created by this course admin
   getMyCourses = () => {
     console.log("getting courses...");
     let component = this;
@@ -82,10 +85,12 @@ class Home_courseAdmin extends React.Component {
         .catch(err => console.log('Error:', err));
   }
 
+  //intermediate handler required to check correct values of row.uni and row.code
   handleCourseDelete = (e, row) => {
       this.sendCourseDelete(row.uni, row.code);
   }
 
+  //delete a course (handled by API)
   sendCourseDelete(uni, code){
     let component = this;
     let data = JSON.stringify({
@@ -112,11 +117,13 @@ class Home_courseAdmin extends React.Component {
         .catch(err => console.log('Error:', err));
   }
 
+  //intermediate handler required to check correct values of row.uni and row.code
   handleCourseEdit = (e, row) => {
       console.log("in edit: ", row.code);
       this.setCourseDetails(row.code, row.uni);
   }
 
+  //get all details for a selected course and display them in a modal
   setCourseDetails(code, uni) {
     this.getGradOutcomes(uni);
     let component = this;
@@ -145,6 +152,7 @@ class Home_courseAdmin extends React.Component {
         .catch(err => console.log('Error:', err));
   }
 
+  //get list of all graduate outcomes for a selected uni. to display in graduate outcomes dropdown
   getGradOutcomes = (uni) => {
     const urlUni = this.acronymUniversity(uni);
     let component = this;
@@ -165,32 +173,7 @@ class Home_courseAdmin extends React.Component {
         .catch(err => console.log('Error:', err));
   }
 
-  acronymUniversity(uni) {
-    console.log("hello?");
-    if(uni == "University of New South Wales"){
-      return("UNSW");
-    }
-    if(uni == "University of Sydney"){
-      return("USYD");
-    }
-    if(uni == "University of Technology Sydney"){
-      return("UTS");
-    }
-    else{
-      return(uni);
-    }
-  }
-
-  onTagsChange = (event, values) => {
-    this.setState({
-      gradOutcomes: values
-    }, () => {
-      // This will output an array of objects
-      // given by Autocompelte options property.
-      console.log(this.state.gradOutcomes);
-    });
-  }
-
+  //handle when admin edits course details inside modal and clicks submit
   handleCourseEditSubmit = (e) => {
       e.preventDefault();
       console.log("hello?");
@@ -209,6 +192,7 @@ class Home_courseAdmin extends React.Component {
       this.handleCourseSend(dict);
   }
 
+  //update backend to edited course details
   handleCourseSend(dict) {
     let component = this;
     let url = 'http://localhost:5000/course/add/edit';
@@ -234,6 +218,33 @@ class Home_courseAdmin extends React.Component {
           }
     })
         .catch(err => console.log('Error:', err));
+  }
+
+  acronymUniversity(uni) {
+    console.log("hello?");
+    if(uni == "University of New South Wales"){
+      return("UNSW");
+    }
+    if(uni == "University of Sydney"){
+      return("USYD");
+    }
+    if(uni == "University of Technology Sydney"){
+      return("UTS");
+    }
+    else{
+      return(uni);
+    }
+  }
+
+  //handling chips select/deselect for gradOutcomes Autocomplete element
+  onTagsChange = (event, values) => {
+    this.setState({
+      gradOutcomes: values
+    }, () => {
+      // This will output an array of objects
+      // given by Autocompelte options property.
+      console.log(this.state.gradOutcomes);
+    });
   }
 
   render() {

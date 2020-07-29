@@ -54,6 +54,7 @@ class Home_skillsAdmin extends React.Component {
       this.fetchUserActivity();
   }
 
+  // handlers for all modal opens and closes
   handleCourseAdminModal() {
       this.setState({course_admin_open: true});
   }
@@ -81,11 +82,13 @@ class Home_skillsAdmin extends React.Component {
   handleChangePassword() {
       this.setState({change_password: true});
   }
+  //end modal handlers
 
   handleLogout() {
       SessionDetails.removeEmail();
   }
 
+  //on home page load, load user count stats for dashboard graphs
   fetchUserCounts() {
     return this.getUserCounts().then( (response) => {
       if (response['ok']) {
@@ -94,6 +97,7 @@ class Home_skillsAdmin extends React.Component {
     })
   }
 
+  //API handler for above^
   getUserCounts() {
     let url = 'http://127.0.0.1:5000/skills_admin/dash/accounts';
 
@@ -111,6 +115,7 @@ class Home_skillsAdmin extends React.Component {
     }).catch(err => console.log('Error:', err));
   }
 
+  //on home page load, load user activity stats for dashboard graphs
   fetchUserActivity() {
     return this.getUserActivity().then( (response) => {
       if (response['ok']) {
@@ -119,6 +124,7 @@ class Home_skillsAdmin extends React.Component {
     })
   }
 
+  //API handler for above^
   getUserActivity() {
     let url = 'http://127.0.0.1:5000/skills_admin/dash/activity';
 
@@ -136,6 +142,7 @@ class Home_skillsAdmin extends React.Component {
     }).catch(err => console.log('Error:', err));
   }
 
+  //send invite to course admin via email (handled by API)
   handleInviteSend = (e) => {
       let url = 'http://localhost:5000/course_admin/invite';
       let data = JSON.stringify({
@@ -156,36 +163,7 @@ class Home_skillsAdmin extends React.Component {
           .catch(err => console.log('Error:', err));
   }
 
-  sendSiteAdminPassword(e) {
-      let data = JSON.stringify({
-          "new_password": e.target.password.value
-      });
-      let url = 'http://localhost:5000/skills_admin/details/' + SessionDetails.getEmail();
-      console.log('Sending to ' + url + ': ' + data);
-
-      return fetch(url, {
-          method: 'PUT',
-          headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-              'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-          },
-          body: data
-      }).then(response => {
-          return response.ok;
-      })
-          .catch(err => console.log('Error:', err));
-  }
-
-  validatePassword = (password) => {
-      const errors = [];
-      if(!password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/)){
-          errors.push("Invalid password: Password must be min. 8 characters with at least one lower case and upper case letter and number.")
-      }
-      console.log("errors: ", errors);
-      return errors;
-  };
-
+  //change password flow for a first-login skills admin
   handleChangePasswordSubmit = (e) => {
       console.log(this.state.change_password);
       const password = e.target.password.value;
@@ -210,6 +188,38 @@ class Home_skillsAdmin extends React.Component {
       }
   }
 
+  validatePassword = (password) => {
+      const errors = [];
+      if(!password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/)){
+          errors.push("Invalid password: Password must be min. 8 characters with at least one lower case and upper case letter and number.")
+      }
+      console.log("errors: ", errors);
+      return errors;
+  };
+
+  //update backend new password for a first-login skills admin (API handler)
+  sendSiteAdminPassword(e) {
+      let data = JSON.stringify({
+          "new_password": e.target.password.value
+      });
+      let url = 'http://localhost:5000/skills_admin/details/' + SessionDetails.getEmail();
+      console.log('Sending to ' + url + ': ' + data);
+
+      return fetch(url, {
+          method: 'PUT',
+          headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          },
+          body: data
+      }).then(response => {
+          return response.ok;
+      })
+          .catch(err => console.log('Error:', err));
+  }
+
+  //checks if this is a first-login for the skills admin (in which case, password needs to be changed)
   handleSkillsAdminLoad() {
     this.sendSkillsAdminLogin().then( (response) => {
         console.log("Login response: " + response.message);
@@ -221,6 +231,7 @@ class Home_skillsAdmin extends React.Component {
     });
   }
 
+  //API handler for above^
   sendSkillsAdminLogin() {
       let url = 'http://localhost:5000/skills_admin/new/' + SessionDetails.getEmail();
       console.log('Sending to ' + url);
@@ -237,38 +248,7 @@ class Home_skillsAdmin extends React.Component {
           .catch(err => console.log('Error:', err));
   }
 
-  sendSiteAdmin(e) {
-      let data = JSON.stringify({
-          "user_type": "skillsAdmin",
-          "name": e.target.name.value,
-          "email": e.target.email.value,
-          "password": ''
-      });
-      let url = 'http://localhost:5000/account/create';
-      console.log('Sending to ' + url + ': ' + data);
-
-      return fetch(url, {
-          method: 'POST',
-          headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-          },
-          body: data
-      }).then(response => {
-          return response.ok && response.json();
-      })
-          .catch(err => console.log('Error:', err));
-  }
-
-  validateEmail = (email) => {
-      const errors = [];
-      if(!email.match(/^.+@.+$/i)){
-          errors.push("Invalid email.")
-      }
-      console.log("errors: ", errors);
-      return errors;
-  };
-
+  //handler to add a new skills admin account:
   handleFormSubmit = (e) => {
       e.preventDefault();
       const email = e.target.email.value;
@@ -293,6 +273,40 @@ class Home_skillsAdmin extends React.Component {
           alert(errors);
       }
   };
+
+  validateEmail = (email) => {
+      const errors = [];
+      if(!email.match(/^.+@.+$/i)){
+          errors.push("Invalid email.")
+      }
+      console.log("errors: ", errors);
+      return errors;
+  };
+
+  //send new skills admin account details to backend
+  sendSiteAdmin(e) {
+      let data = JSON.stringify({
+          "user_type": "skillsAdmin",
+          "name": e.target.name.value,
+          "email": e.target.email.value,
+          "password": ''
+      });
+      let url = 'http://localhost:5000/account/create';
+      console.log('Sending to ' + url + ': ' + data);
+
+      return fetch(url, {
+          method: 'POST',
+          headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+          },
+          body: data
+      }).then(response => {
+          return response.ok && response.json();
+      })
+          .catch(err => console.log('Error:', err));
+  }
+  //end flow to add new skills admin
 
   render() {
     return (

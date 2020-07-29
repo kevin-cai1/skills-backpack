@@ -28,6 +28,7 @@ class Register extends React.Component {
        this.handleFormSubmit = this.handleFormSubmit.bind(this);
     }
 
+    //handle tab switches on registration page
     handleChange = (event, value) => {
       this.setState({ value });
     };
@@ -35,7 +36,9 @@ class Register extends React.Component {
     handleChangeIndex = index => {
       this.setState({ value: index });
     };
+    //end handle tab switches
 
+    //send details of new course admin to backend
     sendCourseAdmin(e, type) {
         let data = JSON.stringify({
             "user_type": type,
@@ -62,6 +65,7 @@ class Register extends React.Component {
             .catch(err => console.log('Error:', err));
     }
 
+    //send details of new candidate to backend
     sendCandidate(e, type) {
         let data = JSON.stringify({
             "user_type": type,
@@ -89,6 +93,7 @@ class Register extends React.Component {
             .catch(err => console.log('Error:', err));
     }
 
+    //send details of new employer to backend
     sendEmployer(e, type) {
         let data = JSON.stringify({
             "user_type": type,
@@ -115,8 +120,33 @@ class Register extends React.Component {
             .catch(err => console.log('Error:', err));
     }
 
+    //at form submission, handle validation then send to API handlers
+    handleFormSubmit = (e, type) => {
+        e.preventDefault();
+        const email = e.target.email.value;
+        const password = e.target.password.value;
+        const confirm = e.target.confirm.value;
+        const errors = this.validate(email, password, confirm);
+        if (errors.length == 0) {
+            const response = this.createAccount(e, type);
+            if (response === false) {
+              alert("Something went wrong. Try again later.");
+            }
+            else{
+              alert("Your account has been created!");
+            }
 
+        }
+        else {
+            this.setState({ errors: errors });
+            this.setState({ validation_error: true });
+        }
+        console.log(email);
+        console.log(password);
+        console.log(confirm);
+    };
 
+    //determine account type and send to appropriate account creation flow
     createAccount = (e, type) => {
         console.log(type);
         if (type == "courseAdmin") {
@@ -146,6 +176,7 @@ class Register extends React.Component {
         }
     }
 
+    //all input validation
     validate = (email, password, confirm) => {
         const errors = [];
         if(!email.match(/^.+@.+$/i)){
@@ -161,31 +192,7 @@ class Register extends React.Component {
         return errors;
     };
 
-    handleFormSubmit = (e, type) => {
-        e.preventDefault();
-        const email = e.target.email.value;
-        const password = e.target.password.value;
-        const confirm = e.target.confirm.value;
-        const errors = this.validate(email, password, confirm);
-        if (errors.length == 0) {
-            const response = this.createAccount(e, type);
-            if (response === false) {
-              alert("Something went wrong. Try again later.");
-            }
-            else{
-              alert("Your account has been created!");
-            }
-
-        }
-        else {
-            this.setState({ errors: errors });
-            this.setState({ validation_error: true });
-        }
-        console.log(email);
-        console.log(password);
-        console.log(confirm);
-    };
-
+    //Items One, Two and Three return the front-end form for each tab switch on registration page
     ItemOne = theme => {
       return (
         <div className="Error-body">

@@ -15,17 +15,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Navbar from "./Navbar";
 
-// const gradOutcomes = [
-//   { title: 'Deep discipline knowledge and intellectual breadth' },
-//   { title: 'Creative and critical thinking and problem solving' },
-//   { title: 'Teamwork and communication skills' },
-//   { title: 'Professionalism and leadership readiness' },
-//   { title: 'Intercultural and ethical competency' },
-//   { title: 'Digital Capabilities' },
-//   { title: 'Self-awareness and emotional intelligence' }
-// ];
-
-
 class Course_Create extends React.Component {
   constructor(props) {
       super(props);
@@ -43,6 +32,7 @@ class Course_Create extends React.Component {
     this.sendUniSelect(e);
   }
 
+  //when course admin selects uni, populate graduate outcomes options
   sendUniSelect = (e) => {
     let component = this;
     console.log("selected:", e.target.value);
@@ -63,6 +53,7 @@ class Course_Create extends React.Component {
         .catch(err => console.log('Error:', err));
   }
 
+  //handling chips select/deselect for gradOutcomes Autocomplete element
   onTagsChange = (event, values) => {
     this.setState({
       gradOutcomes: values
@@ -73,6 +64,7 @@ class Course_Create extends React.Component {
     });
   }
 
+  //intermediate values handler when course admin submits form
   handleCourseAdd = (e) => {
       e.preventDefault();
       console.log("hello?");
@@ -107,6 +99,7 @@ class Course_Create extends React.Component {
       }
   }
 
+  //add new course (send all new course details to backend)
   handleCourseSend(dict) {
     let component = this;
     let url = 'http://localhost:5000/course/add/add';
