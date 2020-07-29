@@ -117,7 +117,7 @@ class SearchEmployer extends React.Component {
                 <header className="App-header">
                     <h1>Skills Backpack</h1>
                 </header>
-                <body className="column-container" style={{'min-height':'500px'}}>
+                <body className="column-container">
                 <div className="center-align-container">
                     <div style={{'display': 'inline-block','padding-top':'40px'}}>
                         <h3>Company Search</h3>

@@ -128,7 +128,7 @@ class Home_Employer extends React.Component {
                 <header className="App-header">
                     <h1>Skills Backpack</h1>
                 </header>
-                <body className="column-container" style={{'min-height':'500px'}}>
+                <body className="column-container">
                 <div style={{'padding-top':'50px','overflow':'hidden'}}>
                     <div style={{'float':'right', 'marginRight':'90px'}}>
                         <MuiThemeProvider theme={theme}>
