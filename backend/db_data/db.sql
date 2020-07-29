@@ -219,7 +219,7 @@ CREATE TABLE Employer_GradOutcomes (
 			ON DELETE CASCADE
 			ON UPDATE CASCADE,
 	FOREIGN KEY (gradOutcomeID)
-		REFERENCES GraduteOutcomes(id)
+		REFERENCES GraduateOutcomes(id)
 			ON DELETE CASCADE
 			ON UPDATE CASCADE,
 	PRIMARY KEY(employerEmail, gradOutcomeID)
