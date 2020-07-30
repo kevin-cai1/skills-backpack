@@ -93,4 +93,5 @@ Week 8
 
 29/07/20 
 - finished backend for adding gradoutcomes to employer skills criteria
+- cleaned up code and added comments
 
