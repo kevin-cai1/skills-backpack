@@ -12,6 +12,7 @@ update_details = api.model('update_skillsadminpw', {
     'new_password' : fields.String(description='new password for account access', required=True)
 })
 
+# payload of update skills admin details
 skills_admin_details = api.model('skills admin details', {
     'email' : fields.String(description='university email for account identification', required=True),
     'password'  : fields.String(description='password for account access', required=True),
@@ -45,6 +46,7 @@ class SkillsAdminAccount(Resource):
         }
         return return_val
 
+# creates new skills admin 
 @api.route('/new/<string:email>')
 @api.doc(params={'email': 'the email of the skillsBackpack admin account'})
 class SkillsAdminInfo(Resource):
@@ -73,6 +75,7 @@ class SkillsAdminInfo(Resource):
                 'message' : 'Account is all good'
             }
 
+# updated initial course admin password 
 @api.route('/details/<string:email>')
 class updateAccountP(Resource):
     @api.expect(update_details)
@@ -102,7 +105,7 @@ class updateAccountP(Resource):
         return {
             'ok' : 'True'
         }
-# account stuff       
+      
 @api.route('/all')
 class accounts(Resource):
     @api.doc(description="Get all admin details from system")
@@ -114,7 +117,6 @@ class accounts(Resource):
 
         return 0
         
-
 @api.route('/<string:account>')
 class accountInfo(Resource):
     def get(self, account):
@@ -127,14 +129,12 @@ class accountInfo(Resource):
         if (account_check == 0):
             api.abort(404, "Account '{}' doesn't exist".format(account), ok=False)
 
-        # SELECT STUFF FROM SKILLS ADMIN
-        # FORMAT RESPONSE
         return_val = {
             'email' : account
         }
         return return_val
         
-    
+    # delete skills admin
     @api.doc(description="Delete specified account")
     def delete(self, account):
         conn = db.get_conn()
@@ -155,6 +155,7 @@ class accountInfo(Resource):
         }
         return return_val
 
+    # skills admin edit details
     @api.doc(description="Edit user details")
     @api.expect(skills_admin_details)
     def put(self, account):
@@ -171,29 +172,15 @@ class accountInfo(Resource):
         
         # change account details if account exists
         elif (account_check == 1):  
-            # hashed_password = generate_password_hash(req['password'], "sha256")
-            # getting api input
-            # edit_details = request.get_json()
-            # pw_edit = req.get('password')
-            # name_edit = req.get('name')
-            # uni_edit = req.get('university')
-            # c.execute("SELECT password FROM SkillBackpackAdmin WHERE email = ?", (account,))
-            # query = c.fetchone()
-            # if query == None:
-            #     api.abort(400, "User '{}' not found".format(account), ok=False)
-            # password = query[0]
-            # if req['password'] == password:
-            # update 
+           
             c.execute("UPDATE SkillsBackpackAdmin SET (name) = (?) WHERE email = ?",(req['name'], req['email'],))
             conn.commit()
             conn.close()
             new_details = {
                 'email' : account,
-                # 'password' : hashed_password,
                 'name' : req['name'],
             }
-            # else:   
-            #     api.abort(400, "Password incorrect", ok=False)
+
         else: 
             api.abort(400, "Update Error")
             conn.close()

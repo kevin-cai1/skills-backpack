@@ -6,10 +6,10 @@ import db
 from werkzeug.security import generate_password_hash
 
 api = Namespace('Employer', description='Employer user operations')
- 
+
+# payload for update employer details
 employer_details = api.model('employer details', {
     'email' : fields.String(description='university email for account identification', required=True),
-    # 'password'  : fields.String(description='password for account access', required=True),
     'name' : fields.String(description='name of user', required=True),
     'company' : fields.String(description='company of employer')
 })
@@ -24,7 +24,8 @@ DeleteGradOutcome = api.model('GradOutcome', {
 
 @api.route('/all')
 class SkillsCriteria(Resource):
-    # endpoint for getting all graduate outcomes in the db so employers can choose from a list of them to add to their criteria
+
+    #  endpoint for getting all graduate outcomes in the db so employers can choose from a list of them to add to their criteria
     @api.doc(description = 'getting list of all graduate outcomes in the db so the employer can choose from the list to add to their criteria')
     def get(self):
         gradoutcomes_list = []
@@ -43,6 +44,7 @@ class SkillsCriteria(Resource):
 
 @api.route('/<string:account>')
 class accountInfo(Resource):
+    
     # API for getting all account details associated with employer (name, email, company, skills criteria)
     @api.doc(description = 'get account details')
     def get(self, account):
@@ -64,6 +66,7 @@ class accountInfo(Resource):
         employer_details['name'] = name
         employer_details['company'] = company
 
+        # get all the skills associated with the employer
         for skill in c.execute('SELECT s.id, s.name FROM Skill s, Employer_Skill es WHERE s.id = es.skillID AND es.employer = ?', (account,)):
             skill_entry = {
                     'id' : skill[0],
@@ -71,6 +74,7 @@ class accountInfo(Resource):
             }
             job_skills.append(skill_entry)
 
+        # get all the graduate outcomes associated with the employer
         for gradoutcome in c.execute('SELECT g.id, g.g_outcome FROM GraduateOutcomes g, Employer_GradOutcomes eg WHERE g.id = eg.gradOutcomeID AND eg.employerEmail = ?', (account,)):
             gradoutcome_entry = {
                     'id' : gradoutcome[0],
@@ -86,6 +90,7 @@ class accountInfo(Resource):
         }
         return returnVal
 
+    # delete employer account
     @api.doc(description="Delete specified account")
     def delete(self, account):
         conn = db.get_conn()
@@ -106,6 +111,7 @@ class accountInfo(Resource):
         }
         return return_val
 
+    # employer can update their details
     @api.doc(description="Edit employer details")
     @api.expect(employer_details)
     def put(self, account):
@@ -122,40 +128,15 @@ class accountInfo(Resource):
         
         # change account details if account exists
         elif (account_check == 1):  
-            # hashed_password = generate_password_hash(req['password'], "sha256")
 
-            # getting api input
-            # edit_details = request.get_json()
-            # pw_edit = req.get('password')
-            # name_edit = req.get('name')
-            # uni_edit = req.get('university')
-            # c.execute("SELECT password FROM Employer WHERE email = ?", (account,))
-            # query = c.fetchone()
-            # if query == None:
-            #     api.abort(400, "User '{}' not found".format(account), ok=False)
-            # password = query[0]
-            # if req['password'] == password:
-            
-            # getting api input
-            # edit_details = request.get_json()
-            # pw_edit = req.get('password')
-            # name_edit = req.get('name')
-            # uni_edit = req.get('university')
-            # degree_edit = req.get('name')
-            # grad_edit = req.get('gradYear')
-
-            # update 
                 c.execute("UPDATE Employer SET (name, company) = (?,?) WHERE email = ?",(req['name'], req['company'], req['email'],))
                 conn.commit()
                 conn.close()
                 new_details = {
                     'email' : account,
-                    # 'password' : hashed_password,
                     'name' : req['name'],
                     'company' : req['company'],
                 }
-            # else:   
-            #     api.abort(400, "Password incorrect", ok=False)
 
         else: 
             api.abort(400, "Update Error")
@@ -189,6 +170,7 @@ class accountInfo(Resource):
         }
         return returnVal
 
+# editing graduate outcomes associated with the employer
 @api.route('/criteria/<string:account>')
 class EditingCriteria(Resource):
     @api.doc(description = 'Delete a GRADOUTCOME from the employers criteria of interest')

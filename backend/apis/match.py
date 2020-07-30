@@ -18,6 +18,7 @@ candidate_criteria = api.model('candidate criteria', {
 # helper function to iterate through all attributes and find matches
 # searches if an candidate matches a specific skill
 def findEPs(candidate_email, attribute, c, res):
+    
     # iterate through each grad outcome associated with the specified candidate email
     # change the search variable to lowercase to make search case insensitive
     lowercase_attribute = attribute.lower() 
@@ -59,9 +60,9 @@ def all_employers():
     conn.close()
     return res
 
-
 # find if a specified candidate skillset matches the criteria of interest for any employers
 # if a match is found, the employer is notified via email
+# send email
 def emailMatches(candidate_email):       
     conn = db.get_conn()
     c = conn.cursor()
@@ -87,6 +88,7 @@ def emailMatches(candidate_email):
         # if the number of matched criteria and the number of employer criteria is the same, a match has been found
         if (len(matched_criterias[candidate_email]) == len(employer_criteria)):
             print('sending email from {} to {}'.format(sender_email, employer_email))
+            
             # send email
             message = Mail(
                 from_email=sender_email,
