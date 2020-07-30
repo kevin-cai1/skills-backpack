@@ -6,14 +6,6 @@ from werkzeug.security import generate_password_hash
 
 api = Namespace('Candidate', description='Candidate account operations')
 
-@api.route('/all')
-class accounts(Resource):
-    def get(self):
-        conn = db.get_conn()
-        c = conn.cursor()
-
-        c.execute("SELECT * FROM Candidate")
-        
 candidate_details = api.model('candidate details', {
     'email' : fields.String(description='university email for account identification', required=True),
     # 'password'  : fields.String(description='password for account access', required=True),
