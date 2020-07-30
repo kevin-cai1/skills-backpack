@@ -95,3 +95,6 @@ Week 8
 - finished backend for adding gradoutcomes to employer skills criteria
 - cleaned up code and added comments
 
+30/07/20
+- finished testing for email notification
+- email seems to work for new emails, but maybe gets blocked after a few attempts
