@@ -38,7 +38,7 @@ GradOutcomes = api.model('GradOutcomes', {
 
 @api.route('/<string:account>')
 class accountInfo(Resource):
-    @api.doc(description = 'get account email');
+    @api.doc(description = 'get account email')
     def get(self, account):
         conn = db.get_conn()
         c = conn.cursor()
@@ -154,10 +154,10 @@ class accountInfo(Resource):
         conn = db.get_conn()
         c = conn.cursor()
 
-        for gradoutcome in req['GradOutcomes']:
-            try:
-                c.execute('INSERT INTO 
-
+        #for gradoutcome in req['GradOutcomes']:
+            #try:
+                #c.execute('INSERT INTO 
+                
 
 
 

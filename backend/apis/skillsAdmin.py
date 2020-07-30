@@ -146,7 +146,7 @@ class accountInfo(Resource):
         if (account_check == 0):
             api.abort(404, "Account '{}' doesn't exist".format(account), ok=False)
 
-        c.execute("DELETE FROM SkillsBackpackAdmin WHERE email = ?)", (account,))
+        c.execute("DELETE FROM SkillsBackpackAdmin WHERE email = ?", (account,))
         
         conn.commit()
         conn.close()
