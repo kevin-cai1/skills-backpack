@@ -42,3 +42,11 @@ Week 7 (Flexi Week)
 
 Week 8
 - added search functionality to allow candidates to search for employers
+- fixed issue with navbar not updating on login and logout
+- fixed redirect issue with url with multiple slashes
+- did some css code cleanup, move common styles to classes
+- created an api handler to remove redundant api call
+
+Week 9
+- added functionality for employers to add their graduate outcome criteria
+- did some code cleanup
