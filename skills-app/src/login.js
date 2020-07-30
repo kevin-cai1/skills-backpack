@@ -113,11 +113,9 @@ class Login extends React.Component {
     }
 
     render() {
-        /*  if already logged in, redirect to user's homepage */
         if ((this.state.formSuccess) || (SessionDetails.getEmail() != "")) {
             return <Redirect to='./home' />
         } else {
-            /* render login page */
             return (
                 <div className="App">
                     <Navbar/>

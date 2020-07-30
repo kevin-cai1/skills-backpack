@@ -22,11 +22,9 @@ const theme = createMuiTheme({
 
 // component for default index page
 function App() {
-  /* redirect to user homepage if they are logged in */
   if (SessionDetails.getEmail() != "") {
     return <Redirect to='/home' />
   }
-  /* otherwise redirect to generic skill backpack homepage */
   else {
     return (
         <div>
