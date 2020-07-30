@@ -14,17 +14,18 @@ import apiHandler from './apiHandler';
 
 const filter = createFilterOptions();
 
+// component to display the employer homepage
 class Home_Employer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            value: null,
-            setValue: null,
-            valueList: [],
-            allOutcomes: [],
-            candidateList: [],
-            numResults: '',
-            searchMessage: '',
+            value: null, // value of current search input
+            setValue: null, // newly entered value
+            valueList: [], // list of all skills added to the search criteria
+            allOutcomes: [], // list of outcomes to populate the search dropdown
+            candidateList: [], // list of all candidates that match the search criteria
+            numResults: '', // number of candidates matching the search criteria
+            searchMessage: '', // message to indicate success or fail upon search
         }
         this.handleSearch = this.handleSearch.bind(this);
     }
@@ -33,6 +34,7 @@ class Home_Employer extends React.Component {
         this.populateDropdown();
     }
 
+    // method to post candidate search results and return response
     handleSearch() {
         this.state.candidateList = [];
         let searchValues = JSON.stringify(this.state.valueList);
@@ -70,6 +72,7 @@ class Home_Employer extends React.Component {
         });
     }
 
+    // method to get common skills/graduate outcomes and populate the search dropdown
     populateDropdown() {
         return apiHandler('search/getoutcomes', 'GET').then( (response) => {
             console.log(response);
@@ -108,6 +111,7 @@ class Home_Employer extends React.Component {
                 <div className="center-align-container">
                     <div className="search-inline">
                         <h3>Candidate Search</h3>
+                        /* Search Bar */
                         <div className="search-style">
                             <Autocomplete
                                 multiple
@@ -170,6 +174,7 @@ class Home_Employer extends React.Component {
                 </div>
                 <div className="center-align-container search-results">
                     <div className="center-box">
+                        /* Search Bar Results */
                         <div className="search-company-container">
                             <p className="ep-course-heading italicised search-message">
                                 {this.state.searchMessage}

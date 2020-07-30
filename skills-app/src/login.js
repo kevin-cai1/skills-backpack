@@ -4,8 +4,6 @@ import {
     TextField,
     Button,
     ButtonGroup,
-    InputLabel,
-    Select,
     createMuiTheme, MuiThemeProvider
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
@@ -13,7 +11,9 @@ import './login.css';
 import { Redirect } from 'react-router-dom';
 import SessionDetails from './SessionDetails';
 import Navbar from "./Navbar";
+import apiHandler from './apiHandler';
 
+// login form colour scheme
 const theme = createMuiTheme({
     palette: {
         primary: {
@@ -27,6 +27,7 @@ const theme = createMuiTheme({
     },
 });
 
+// component to display login form
 class Login extends React.Component {
 
     constructor(props) {
@@ -50,6 +51,7 @@ class Login extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
+    // method to get the newest value in the input field
     handleChange(event) {
         const fieldName = event.target.name;
         const fieldValue = event.target.value;
@@ -57,6 +59,7 @@ class Login extends React.Component {
             () => { this.validateField(fieldName, fieldValue) });
     }
 
+    // method to check whether form fields are valid
     validateField(field, value) {
         if (field === 'email') {
             this.state.emailValid = value.match(/^.+@.+$/i);
@@ -71,31 +74,13 @@ class Login extends React.Component {
         this.validateForm();
     }
 
-    postLogin() {
+    // method to call API, check whether credentials are correct, and get response
+    handleSubmit(event) {
         let data = JSON.stringify({
             "email": this.state.email,
             "password": this.state.password
         });
-        let url = 'http://localhost:5000/account/login';
-        console.log('Sending to ' + url + ': ' + data);
-
-        return fetch(url, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: data
-        }).then(response => {
-            console.log(response)
-            console.log('response ' + response.status)
-            return response.ok && response.json();
-        })
-            .catch(err => console.log('Error:', err));
-    }
-
-    handleSubmit(event) {
-        return this.postLogin().then( (response) => {
+        return apiHandler('account/login', 'POST', data).then( (response) => {
             console.log(response);
             let status = response["logged_in"];
             let email = response["user"];
@@ -106,10 +91,13 @@ class Login extends React.Component {
                 password: '',
                 userType: ''
             });
+            // display error if credentials incorrect
             if (!status) {
                 this.state.formError = true;
                 this.forceUpdate();
-            } else {
+            }
+            // else set user type, name and email
+            else {
                 SessionDetails.setEmail(email);
                 SessionDetails.setType(user_type);
                 SessionDetails.setName(name);
@@ -119,14 +107,17 @@ class Login extends React.Component {
         });
     }
 
+    // check whether all form fields are valid
     validateForm() {
         this.setState({formValid: this.state.emailValid && this.state.passwordValid && this.state.userTypeValid});
     }
 
     render() {
+        /*  if already logged in, redirect to user's homepage */
         if ((this.state.formSuccess) || (SessionDetails.getEmail() != "")) {
             return <Redirect to='./home' />
         } else {
+            /* render login page */
             return (
                 <div className="App">
                     <Navbar/>

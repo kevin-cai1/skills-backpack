@@ -15,6 +15,7 @@ import './main.css';
 import { Menu, MenuItem } from '@material-ui/core';
 import { useHistory } from "react-router-dom";
 
+// navbar colour scheme
 const theme = createMuiTheme({
     palette: {
         primary: {
@@ -26,6 +27,7 @@ const theme = createMuiTheme({
     },
 });
 
+// navbar style
 const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
@@ -38,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+// navigation bar component
 export default function Navbar() {
     const classes = useStyles();
 
@@ -47,14 +50,17 @@ export default function Navbar() {
     const loggedIn = (SessionDetails.getEmail() != '') ? true : false;
     const [auth, setAuth] = React.useState(loggedIn);
 
+    // method to handle the opening of popup menu
     const handleMenu = (event) => {
         setAnchorEl(event.currentTarget);
     };
 
+    // method to handle closing of popup menu
     const handleClose = () => {
         setAnchorEl(null);
     };
 
+    // method to handle user logout
     const handleLogout = () => {
         setAnchorEl(null);
         SessionDetails.removeEmail();
@@ -64,6 +70,7 @@ export default function Navbar() {
         history.push("./");
     }
 
+    // method to redirect to homepage
     const changeRoute = () => {
         if (auth) {
             history.push("../home");
@@ -88,6 +95,7 @@ export default function Navbar() {
                         </div>
                         {
                             (auth) ?
+                                /* if logged in, render user profile button */
                                 <div style={{"margin-left":"auto","margin-right":"0"}}>
                                     <IconButton
                                         aria-label="account of current user"
@@ -122,6 +130,7 @@ export default function Navbar() {
                                         >Logout</Link></MenuItem>
                                     </Menu>
                                 </div> :
+                                /* in not logged in, render login button */
                                 <div style={{"margin-left":"auto","margin-right":"0"}}>
                                     <Button color="secondary"><Link to='./login' className="header-button">Login</Link></Button>
                                 </div>

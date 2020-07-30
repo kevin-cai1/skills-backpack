@@ -1,31 +1,15 @@
 import React from 'react';
-import SessionDetails from "./SessionDetails";
 import {
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText, FormControl, FormHelperText, Input,
-    InputLabel, MenuItem,
-    MuiThemeProvider, Select,
-    TextField,
-    Chip,
-    Card, CardContent, Typography, CardActions
+    MuiThemeProvider, Chip, Card, CardContent
 } from "@material-ui/core";
 import {theme} from "./App";
 import SchoolIcon from '@material-ui/icons/School';
 import EmailIcon from '@material-ui/icons/Email';import LanguageIcon from '@material-ui/icons/Language';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import Navbar from "./Navbar";
+import apiHandler from './apiHandler';
 
-
-const chipNames = [
-    {name: 'css'},
-    {name: 'html'},
-    {name: 'reactjs'},
-    {name: 'python'},
-    {name: 'communication'},
-]
-
+// method to display student E-Portfolio
 class View_EPortfolio extends React.Component{
     constructor(props) {
         super(props);
@@ -42,27 +26,13 @@ class View_EPortfolio extends React.Component{
         this.fetchEportfolioDetails();
     }
 
-    getAllDetails() {
-        let url = 'http://localhost:5000/ePortfolio/' + this.props.match.params.user;
-        console.log('Fetching data from: ' + url);
-
-        return fetch(url, {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            }
-        }).then(response => {
-            return response.ok && response.json();
-        })
-            .catch(err => console.log('Error:', err));
-    }
-
+    // method to get E-Portfolio Details from backend API
     fetchEportfolioDetails() {
-        return this.getAllDetails().then( (response) => {
-            console.log(response);
+        let path = 'ePortfolio/' + this.props.match.params.user;
+        return apiHandler(path, 'GET').then( (response) => {
             let status = response["ok"];
             let count = response["entry_count"];
+            // set all states so it can be rendered on the page
             if (status) {
                 this.state.candidateJobSkills = response["job_skills"];
                 this.state.candidateEmpSkills = response["employability_skills"];

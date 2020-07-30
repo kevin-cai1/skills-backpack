@@ -4,15 +4,15 @@ import {
     TextField,
     Button,
     ButtonGroup,
-    InputLabel,
-    Select,
     createMuiTheme, MuiThemeProvider
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import './login.css';
 import SessionDetails from './SessionDetails';
 import Navbar from "./Navbar";
+import apiHandler from './apiHandler';
 
+// colour scheme for form
 const theme = createMuiTheme({
     palette: {
         primary: {
@@ -26,6 +26,7 @@ const theme = createMuiTheme({
     },
 });
 
+// component for change password screen
 class ChangePassword extends React.Component {
 
     constructor(props) {
@@ -50,6 +51,7 @@ class ChangePassword extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
+    // method to get value of current input
     handleChange(event) {
         const fieldName = event.target.name;
         const fieldValue = event.target.value;
@@ -57,6 +59,7 @@ class ChangePassword extends React.Component {
             () => { this.validateField(fieldName, fieldValue) });
     }
 
+    // method to validate the password fields and display error if invalid
     validateField(field, value) {
         if (field === 'currentPassword') {
             this.state.currentValid =  value.length > 0;
@@ -83,36 +86,20 @@ class ChangePassword extends React.Component {
         this.validateForm();
     }
 
+    // method to check if all fields are valid
     validateForm() {
         this.setState({formValid: this.state.currentValid && this.state.newValid && this.state.confirmValid});
     }
 
-    postPassword() {
+    // method to post new password to API and return response
+    handleSubmit(event) {
+        let path = 'password/' + SessionDetails.getEmail();
         let data = JSON.stringify({
             "email": SessionDetails.getEmail(),
             "password": this.state.currentPassword,
             "new_password": this.state.newPassword
         });
-        let url = 'http://localhost:5000/password/' + SessionDetails.getEmail();
-        console.log('Sending to ' + url + ': ' + data);
-
-        return fetch(url, {
-            method: 'PUT',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: data
-        }).then(response => {
-            console.log(response)
-            console.log('response ' + response.status)
-            return response.ok && response.json();
-        })
-            .catch(err => console.log('Error:', err));
-    }
-
-    handleSubmit(event) {
-        return this.postPassword().then( (response) => {
+        return apiHandler(path, 'PUT', data).then( (response) => {
             console.log(response);
             this.state.formError = '';
             this.state.formSuccess = '';

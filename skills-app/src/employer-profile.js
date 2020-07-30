@@ -1,13 +1,8 @@
 import React from 'react';
 import SessionDetails from "./SessionDetails";
 import {
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    MuiThemeProvider,
-    TextField,
-    Chip,
+    Dialog, DialogActions, DialogContent, DialogContentText,
+    MuiThemeProvider, TextField, Chip,
     Card, CardContent, Divider
 } from "@material-ui/core";
 import {theme} from "./App";
@@ -21,6 +16,7 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import Navbar from "./Navbar";
 import apiHandler from './apiHandler';
 
+// Component for Displaying Employer Profile
 class Employer_Profile extends React.Component{
     constructor(props) {
         super(props);
@@ -65,15 +61,18 @@ class Employer_Profile extends React.Component{
         this.fetchEmployerDetails();
     }
 
+    // method to handle the opening of search skills modal
     handleSearchSkillsModal() {
         this.setState({search_skills_open: true});
     }
 
+    // method to handle closing of the search skills modal
     handleSearchSkillsModalClose() {
         this.setState({search_skills_open: false});
         this.handleClearStatus();
     }
 
+    //method to handle the opening of the search outcomes modal
     handleSearchOutcomesModal() {
         this.setState({
             newOutcome: '',
@@ -85,15 +84,18 @@ class Employer_Profile extends React.Component{
         this.setState({search_outcomes_open: true});
     }
 
+    // method to handle closing of the search outcomes modal
     handleSearchOutcomesModalClose() {
         this.setState({search_outcomes_open: false});
     }
 
+    // method to handle the change in input value in the search outcomes modal
     handleChange = (event, values) => {
         const fieldValue = (typeof event.target.name == 'undefined') ? values : event.target.value;
         this.setState({ ['newOutcome']: fieldValue });
     }
 
+    // method to post new outcome to backend
     handleAddOutcome() {
         let data = JSON.stringify({
             "GradOutcomes": [this.state.newOutcome],
@@ -118,6 +120,7 @@ class Employer_Profile extends React.Component{
         });
     }
 
+    // method to post new skill to the backend
     handleAddSkill() {
         let data = JSON.stringify({
             "id": this.state.skillID,
@@ -132,6 +135,7 @@ class Employer_Profile extends React.Component{
         });
     }
 
+    // method to delete a skill
     handleDeleteSkill(id, name) {
         let path = 'skills/' + SessionDetails.getEmail();
         let data = JSON.stringify({
@@ -144,6 +148,7 @@ class Employer_Profile extends React.Component{
         });
     }
 
+    // method to delete an outcome
     handleDeleteOutcome(name) {
         let path = 'employer/criteria/' + SessionDetails.getEmail();
         let data = JSON.stringify({
@@ -155,6 +160,7 @@ class Employer_Profile extends React.Component{
         });
     }
 
+    // method to clear input after closing modal
     handleClearStatus() {
         this.state.addSkillSuccess = false;
         this.state.newSkill = '';
@@ -162,6 +168,7 @@ class Employer_Profile extends React.Component{
         this.forceUpdate();
     }
 
+    // method to get outcomes to populate the add outcomes dropdown
     fetchOutcomes(event) {
         return apiHandler('employer/all', 'GET').then( (response) => {
             let status = response["ok"];
@@ -171,6 +178,7 @@ class Employer_Profile extends React.Component{
         });
     }
 
+    // method to get list of skills to populate the add skills dropdown
     fetchSkills(event) {
         return apiHandler('skills/all', 'GET').then( (response) => {
             let status = response["ok"];
@@ -181,6 +189,7 @@ class Employer_Profile extends React.Component{
         });
     }
 
+    // methdd to get all the employer details and display them
     fetchEmployerDetails() {
         let path = 'employer/' + SessionDetails.getEmail();
         return apiHandler(path, 'GET').then( (response) => {
@@ -252,6 +261,7 @@ class Employer_Profile extends React.Component{
         });
     }
 
+    // callback function to get input value from the searchbox child component
     callbackFunction = (childData) => {
         if (! (childData == null)) {
             if (childData.hasOwnProperty('inputValue')) {

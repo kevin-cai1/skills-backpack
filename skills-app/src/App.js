@@ -1,12 +1,7 @@
 import React from 'react';
-import {Link, Redirect} from 'react-router-dom';
-import logo from './logo.svg';
+import {Redirect} from 'react-router-dom';
 import './App.css';
-import allRoutes from './routes';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import { spacing } from '@material-ui/system';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import { createMuiTheme } from '@material-ui/core/styles';
 import SessionDetails from './SessionDetails';
 import Background from './images/employer.jpg';
 import Navbar from "./Navbar";
@@ -25,10 +20,14 @@ const theme = createMuiTheme({
   },
 });
 
+// component for default index page
 function App() {
+  /* redirect to user homepage if they are logged in */
   if (SessionDetails.getEmail() != "") {
     return <Redirect to='/home' />
-  } else {
+  }
+  /* otherwise redirect to generic skill backpack homepage */
+  else {
     return (
         <div>
             <Navbar/>

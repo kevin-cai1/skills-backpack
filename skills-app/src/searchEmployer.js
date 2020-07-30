@@ -1,24 +1,24 @@
-/* eslint-disable no-use-before-define */
 import React from 'react';
 import Autocomplete, {createFilterOptions} from '@material-ui/lab/Autocomplete';
 import {makeStyles, MuiThemeProvider} from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import SearchIcon from '@material-ui/icons/Search';
-import {Button, ButtonGroup, Card, CardActions, CardContent} from '@material-ui/core';
+import {Button, ButtonGroup, Card, CardContent} from '@material-ui/core';
 import { theme } from './App.js'
 import EmailIcon from '@material-ui/icons/Email';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
 import Navbar from "./Navbar";
 import apiHandler from './apiHandler';
 
+// component for the employer/company search page
 class SearchEmployer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            allEmployers: [],
-            employerName: '',
-            employerDetails: [],
-            searchMessage: '',
+            allEmployers: [], // array to store list of all employers
+            employerName: '', // selected employer
+            employerDetails: [], // array to store selected employer details
+            searchMessage: '', // message if employer searched doesn't exist
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleSearch = this.handleSearch.bind(this);
@@ -28,6 +28,7 @@ class SearchEmployer extends React.Component {
         this.populateDropdown();
     }
 
+    // method to fetch employer list from API to populate the dropdown menu
     populateDropdown() {
         return apiHandler('search/searchemployers', 'GET').then( (response) => {
             console.log(response);
@@ -43,6 +44,7 @@ class SearchEmployer extends React.Component {
         });
     }
 
+    // method to post search results to API, and display response
     handleSearch() {
         let data = JSON.stringify({
             "employer_name": this.state.employerName
@@ -68,6 +70,7 @@ class SearchEmployer extends React.Component {
         });
     }
 
+    // method to handle changes in searchbar user input and save the search value to state
     handleChange = (event, values) => {
         const fieldValue = (typeof event.target.name == 'undefined') ? values : event.target.value;
         this.setState({ ['employerName']: fieldValue });
@@ -85,6 +88,7 @@ class SearchEmployer extends React.Component {
                 <div className="center-align-container">
                     <div className="search-inline">
                         <h3>Company Search</h3>
+                        /*Search Bar */
                         <div className="row-container">
                             <div style={{ width: 300 }}>
                                 <Autocomplete
@@ -117,6 +121,7 @@ class SearchEmployer extends React.Component {
                             </MuiThemeProvider>
                         </div>
                     </div>
+                    /*Search Results*/
                     <div className="center-align-container">
                         <div style={{'display':'inline-block'}}>
                             <div style={{'overflow':'hidden'}}>

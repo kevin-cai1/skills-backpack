@@ -1,10 +1,11 @@
-/* eslint-disable no-use-before-define */
 import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 
 const filter = createFilterOptions();
 
+// common search box component
+// user can select from dropdown list or have custom input
 export default function SearchBox(props) {
     const [value, setValue] = React.useState(null);
 

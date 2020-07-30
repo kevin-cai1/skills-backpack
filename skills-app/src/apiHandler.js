@@ -1,6 +1,8 @@
+// helper function to make api calls
 export default function apiHandler(...args) {
     let path, methodType, data;
 
+    // checking if API call has a body or not
     if (args.length > 2) {
         [path, methodType, data] = args;
     } else {
@@ -11,6 +13,7 @@ export default function apiHandler(...args) {
     let url = 'http://localhost:5000/' + path;
     console.log('Sending to ' + url + ': ' + data);
 
+    // if there is data that needs to be sent
     if (data) {
         return fetch(url, {
             method: methodType,
@@ -25,7 +28,9 @@ export default function apiHandler(...args) {
             return response.ok && response.json();
         })
             .catch(err => console.log('Error:', err));
-    } else {
+    }
+    // else no data needs to be sent to API
+    else {
         return fetch(url, {
             method: methodType,
             headers: {

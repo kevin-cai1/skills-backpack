@@ -1,14 +1,10 @@
-// add new routes here
-
 import React from 'react';
 import { Route, Link, Switch, BrowserRouter as Router } from 'react-router-dom';
-import SessionDetails from './SessionDetails';
 import Login from './login';
 import Register from './registration-forms';
 import App from './App';
 import PrivateRoute from './PrivateRoute';
 import ChangePassword from './changePassword';
-import Navbar from './Navbar';
 import Home from './home'
 import Course_Create from './course-create-forms';
 import AdminInvite from './AdminInvite';
@@ -23,6 +19,7 @@ import Home_Candidate from './home-candidate.js';
 import SearchEmployer from './searchEmployer';
 import View_Employer from './view-employer';
 
+// list of all the routes and components that they are displaying
 const allRoutes = () => (
     <Router>
         <Route exact path="/" component={App} />
@@ -39,7 +36,7 @@ const allRoutes = () => (
         <PrivateRoute exact path="/course_create" component={Course_Create}/>
         <PrivateRoute exact path="/my-eportfolio" component={Candidate_EPortfolio}/>
         <PrivateRoute exact path="/view-eportfolio/:user" component={View_EPortfolio}/>
-            <PrivateRoute exact path="/view-company/:user" component={View_Employer}/>
+        <PrivateRoute exact path="/view-company/:user" component={View_Employer}/>
         <PrivateRoute exact path="/my-profile" component={Employer_Profile}/>
         <PrivateRoute exact path="/search-company" component={SearchEmployer}/>
     </Router>
