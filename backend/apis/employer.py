@@ -43,12 +43,8 @@ class SkillsCriteria(Resource):
 
 @api.route('/<string:account>')
 class accountInfo(Resource):
-<<<<<<< HEAD
-    @api.doc(description = 'get account email')
-=======
     # API for getting all account details associated with employer (name, email, company, skills criteria)
     @api.doc(description = 'get account details')
->>>>>>> 409723293b84b141b6998711ff820efc8db20744
     def get(self, account):
         conn = db.get_conn()
         c = conn.cursor()
