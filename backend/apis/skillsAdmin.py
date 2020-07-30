@@ -31,7 +31,6 @@ class SkillsAdminAccount(Resource):
         info = c.fetchone()
         if info == None:
             api.abort(400, "User '{}' not found".format(email), ok=False)
-        print(info)
         name = info[0]
         email = info[1]
         password = info[2]
@@ -92,7 +91,6 @@ class updateAccountP(Resource):
         
         password = query[0]
         hashed_password = generate_password_hash(req['new_password'], "sha256")
-        print("UPDATE PASSWORD")
         try:
             c.execute("UPDATE SkillsBackpackAdmin SET password = ?, newAccount = 0 WHERE email = ?", (hashed_password, email,))
         except db.sqlite3.Error as e:
