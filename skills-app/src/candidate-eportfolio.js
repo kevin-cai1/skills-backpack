@@ -26,14 +26,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import Navbar from "./Navbar";
 import apiHandler from './apiHandler';
 
-const chipNames = [
-    {name: 'css'},
-    {name: 'html'},
-    {name: 'reactjs'},
-    {name: 'python'},
-    {name: 'communication'},
-]
-
+// component to display candidate's E-Portfolio
 class Candidate_EPortfolio extends React.Component{
     constructor(props) {
         super(props);
@@ -157,6 +150,7 @@ class Candidate_EPortfolio extends React.Component{
     }
     //end modal handlers
 
+    // method for editing account details
     handleEditAccount() {
         let url = 'candidate/' + SessionDetails.getEmail();
         let data = JSON.stringify({
@@ -176,6 +170,7 @@ class Candidate_EPortfolio extends React.Component{
         });
     }
 
+    // method for handling adding a job and rendering it
     handleAddJob() {
         let data = JSON.stringify({
             "user": SessionDetails.getEmail(),
@@ -196,6 +191,7 @@ class Candidate_EPortfolio extends React.Component{
         });
     }
 
+    // method for clearing employment modal fields
     clearEmploymentFields() {
         this.setState({jobTitle: ''});
         this.setState({employerName: ''});
@@ -205,6 +201,7 @@ class Candidate_EPortfolio extends React.Component{
         this.setState({jobDescription: ''});
     }
 
+    // method for handling adding skills
     handleAddSkill() {
         let url = 'skills/' + SessionDetails.getEmail();
         let data = JSON.stringify({
@@ -221,6 +218,7 @@ class Candidate_EPortfolio extends React.Component{
         });
     }
 
+    // method for handling deleting a skill
     handleDeleteSkill(id, name) {
         let path = 'skills/' + SessionDetails.getEmail();
         let data = JSON.stringify({
@@ -245,6 +243,7 @@ class Candidate_EPortfolio extends React.Component{
         });
     }
 
+    // method for handling the deletion of employment history
     handleDeleteEmployment(id) {
         let path = 'employment/' + id;
         return apiHandler(path, 'DELETE').then( (response) => {
@@ -253,6 +252,7 @@ class Candidate_EPortfolio extends React.Component{
         });
     }
 
+    // method for clearing skill modal input
     handleClearStatus() {
         this.state.addSkillSuccess = false;
         this.state.newSkill = '';
@@ -260,6 +260,7 @@ class Candidate_EPortfolio extends React.Component{
         this.forceUpdate();
     }
 
+    // method for getting list of skills and populating the add skills dropdown
     fetchSkills(event) {
         return apiHandler('skills/all', 'GET').then( (response) => {
             let status = response["ok"];
@@ -270,6 +271,7 @@ class Candidate_EPortfolio extends React.Component{
         });
     }
 
+    // method for getting all the user's E-Portfolio details
     fetchEportfolioDetails() {
         let path = 'ePortfolio/' + SessionDetails.getEmail();
         return apiHandler(path, 'GET').then( (response) => {
@@ -354,6 +356,7 @@ class Candidate_EPortfolio extends React.Component{
         });
     }
 
+    // callback function to get input value from child searchbox component
     callbackFunction = (childData) => {
         if (! (childData == null)) {
             if (childData.hasOwnProperty('inputValue')) {
