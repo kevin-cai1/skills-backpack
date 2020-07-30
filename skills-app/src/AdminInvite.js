@@ -16,6 +16,7 @@ import {
 } from '@material-ui/core';
 import SessionDetails from './SessionDetails';
 import Navbar from "./Navbar";
+import apiHandler from './apiHandler';
 
 const theme = createMuiTheme({
     palette: {
@@ -60,6 +61,7 @@ class AdminInvite extends React.Component {
             () => { this.validateField(fieldName, fieldValue) });
     }
 
+    // validate field inputs
     validateField(field, value) {
         if (field === 'password') {
             this.state.passwordValid = value.length > 0;
@@ -76,6 +78,7 @@ class AdminInvite extends React.Component {
         this.validateForm();
     }
 
+    // submit details to create an account
     postSignup() {
         let data = JSON.stringify({
             "email": this.state.email,
@@ -103,15 +106,10 @@ class AdminInvite extends React.Component {
             .catch(err => console.log('Error:', err));
     }
 
+    // handle sign up submission
     handleSubmit(event) {
-        console.log(this.state.email)
-        console.log(this.state.password)
-        console.log(this.state.university)
-        console.log(this.state.name)
         return this.postSignup().then( (response) => {
-            console.log(response);
             let status = response["ok"];
-            console.log('status' + status);
             if (!status) {
                 this.state.formError = true;
                 this.forceUpdate();
@@ -131,37 +129,17 @@ class AdminInvite extends React.Component {
         this.setState({formValid: this.state.passwordValid && this.state.passwordMatch && this.state.universityValid && this.state.nameValid});
     }
 
-    decryptEmail(token) {
-        let url = 'http://localhost:5000/course_admin/email/decode';
-        
-        let data = JSON.stringify({
-            "token": token
-        });
-
-        console.log('Sending to ' + url + ': ' + data);
-
-        return fetch(url, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: data
-        }).then(response => {
-            console.log(response)
-            return response.json();
-            //console.log('response ' + response.status)
-            //this.setState({ email: response.email })
-        }).catch(err => console.log('Error:', err));
-    }
-
     componentDidMount() {
         const { match: { params } } = this.props;
-        this.decryptEmail(params.email).then( (response) => {
-            console.log(response)
+
+        let path = 'course_admin/email/decode';
+        let data = JSON.stringify({
+            "token": params.email
+        });
+        // decrypt email from url token
+        return apiHandler(path, 'POST', data).then( (response) => {
             this.setState({email: response.email})
         });
-        console.log(this.state.email)
     }
 
     render() {
