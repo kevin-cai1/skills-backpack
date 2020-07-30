@@ -15,6 +15,7 @@ import AddCircleIcon from '@material-ui/icons/AddCircle';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import Navbar from "./Navbar";
 import apiHandler from './apiHandler';
+import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
 
 // Component for Displaying Employer Profile
 class Employer_Profile extends React.Component{
@@ -40,7 +41,8 @@ class Employer_Profile extends React.Component{
             requiredOutcomes: [],
             candidateList: [],
             numResults: '',
-            searchMessage: ''
+            searchMessage: '',
+            employerProfile: [],
         };
         this.handleSearchSkillsModal = this.handleSearchSkillsModal.bind(this);
         this.handleSearchSkillsModalClose = this.handleSearchSkillsModalClose.bind(this);
@@ -92,7 +94,7 @@ class Employer_Profile extends React.Component{
     // method to handle the change in input value in the search outcomes modal
     handleChange = (event, values) => {
         const fieldValue = (typeof event.target.name == 'undefined') ? values : event.target.value;
-        this.setState({ ['newOutcome']: fieldValue });
+        this.setState({ 'newOutcome': fieldValue });
     }
 
     // method to post new outcome to backend
@@ -198,6 +200,7 @@ class Employer_Profile extends React.Component{
             if (status) {
                 this.state.requiredSkills = response["job_skills"];
                 this.state.requiredOutcomes = response["employability_skills"];
+                this.state.employerProfile = response["employer_details"];
                 this.handleSearch();
                 this.forceUpdate();
             }
@@ -286,11 +289,15 @@ class Employer_Profile extends React.Component{
                 <div className="center-align-container">
                     <div style={{'display': 'inline-block', 'padding-top':'50px'}}>
                         <div><AccountCircleIcon style={{ fontSize: 100 }}/></div>
-                        <div style={{color: 'dimgrey'}}><h2>{SessionDetails.getName()}</h2></div>
+                        <div style={{color: 'dimgrey'}}><h2>{this.state.employerProfile.company}</h2></div>
                         <div className="row-container">
                             <div className="user-profile-details-row">
+                                <PersonOutlineIcon className="sm-icon-padded"/>
+                                <h5>{this.state.employerProfile.name}</h5>
+                            </div>
+                            <div className="user-profile-details-row">
                                 <EmailIcon className="sm-icon-padded"/>
-                                <h5>{SessionDetails.getEmail()}</h5>
+                                <h5>{this.state.employerProfile.email}</h5>
                             </div>
                         </div>
                     </div>

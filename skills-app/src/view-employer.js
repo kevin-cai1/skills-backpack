@@ -1,36 +1,22 @@
 import React from 'react';
-import SessionDetails from "./SessionDetails";
 import {
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText, FormControl, FormHelperText, Input,
-    InputLabel, MenuItem,
-    MuiThemeProvider, Select,
-    TextField,
-    Chip,
-    Card, CardContent, Typography, CardActions
+    MuiThemeProvider, Chip,
 } from "@material-ui/core";
 import {theme} from "./App";
-import Box from "@material-ui/core/Box";
-import Button from "@material-ui/core/Button";
-import { FormControlLabel, Checkbox } from "@material-ui/core";
-import SearchBox from './search-box';
-import {Alert} from "@material-ui/lab";
-import Autocomplete from "@material-ui/lab/Autocomplete/Autocomplete";
-import {Link} from "react-router-dom";
 import EmailIcon from '@material-ui/icons/Email';
-import AddCircleIcon from '@material-ui/icons/AddCircle';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
 import Navbar from "./Navbar";
+import apiHandler from './apiHandler';
 
+// component to display employer profile to candidates
 class View_Employer extends React.Component{
     constructor(props) {
         super(props);
         this.state = {
             skillID: 0,
             requiredSkills: [],
+            requiredOutcomes: [],
             employerDetails:[],
         };
     }
@@ -39,37 +25,25 @@ class View_Employer extends React.Component{
         this.populateDetails();
     }
 
-
-    getSkills(email) {
-        let url = 'http://localhost:5000/skills/' + email;
-        console.log('Fetching data from: ' + url);
-
-        return fetch(url, {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            }
-        }).then(response => {
-            return response.ok && response.json();
-        })
-            .catch(err => console.log('Error:', err));
-    }
-
-    fetchSkills(email) {
-        return this.getSkills(email).then( (response) => {
-            console.log(response);
+    // get job skills and graduate outcomes from backend
+    fetchSkillsOutcomes(email) {
+        let path = 'employer/' + email;
+        return apiHandler(path, 'GET').then( (response) => {
             let status = response["ok"];
-            let count = response["entry_count"];
             if (status) {
-                this.state.requiredSkills = response["entries"];
+                this.state.requiredSkills = response["job_skills"];
+                this.state.requiredOutcomes = response["employability_skills"];
                 this.forceUpdate();
             }
         });
     }
 
+    // get employer profile details from backend api and display on page
     populateDetails() {
-        return this.getDetails().then( (response) => {
+        let data = JSON.stringify({
+            "employer_name": this.props.match.params.user
+        });
+        return apiHandler('search/searchemployers', 'POST', data).then( (response) => {
             console.log(response);
             let status = response["ok"];
             if (!status) {
@@ -80,31 +54,9 @@ class View_Employer extends React.Component{
                     employerDetails: details
                 });
                 let email = details["email"];
-                this.fetchSkills(email);
+                this.fetchSkillsOutcomes(email);
             }
         });
-    }
-
-    getDetails() {
-        let data = JSON.stringify({
-            "employer_name": this.props.match.params.user
-        });
-        let url = 'http://localhost:5000/search/searchemployers';
-        console.log('Sending to ' + url + ': ' + data);
-
-        return fetch(url, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: data
-        }).then(response => {
-            console.log(response)
-            console.log('response ' + response.status)
-            return response.ok && response.json();
-        })
-            .catch(err => console.log('Error:', err));
     }
 
     render() {
@@ -134,10 +86,18 @@ class View_Employer extends React.Component{
                 <div className="ep-container">
                     <MuiThemeProvider theme={theme}>
                         <div className="row-container">
-                            <h3 className="ep-h3-text">Required Skills</h3>
+                            <h3 className="ep-h3-text">Required Job Skills</h3>
                         </div>
                         <div>
                             {this.state.requiredSkills.map(i => {
+                                return <Chip label={i.name} id={i.id} className="skills-chip"/>
+                            })}
+                        </div>
+                        <div className="row-container">
+                            <h3 className="ep-h3-text">Required Employability Skills</h3>
+                        </div>
+                        <div>
+                            {this.state.requiredOutcomes.map(i => {
                                 return <Chip label={i.name} id={i.id} className="skills-chip"/>
                             })}
                         </div>

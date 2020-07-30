@@ -111,7 +111,6 @@ class Home_Employer extends React.Component {
                 <div className="center-align-container">
                     <div className="search-inline">
                         <h3>Candidate Search</h3>
-                        /* Search Bar */
                         <div className="search-style">
                             <Autocomplete
                                 multiple
@@ -174,7 +173,6 @@ class Home_Employer extends React.Component {
                 </div>
                 <div className="center-align-container search-results">
                     <div className="center-box">
-                        /* Search Bar Results */
                         <div className="search-company-container">
                             <p className="ep-course-heading italicised search-message">
                                 {this.state.searchMessage}

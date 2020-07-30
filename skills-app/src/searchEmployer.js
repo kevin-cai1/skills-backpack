@@ -88,7 +88,6 @@ class SearchEmployer extends React.Component {
                 <div className="center-align-container">
                     <div className="search-inline">
                         <h3>Company Search</h3>
-                        /*Search Bar */
                         <div className="row-container">
                             <div style={{ width: 300 }}>
                                 <Autocomplete
@@ -121,7 +120,6 @@ class SearchEmployer extends React.Component {
                             </MuiThemeProvider>
                         </div>
                     </div>
-                    /*Search Results*/
                     <div className="center-align-container">
                         <div style={{'display':'inline-block'}}>
                             <div style={{'overflow':'hidden'}}>
