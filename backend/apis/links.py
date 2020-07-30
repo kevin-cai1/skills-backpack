@@ -7,7 +7,6 @@ from itertools import groupby
 
 api = Namespace('Links', description='Endpoint to get link tracking information')
 
-
 @api.route('/<string:link>')
 @api.doc(params={'link': 'the specified ePortfolio link'})
 class Tracker(Resource):
@@ -42,7 +41,6 @@ class TrackingInfo(Resource):
             results = c.fetchall()
         except db.sqlite3.Error as e:
             api.abort(400, 'invalid query {}'.format(e), ok = False)
-            print(e)
         
         conn.close()
         grouped_results = sorted(results, key=lambda tup: tup[0])   # sort results by link

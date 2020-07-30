@@ -20,13 +20,12 @@ class accountInfo(Resource):
         conn = db.get_conn()
         c = conn.cursor()
         req = request.get_json(force=True)
-
         # check if user is a candidate and match password before changing password 
         c.execute("SELECT EXISTS(SELECT email FROM Candidate WHERE email = ?)", (account,))
         candidate_check = c.fetchone()[0]
         if (candidate_check == 1):
             hashed_password = generate_password_hash(req['new_password'], "sha256")
-
+            print(8)
             c.execute("SELECT password FROM Candidate WHERE email = ?", (account,))
             query = c.fetchone()
             password = query[0]
@@ -45,11 +44,12 @@ class accountInfo(Resource):
         
         # if user is not a candidate, check if they are an employer and match passworord before changing password 
         elif (candidate_check == 0):
+            print(9)
             c.execute("SELECT EXISTS(SELECT email FROM Employer WHERE email = ?)", (account,))
             employer_check = c.fetchone()[0]
             if (employer_check == 1):
                 hashed_password = generate_password_hash(req['new_password'], "sha256")
-
+                print('f')
                 c.execute("SELECT password FROM Employer WHERE email = ?", (account,))
                 query = c.fetchone()
                 password = query[0]
@@ -69,6 +69,7 @@ class accountInfo(Resource):
         # if user is not a candidate or emplopyer, check if they are a skills backpack admin and match 
         # password before changing password 
         elif (employer_check == 0):
+            print(0)
             c.execute("SELECT EXISTS(SELECT email FROM SkillsBackpackAdmin WHERE email = ?)", (account,))
             skillsadmin_check = c.fetchone()[0]
             if (skillsadmin_check == 1):
@@ -94,16 +95,17 @@ class accountInfo(Resource):
         # if user is not a candidate or emplopyer or skills backpack admin, check if they are a course admin and 
         # match passworord before changing password 
         elif (skillsadmin_check == 0):
+            print(1)
             c.execute("SELECT EXISTS(SELECT email FROM CourseAdmin WHERE email = ?)", (account,))
             courseadmin_check = c.fetchone()[0]
             if (courseadmin_check == 1):
                 hashed_password = generate_password_hash(req['new_password'], "sha256")
-
+                print(2)
                 c.execute("SELECT password FROM CourseAdmin WHERE email = ?", (account,))
                 query = c.fetchone()
                 password = query[0]
                 if check_password_hash(password, req['password']):
-
+                    print(3)
                     c.execute("UPDATE CourseAdmin SET password = ? WHERE email = ?",(hashed_password, req['email'],))
                     conn.commit()
                     conn.close()

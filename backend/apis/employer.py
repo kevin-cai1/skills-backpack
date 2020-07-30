@@ -24,7 +24,6 @@ DeleteGradOutcome = api.model('GradOutcome', {
 
 @api.route('/all')
 class SkillsCriteria(Resource):
-
     #  endpoint for getting all graduate outcomes in the db so employers can choose from a list of them to add to their criteria
     @api.doc(description = 'getting list of all graduate outcomes in the db so the employer can choose from the list to add to their criteria')
     def get(self):
@@ -44,7 +43,6 @@ class SkillsCriteria(Resource):
 
 @api.route('/<string:account>')
 class accountInfo(Resource):
-    
     # API for getting all account details associated with employer (name, email, company, skills criteria)
     @api.doc(description = 'get account details')
     def get(self, account):
@@ -170,9 +168,10 @@ class accountInfo(Resource):
         }
         return returnVal
 
-# editing graduate outcomes associated with the employer
+# editing graduate outcomes associated with the employer skills criteria
 @api.route('/criteria/<string:account>')
 class EditingCriteria(Resource):
+    # api for deleting gradoutcomes
     @api.doc(description = 'Delete a GRADOUTCOME from the employers criteria of interest')
     @api.expect(DeleteGradOutcome)
     def delete(self, account):
@@ -193,6 +192,7 @@ class EditingCriteria(Resource):
         conn.close()
         return returnVal
 
+    # api for getting all the existing associated gradoutcomes
     @api.doc(description = 'Get all the gradoutcomes associated with an employers criteria of interest')
     def get(self, account):
         conn = db.get_conn()

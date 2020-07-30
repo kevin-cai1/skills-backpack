@@ -13,7 +13,7 @@ VALUES
 -- Inserting data into Employer table
 INSERT INTO Employer (email, name, password, company)
 VALUES
-	('gordon.xie2@gmail.com', 'Macquarie HR Rep', 'password', 'Macquarie Group'),
+	('macquariegroup@gmail.com', 'Macquarie HR Rep', 'password', 'Macquarie Group'),
 	('google@gmail.com', 'Google HR Rep', 'password', 'Google');
 	--('atlassian@gmail.com', 'Atlassian', 'leadership', 'C++', 'atlassian')
 
@@ -125,8 +125,8 @@ VALUES
 -- Inserting data into employer_skill table
 INSERT INTO Employer_Skill (employer, skillID)
 VALUES
-	('gordon.xie2@gmail.com', 1),
-	('gordon.xie2@gmail.com', 2),
+	('macquariegroup@gmail.com', 1),
+	('macquariegroup@gmail.com', 2),
 	('google@gmail.com', 2);
 
 INSERT INTO ePortfolio_Skill (candidate, skillID)
@@ -140,8 +140,8 @@ VALUES
 
 INSERT INTO Employer_GradOutcomes (employerEmail, gradOutcomeID)
 VALUES
-	('gordon.xie2@gmail.com', 1),
-	('gordon.xie2@gmail.com', 2),
+	('macquariegroup@gmail.com', 1),
+	('macquariegroup@gmail.com', 2),
 	('google@gmail.com', 3),
 	('google@gmail.com', 4);
 

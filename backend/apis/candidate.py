@@ -23,28 +23,8 @@ candidate_details = api.model('candidate details', {
     'gradYear' : fields.Integer(description='graduation year')
 })
 
-add_course_details = api.model('course details', {
-    'code' : fields.String(description = 'Course code', required = True),
-    'university' : fields.String(description = 'The university corresponding to the course being added', required = True)
-})
-
 @api.route('/<string:account>')
 class accountInfo(Resource):
-    def get(self, account):
-        conn = db.get_conn()
-        c = conn.cursor()
-
-        c.execute("SELECT EXISTS(SELECT email FROM Candidate WHERE email = ?)", (account,))
-        account_check = c.fetchone()[0]
-        
-        if (account_check == 0):
-            api.abort(404, "Account '{}' doesn't exist".format(account), ok=False)
-
-        return_val = {
-            'email' : account
-        }
-        return return_val
-    
     # delete candidate account
     @api.doc(description="Delete specified account")
     def delete(self, account):

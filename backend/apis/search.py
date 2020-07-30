@@ -29,7 +29,6 @@ def findmatches(candidate_email, attribute, c, res):
                 return
     except db.sqlite3.Error as e:
             api.abort(400, 'invalid query {}'.format(e), ok = False)
-            print(e)
 
         
     # if the attribute wasn't found in gradoutcomes, iterate through the job specific skills associated with the candidate
@@ -45,7 +44,6 @@ def findmatches(candidate_email, attribute, c, res):
                 return
     except db.Sqlite3.Error as e:
         api.abort(400, 'invalid query {}'.format(e), ok = False)
-        print(e)
     return
 
 # apis used by employers to search for candidates  
@@ -138,6 +136,7 @@ class employers(Resource):
         c = conn.cursor()
         res = []
         try:
+            # fetch all company names
             employers = c.execute('SELECT company FROM Employer').fetchall()
             for e in employers:
                 res.append(e[0])
@@ -187,4 +186,3 @@ class employers(Resource):
                 'employer_details' : res
         }
         return returnVal
-
