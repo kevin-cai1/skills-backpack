@@ -50,3 +50,9 @@ For the final sprint I continued work on the ePortfolio link functionalities. Ha
 I created API endpoints to delete links as well as to manage link access tracking. I then worked on the frontend to implement the user stories. I spent a large amount of time
 overhauling some of the frontend components from last sprint to make everything more cohesive and streamlined. In the end I managed to get all the EP link functionalities working,
 even adding in little add-ons like copy to clipboard.
+
+Week 9
+With this week being our last sprint, most of the work was cleaning up existing code. Having finished all my tasks for sprint 4, I spent time refining the front end as well as
+tidying up code. In our meeting we decided to add additional analytics for skills backpack administrators. I worked to add a couple more endpoints for account counts and login
+tracking. I also implemented the dashboard for these analytics, adding some graphs and charts. I then tidied up all my code, adding comments and cleaning up redundant code.
+Beyond the code, I also worked on the report.
