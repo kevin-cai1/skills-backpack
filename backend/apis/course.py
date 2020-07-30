@@ -6,6 +6,7 @@ import db
 
 api = Namespace('Course', description = 'Course admin operations')
 
+# payload for course details for adding a course
 course_details = api.model('course', {
     'code' : fields.String(required = True, description = 'Course code'),
     'learningOutcomes' :  fields.String(description = 'Learning outcomes gained from the course'),  # assuming for now that we are allowing courses to be registed with no outcomes
@@ -18,6 +19,7 @@ course_details = api.model('course', {
     'admin_email' : fields.String(required = True, description = 'email of the course admin who is submitting the course')
     })
 
+# payload for course details for editing a course
 edited_course_details = api.model('course', {
     'code' : fields.String(required = True, description = 'Course code'),
     'learningOutcomes' :  fields.String(description = 'Learning outcomes gained from the course'),  # assuming for now that we are allowing courses to be registed with no outcomes
@@ -30,6 +32,7 @@ edited_course_details = api.model('course', {
     'admin_email' : fields.String(required = True, description = 'email of the course admin who is submitting the course')
     })
 
+# payload for course details for deleting a course
 delete_course_details = api.model('delete_course', {
     'code' : fields.String(required = True, description = 'Course code'),
     'university' : fields.String(required = True, description = 'University that the course belongs to'),
