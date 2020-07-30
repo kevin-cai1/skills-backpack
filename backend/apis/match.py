@@ -47,7 +47,7 @@ def findEPs(candidate_email, attribute, c, res):
             return
     return
         
-# get list of all employers giving email
+# get list of all employers 
 def all_employers():
     conn = db.get_conn()
     c = conn.cursor()
@@ -60,7 +60,8 @@ def all_employers():
     return res
 
 
-# send email
+# find if a specified candidate skillset matches the criteria of interest for any employers
+# if a match is found, the employer is notified via email
 def emailMatches(candidate_email):       
     conn = db.get_conn()
     c = conn.cursor()
@@ -83,7 +84,7 @@ def emailMatches(candidate_email):
             employer_criteria.append(employer_skillcriteria[0])
             findEPs(candidate_email, employer_skillcriteria[0], c2, matched_criterias)
         
-        print(employer, matched_criterias, employer_criteria)
+        # if the number of matched criteria and the number of employer criteria is the same, a match has been found
         if (len(matched_criterias[candidate_email]) == len(employer_criteria)):
             print('sending email from {} to {}'.format(sender_email, employer_email))
             # send email
@@ -101,15 +102,11 @@ def emailMatches(candidate_email):
                 'c2a_button': "View details"
             }
             message.template_id = 'd-165f1bd189884256a10ee0c090fe3a44'
-            print(os.environ.get('SENDGRID_API_KEY'))
             API_key = "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"
 
             try:
                 sg = SendGridAPIClient(API_key)
                 response = sg.send(message)
-                print(response.status_code)
-                print(response.body)
-                print(response.headers)
                 status = True
                 returnVal = {
                     'status_code' : response.status_code,

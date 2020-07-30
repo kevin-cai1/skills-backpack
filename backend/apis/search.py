@@ -48,6 +48,7 @@ def findmatches(candidate_email, attribute, c, res):
         print(e)
     return
 
+# apis used by employers to search for candidates  
 @api.route('/search')
 class search(Resource):
     @api.expect(search_variables)
@@ -62,28 +63,29 @@ class search(Resource):
         for a in req['attributes']:
             try:
                 for candidate_email in c.execute('SELECT email FROM Candidate'):
-                    findmatches(candidate_email[0], a, c2, unsorted_candidates) # iterates through all candidates and their attributes. appends matches to the dictionary (unsorted_candidates) with the email as the key a list of matches as the value
+                    # iterates through all candidates and their attributes 
+                    # appends matches to the dictionary (unsorted_candidates) with the email as the key a list of matches as the value
+                    findmatches(candidate_email[0], a, c2, unsorted_candidates) 
             except db.sqlite3.Error as e:
                 api.abort(400, 'invalid query {}'.format(e), ok = False)
-                print(e)
 
-        sorted_keys = sorted(unsorted_candidates, key=lambda i: len(unsorted_candidates[i]), reverse=True) # sorting the dictionary by length of each value list
-        for candidate in sorted_keys: # iterating through the sorted keys/emails and getting their info (first entry has the most matches, last entry has the least)
+        # sorting the result dictionary by number of matches 
+        sorted_keys = sorted(unsorted_candidates, key=lambda i: len(unsorted_candidates[i]), reverse=True) 
+        # iterating through the sorted keys/emails and getting their info (first entry has the most matches, last entry has the least)
+        for candidate in sorted_keys: 
             email = candidate
             try:
                 candidate_row = c.execute('SELECT name, degree FROM Candidate WHERE email = ?', (email,)).fetchone()
             except db.sqlite3.Error as e:
                 api.abort(400, 'invalid query {}'.format(e), ok = False)
-                print(e)
-
-            name, degree = candidate_row[0], candidate_row[1]
             new_entry = {
                     'email' : email,
-                    'name' : name,
-                    'degree' : degree,
+                    'name' : candidate_row[0],
+                    'degree' : candidate_row[1],
                     'matching skills' : unsorted_candidates[email]
             }
-            res.append(new_entry) # append each candidate entries to the final result
+            res.append(new_entry) # append each candidate entry to the final result
+        # if the results list is empty, no matches were found
         if not res:
             returnVal = {
                     'ok' : False,
@@ -98,25 +100,25 @@ class search(Resource):
         conn.close()
         return returnVal
 
-# api which returns all graduate and learning outcomes in one list
+# api which returns all graduateoutcomes and skills in one list
 @api.route('/getoutcomes')
 class search(Resource):
-    @api.doc(description = 'getting all the existing grad and learning outcomes')
+    @api.doc(description = 'getting all the existing gradoutcomes and skills')
     def get(self):
         conn = db.get_conn()
         c = conn.cursor()
         res = []
         
         try:
+            # fetch all skills
             for j in c.execute('SELECT DISTINCT name FROM Skill').fetchall():
                 res.append(j[0])
-
+            # fetch all gradoutcomes
             grad_outcomes = c.execute('SELECT DISTINCT g_outcome FROM GraduateOutcomes').fetchall()
             for g in grad_outcomes:
                 res.append(g[0])
         except db.sqlite3.Error as e:
             api.abort(400, 'invalid query {}'.format(e), ok = False)
-            print(e)
 
         returnVal = {
             'ok' : True,
@@ -126,15 +128,15 @@ class search(Resource):
         conn.close()
         return returnVal
 
-# api which returns all employer names in one list
+# apis used by candidates to search for employers
 @api.route('/searchemployers')
 class employers(Resource):
+    # api which returns all employer names in one list
     @api.doc(description = 'returns list of all employers in the system')
     def get(self):
         conn = db.get_conn()
         c = conn.cursor()
         res = []
-
         try:
             employers = c.execute('SELECT company FROM Employer').fetchall()
             for e in employers:
@@ -160,6 +162,7 @@ class employers(Resource):
         company_name = req['employer_name']
 
         try:
+            # fetching employer details
             employer_details = c.execute('SELECT company, name, email FROM Employer WHERE company = ?', (company_name,)).fetchone()
             if employer_details:
                 res = {
