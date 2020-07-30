@@ -11,6 +11,7 @@ import SessionDetails from './SessionDetails';
 import Background from './images/employer.jpg';
 import Navbar from "./Navbar";
 
+//colour themes for text, buttons and smaller elements used throughout this app
 const theme = createMuiTheme({
   palette: {
     primary: {

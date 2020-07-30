@@ -96,6 +96,7 @@ class Candidate_EPortfolio extends React.Component{
         this.fetchEportfolioDetails();
     }
 
+    //handlers for modal opens and closes
     handleSearchSkillsModal() {
         this.setState({search_skills_open: true});
     }
@@ -154,6 +155,7 @@ class Candidate_EPortfolio extends React.Component{
     handleEditAccountModalClose() {
         this.setState({edit_account_open: false});
     }
+    //end modal handlers
 
     handleEditAccount() {
         let url = 'candidate/' + SessionDetails.getEmail();
@@ -285,6 +287,7 @@ class Candidate_EPortfolio extends React.Component{
         });
     }
 
+    //display all courses for a selected uni. for candidate to add to EP
     handleUniSelect = (e) => {
       this.setState({addedUni: e.target.value});
       this.setState({all_course_codes: []});
@@ -323,6 +326,7 @@ class Candidate_EPortfolio extends React.Component{
           .catch(err => console.log('Error:', err));
     }
 
+    //create dropdown options for each course from above^
     createCoursesForSelect() {
         const items = [];
         const codes = this.state.all_course_codes;
@@ -336,6 +340,7 @@ class Candidate_EPortfolio extends React.Component{
         return items;
     }
 
+    //add selected course to EP
     handleAddCourse(e) {
         let path = 'ePortfolio/' + SessionDetails.getEmail();
         let data = JSON.stringify({

@@ -176,12 +176,16 @@ class UserSkills(Resource):
             'ok': True,
         }
         return return_val
-    
+
+    # Endpoint for retrieving list of skills associated with a candidate or employer criteria
     @api.doc(description="Get list of skills for given user")
     def get(self, email):
         # check user exists
         conn = db.get_conn()
         c = conn.cursor()
+        entries = []
+        entry_count = 0
+
 
         c.execute("SELECT email from Candidate WHERE email = ?", (email,))
         account = c.fetchone()
@@ -225,7 +229,7 @@ class UserSkills(Resource):
             'entries': entries
         }
         return return_val
-    
+
     @api.doc(description="Delete specified skill from given user")
     @api.expect(skill_package)
     def delete(self, email):
