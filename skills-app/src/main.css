@@ -69,6 +69,7 @@
 .skills-chip {
     margin-left: 5px;
     margin-right: 5px;
+    margin-bottom: 5px;
 }
 
 .ep-course-heading {
@@ -160,4 +161,9 @@
 .skill-list-p {
     float: left;
     margin-top: 15px;
+}
+
+.divider {
+    margin-top: 40px;
+    margin-bottom: 23px;
 }
