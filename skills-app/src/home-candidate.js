@@ -63,11 +63,8 @@ class Home_Candidate extends React.Component {
   }
 
   handleEPLinkRedirect(e) {
-    console.log("URL REDIRECT")
     var link = e
-    console.log(link)
     var new_link = "/eportfolio/" + link;
-    console.log(new_link)
     this.props.history.push(new_link)
   }
 
@@ -94,7 +91,6 @@ class Home_Candidate extends React.Component {
   handleChange(event) {
     const fieldName = event.target.name;
     const fieldValue = event.target.value;
-    console.log('fn: ' + fieldName + ', fv: ' + fieldValue);
     this.setState({[fieldName]: fieldValue});
     this.componentDidMount();
   }
@@ -112,7 +108,6 @@ class Home_Candidate extends React.Component {
           "tag": this.state.linkTag
       });
       return apiHandler(path, 'POST', data).then( (response) => {
-          console.log(response);
           this.clearModalFields();
           this.handleAddLinksModalClose();
           this.componentDidMount();
@@ -124,8 +119,8 @@ class Home_Candidate extends React.Component {
   }
 
   fetchLinks() {
-      let path = 'ePortfolio/link/' + SessionDetails.getEmail();
-      return apiHandler(path, 'GET').then( (response) => {
+    let path = 'ePortfolio/link/' + SessionDetails.getEmail();
+    return apiHandler(path, 'GET').then( (response) => {
       if (response["ok"]) {
         console.log(response.links)
         this.setState({EP_Links: response.links})

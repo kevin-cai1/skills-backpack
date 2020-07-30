@@ -10,6 +10,7 @@ import SchoolIcon from '@material-ui/icons/School';
 import EmailIcon from '@material-ui/icons/Email';
 import LanguageIcon from '@material-ui/icons/Language';
 import SessionDetails from './SessionDetails';
+import apiHandler from './apiHandler';
 
 const chipNames = [
     {name: 'css'},
@@ -34,63 +35,32 @@ class Link_EPortfolio extends React.Component{
 
     componentDidMount() {
         const { match: { params } } = this.props;
-        this.getUserFromToken(params.link).then( (response) => {
-            console.log(response)
+        let path = 'ePortfolio/candidate/' + params.link;
+        // get email associated with specific url link
+        return apiHandler(path, 'GET').then( (response) => {
             this.setState({email: response.email})
             this.fetchEportfolioDetails();
-            console.log(SessionDetails.getEmail())
-            console.log("LOGGED IN ACCOUNT ^")
-            console.log("PROFILE SHOWING v")
-            console.log(this.state.email)
             if (SessionDetails.getEmail() !== response.email){
                 this.postTracking(params.link);
             }
         });
-        console.log(this.state.email);
     }
 
+    // log tracking info in system
     postTracking(link) {
-        let url = 'http://localhost:5000/link/' + link;
-        console.log('Sending to ' + url);
-
-        return fetch(url, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-        }).then(response => {
-            console.log(response)
-            console.log('response ' + response.status)
-            return response.ok && response.json();
-        })
-            .catch(err => console.log('Error:', err));
-    }
-
-    getAllDetails() {
-        var user = this.state.email;
-        console.log(user)
-        let url = 'http://localhost:5000/ePortfolio/' + user;
-        console.log('Fetching data from: ' + url);
-
-        return fetch(url, {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            }
-        }).then(response => {
-            return response.ok && response.json();
-        })
-            .catch(err => console.log('Error:', err));
-    }
-
-    fetchEportfolioDetails() {
-        return this.getAllDetails().then( (response) => {
+        let path = 'link/' + link;
+        return apiHandler(path, 'POST').then( (response) => {
             console.log(response);
-            let status = response["ok"];
-            let count = response["entry_count"];
-            if (status) {
+        });
+    }
+
+    // fetch eportfolio details for 
+    fetchEportfolioDetails() {
+        var user = this.state.email;
+        let path = 'ePortfolio/' + user;
+        return apiHandler(path, 'GET').then( (response) => {
+            if (response["ok"]) {
+                this.setState({EP_Links: response.links})
                 this.state.candidateJobSkills = response["job_skills"];
                 this.state.candidateEmpSkills = response["employability_skills"];
                 this.state.candidateCourses = response["courses"];
@@ -99,24 +69,6 @@ class Link_EPortfolio extends React.Component{
                 this.forceUpdate();
             }
         });
-    }
-
-    getUserFromToken(token) {
-        console.log(token)
-        let url = 'http://127.0.0.1:5000/ePortfolio/candidate/' + token;
-        console.log('Fetching data from: ' + url);
-
-        return fetch(url, {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            }
-        }).then(response => {
-            console.log(response)
-            return response.ok && response.json();
-        })
-            .catch(err => console.log('Error:', err));
     }
 
     render() {

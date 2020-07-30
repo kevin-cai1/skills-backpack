@@ -15,7 +15,7 @@ class Tracker(Resource):
     def post(self, link):
         conn = db.get_conn()
         c = conn.cursor()
-        time = datetime.now().strftime('%H:%M %d-%m-%Y')
+        time = datetime.now().strftime('%d-%m-%Y %H:%M')
         # save link access time
         try:
             c.execute("INSERT INTO TrackingInfo (link, time) VALUES (?, ?)", (link, time,))
