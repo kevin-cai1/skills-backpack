@@ -64,7 +64,8 @@ class Home_courseAdmin extends React.Component {
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-        }
+        },
+        mode: 'no-cors'
     }).then(function(response){ return response.json();
     }).then(function(data) {
           const items = data;
