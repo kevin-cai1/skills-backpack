@@ -1,3 +1,4 @@
+# lastest push w changes
 from flask_restplus import Namespace, Resource, fields
 from flask import request, jsonify
 
@@ -20,10 +21,13 @@ class accountInfo(Resource):
         conn = db.get_conn()
         c = conn.cursor()
         req = request.get_json(force=True)
+        userType = ""
+
         # check if user is a candidate and match password before changing password 
         c.execute("SELECT EXISTS(SELECT email FROM Candidate WHERE email = ?)", (account,))
         candidate_check = c.fetchone()[0]
         if (candidate_check == 1):
+            userType = "candidate"
             hashed_password = generate_password_hash(req['new_password'], "sha256")
             print(8)
             c.execute("SELECT password FROM Candidate WHERE email = ?", (account,))
@@ -43,11 +47,12 @@ class accountInfo(Resource):
                 api.abort(400, "Candidate password incorrect", ok=False)
         
         # if user is not a candidate, check if they are an employer and match passworord before changing password 
-        elif (candidate_check == 0):
+        if (candidate_check == 0 and userType == ""):
             print(9)
             c.execute("SELECT EXISTS(SELECT email FROM Employer WHERE email = ?)", (account,))
             employer_check = c.fetchone()[0]
             if (employer_check == 1):
+                userType = "employer"
                 hashed_password = generate_password_hash(req['new_password'], "sha256")
                 print('f')
                 c.execute("SELECT password FROM Employer WHERE email = ?", (account,))
@@ -68,11 +73,12 @@ class accountInfo(Resource):
         
         # if user is not a candidate or emplopyer, check if they are a skills backpack admin and match 
         # password before changing password 
-        elif (employer_check == 0):
+        if (employer_check == 0 and userType == ""):
             print(0)
             c.execute("SELECT EXISTS(SELECT email FROM SkillsBackpackAdmin WHERE email = ?)", (account,))
             skillsadmin_check = c.fetchone()[0]
             if (skillsadmin_check == 1):
+                userType = "skillsadmin"
                 hashed_password = generate_password_hash(req['new_password'], "sha256")
 
                 c.execute("SELECT password FROM SkillsBackpackAdmin WHERE email = ?", (account,))
@@ -94,11 +100,12 @@ class accountInfo(Resource):
         
         # if user is not a candidate or emplopyer or skills backpack admin, check if they are a course admin and 
         # match passworord before changing password 
-        elif (skillsadmin_check == 0):
+        if (skillsadmin_check == 0 and userType == ""):
             print(1)
             c.execute("SELECT EXISTS(SELECT email FROM CourseAdmin WHERE email = ?)", (account,))
             courseadmin_check = c.fetchone()[0]
             if (courseadmin_check == 1):
+                userType = "courseadmin"
                 hashed_password = generate_password_hash(req['new_password'], "sha256")
                 print(2)
                 c.execute("SELECT password FROM CourseAdmin WHERE email = ?", (account,))
@@ -118,10 +125,13 @@ class accountInfo(Resource):
                     api.abort(400, "Course Admin password incorrect", ok=False)
         
         # return unable to update password if user does not match any of these users
-        else: 
-            api.abort(400, "Unable to update password, user does not exist")
-            conn.close()
-        
+        if (userType == ""): 
+            # api.abort(400, "Unable to update password, user does not exist")
+            # conn.close()
+            #conn.close()
+            return_val = {
+                    'ok' : False,
+                    'email' : account,
+                    'message' : "Unable to update password, user does not exist"
+                }
         return return_val
-
-
