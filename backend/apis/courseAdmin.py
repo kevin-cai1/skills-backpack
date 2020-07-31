@@ -26,7 +26,7 @@ class Invite(Resource):
     @api.expect(email_details)
     def post(self):
         print("SENDING COURSE ADMIN INVITE")
-        req = request.get_json()
+        req = request.get_json(force=True)
         skills_email = req['skills_email']
         course_email = req['course_email']
 
