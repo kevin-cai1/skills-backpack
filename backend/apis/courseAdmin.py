@@ -112,20 +112,17 @@ course_admin_details = api.model('course admin details', {
 
 @api.route('/<string:account>')
 class accountInfo(Resource):
+    # returns a list of tuples of (course code, university, course name) or empty list if no associated courses
+    @api.doc(description = 'Get list of registered courses associated with admin')
     def get(self, account):
         conn = db.get_conn()
         c = conn.cursor()
-
-        c.execute("SELECT EXISTS(SELECT email FROM CourseAdmin WHERE email = ?)", (account,))
-        account_check = c.fetchone()[0]
-
-        if (account_check == 0):
-            api.abort(404, "Account '{}' doesn't exist".format(account), ok=False)
-
-        return_val = {
-            'email' : account
+        c.execute('SELECT code, university, name FROM Course WHERE courseAdminEmail = ?', (account,))
+        res = c.fetchall()
+        returnVal = {
+            'courses': res
         }
-        return return_val
+        return returnVal
 
     # delete course admin account
     @api.doc(description="Delete specified account")
