@@ -213,6 +213,10 @@ class Employer_Profile extends React.Component{
             console.log("name: ", this.state.requiredSkills[value].name);
             valueList.push(this.state.requiredSkills[value].name);
         }
+        for (var value in this.state.requiredOutcomes) {
+            console.log("outcome: ", this.state.requiredOutcomes[value].name);
+            valueList.push(this.state.requiredOutcomes[value].name);
+        }
         let data = JSON.stringify({
             "attributes": valueList
         });
