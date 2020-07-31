@@ -156,6 +156,7 @@ class Home_skillsAdmin extends React.Component {
               Accept: 'application/json',
               'Content-Type': 'application/json',
           },
+          mode: 'no-cors',
           body: data
       }).then(response => {
           console.log('Hello?: ' + response.ok && response.json())
