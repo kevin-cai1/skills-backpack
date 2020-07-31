@@ -228,9 +228,6 @@ class Home_courseAdmin extends React.Component {
     if(uni == "University of Sydney"){
       return("USYD");
     }
-    if(uni == "University of Technology Sydney"){
-      return("UTS");
-    }
     else{
       return(uni);
     }
