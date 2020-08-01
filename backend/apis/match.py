@@ -99,10 +99,8 @@ def emailMatches(candidate_email):
                 message.dynamic_template_data = {
                     'header': "A new candidate has matched your job search critera!",
                     'text': "To view their details, please click the link below",
-                    'c2a_link': "http://localhost:3000/login/",
-                    'c2a_button': "View details"
                 }
-                message.template_id = 'd-165f1bd189884256a10ee0c090fe3a44'
+                message.template_id = 'd-d8f283c0c8744469b0b2f417a102a8fa'
                 API_key = "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"
 
                 try:

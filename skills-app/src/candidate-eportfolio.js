@@ -165,6 +165,7 @@ class Candidate_EPortfolio extends React.Component{
             let status = response["ok"];
             if (status) {
                 this.setState({accountUpdated: true});
+                SessionDetails.setName(this.state.userName);
             }
             this.componentDidMount();
         });
