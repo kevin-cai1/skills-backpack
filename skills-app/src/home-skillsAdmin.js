@@ -256,18 +256,17 @@ class Home_skillsAdmin extends React.Component {
       if (errors.length == 0) {
           const response = this.sendSiteAdmin(e).then( (response) => {
               console.log('Final response?: ', response);
-              this.setState({ name_details: response.account.name })
-              this.setState({ email_details: response.account.email })
-              this.setState({ password_details: response.account.password })
+              if (response === false) {
+                alert(`Account already exists for email ${email}`);
+              }
+              else{
+                this.setState({ name_details: response.account.name })
+                this.setState({ email_details: response.account.email })
+                this.setState({ password_details: response.account.password })
+                this.handleSiteAdminModalClose();
+                this.handleDetailsOpen();
+              }
           });
-          if (response === false) {
-            alert("Something went wrong. Try again later.");
-          }
-          else{
-            this.handleSiteAdminModalClose();
-            this.handleDetailsOpen();
-          }
-
       }
       else {
           alert(errors);
