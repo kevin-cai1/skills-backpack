@@ -46,3 +46,7 @@ All working code was securely pushed to demo b branch and demo went smoothly as 
 Added ability to view all matching e-portfolios to criteria on employer profile page.
 Edited course admin home page so that course admin sees all their managed courses as soon as they login.
 Spent rest of week cleaning up css, making colour + font + material-ui elements consistent across the entire front-end.
+
+Week 9
+Spent the week mostly on the final report and making style improvements to front-end files, commenting, etc.
+Made fixes to registration form and course create forms according to final API changes.
