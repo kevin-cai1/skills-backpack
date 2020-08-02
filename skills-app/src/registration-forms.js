@@ -329,7 +329,7 @@ class Register extends React.Component {
                       </Switch>
                     </div>
                   </BrowserRouter>
-                // </MuiThemeProvider>
+                </MuiThemeProvider>
               </body>
               <footer className="Home-footer">
                   <p>Yuppies 2020 </p>
