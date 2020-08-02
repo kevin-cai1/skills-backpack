@@ -26,8 +26,7 @@ VALUES
 INSERT INTO SkillsBackpackAdmin (name, email, password)
 VALUES
 	('sbadmin1', 'sbadmin1@gmail.com', 'sbadmin1'),
-	('admin', 'skillsbackpack@gmail.com', 'password'),
-	('sbadmin2', 'sbadmin2@gmail.com', 'sbadmin2');
+	('sbadmin2', 'sbadmin2@gmail.com', 'sbadmin2'),
 
 -- Inserting data into Course table
 INSERT INTO Course (code, university, faculty, description, name, link, courseAdminEmail)
