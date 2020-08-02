@@ -8,14 +8,12 @@ VALUES
 	('kevincai@unsw.edu.au', 'Kevin Cai', 'UNSW', 'password', 'Computer Science', 2020),
 	('gordonxie@unsw.edu.au', 'Gordon Xie', 'UNSW', 'password', 'Computer Science', 2020),
 	('alexgu@unsw.edu.au', 'Alex Gu', 'UNSW', 'password', 'Computer Science', 2020);
-	--('alexgu@uts.edu.au', 'Alex Gu', 'UTS', 'alex'
 
 -- Inserting data into Employer table
 INSERT INTO Employer (email, name, password, company)
 VALUES
 	('macquariegroup@gmail.com', 'Macquarie HR Rep', 'password', 'Macquarie Group'),
 	('google@gmail.com', 'Google HR Rep', 'password', 'Google');
-	--('atlassian@gmail.com', 'Atlassian', 'leadership', 'C++', 'atlassian')
 
 -- Inserting data into CourseAdmin table
 INSERT INTO CourseAdmin (name, email, university, password)

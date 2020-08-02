@@ -214,7 +214,6 @@ class Register extends React.Component {
               <Select name="uni" labelId="uni-select" id="select">
                 <MenuItem value="University of New South Wales">University of New South Wales</MenuItem>
                 <MenuItem value="University of Sydney">University of Sydney</MenuItem>
-                <MenuItem value="University of Technology Sydney">University of Technology Sydney</MenuItem>
               </Select>
             </FormControl>
             <FormControl fullWidth={true} margin='normal'>

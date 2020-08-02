@@ -144,7 +144,6 @@ class Course_Create extends React.Component {
                 <Select name="uni" labelId="uni-select" id="select" onChange={ this.handleUniSelect }>
                   <MenuItem value="UNSW">University of New South Wales</MenuItem>
                   <MenuItem value="USYD">University of Sydney</MenuItem>
-                  <MenuItem value="UTS">University of Technology Sydney</MenuItem>
                 </Select>
               </FormControl>
               <FormControl fullWidth={true} required={true} margin='normal'>
