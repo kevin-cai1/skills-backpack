@@ -128,22 +128,19 @@ class Register extends React.Component {
         const confirm = e.target.confirm.value;
         const errors = this.validate(email, password, confirm);
         if (errors.length == 0) {
-            const response = this.createAccount(e, type);
-            if (response === false) {
-              alert("Something went wrong. Try again later.");
-            }
-            else{
-              alert("Your account has been created!");
-            }
-
+            const response = this.createAccount(e, type).then( (response) => {
+              if (response === false) {
+                alert(`Email ${email} already in use. Please try again.`);
+              }
+              else{
+                alert("Your account has been created!");
+              }
+            });
         }
         else {
             this.setState({ errors: errors });
             this.setState({ validation_error: true });
         }
-        console.log(email);
-        console.log(password);
-        console.log(confirm);
     };
 
     //determine account type and send to appropriate account creation flow
@@ -153,23 +150,17 @@ class Register extends React.Component {
           const uni = e.target.uni.value;
           console.log("courseAdmin!");
           this.setState({redirect: 1});
-          return this.sendCourseAdmin(e, type).then( (response) => {
-              console.log(response);
-          });
+          return this.sendCourseAdmin(e, type);
         }
         else if (type == "candidate") {
           console.log("student!");
           this.setState({redirect: 1});
-          return this.sendCandidate(e, type).then( (response) => {
-              console.log(response);
-          });
+          return this.sendCandidate(e, type);
         }
         else if (type == "employer") {
           console.log("employer!");
           this.setState({redirect: 1});
-          return this.sendEmployer(e, type).then( (response) => {
-              console.log(response);
-          });
+          return this.sendEmployer(e, type);
         }
         else {
           return false;

@@ -21,7 +21,8 @@ VALUES
 INSERT INTO CourseAdmin (name, email, university, password)
 VALUES
 	('courseadmin1', 'courseadmin1@unsw.edu.au', 'UNSW', 'password'),
-	('courseadmin2', 'courseadmin2@usyd.edu.au', 'USYD', 'password');
+	('courseadmin2', 'courseadmin2@usyd.edu.au', 'USYD', 'password'),
+	('courseadmin5', 'courseadmin6@unsw.edu.au', 'UNSW', 'password');
 
 -- Inserting data into SkillsBackpackAdmin table
 INSERT INTO SkillsBackpackAdmin (name, email, password)

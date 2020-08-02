@@ -95,7 +95,7 @@ class ChangePassword extends React.Component {
     handleSubmit(event) {
         let path = 'password/' + SessionDetails.getEmail();
         let data = JSON.stringify({
-            "email": SessionDetails.getEmail(),
+            "userType": SessionDetails.getType(),
             "password": this.state.currentPassword,
             "new_password": this.state.newPassword
         });

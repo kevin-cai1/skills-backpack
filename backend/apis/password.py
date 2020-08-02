@@ -1,3 +1,4 @@
+# lastest push w changes
 from flask_restplus import Namespace, Resource, fields
 from flask import request, jsonify
 
@@ -7,8 +8,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 api = Namespace('Password', description='Users can change password')
 
-update_password = api.model('create', {
-    'email' : fields.String(description='university email for account identification', required=True),
+update_password = api.model('update_pw', {
+    'userType' : fields.String(description='user type of specified user', required=True),
     'password'  : fields.String(description='current password for account access'),
     'new_password' : fields.String(description='new password for account access'),
 })
@@ -16,112 +17,91 @@ update_password = api.model('create', {
 @api.route('/<string:account>')
 class accountInfo(Resource):
     @api.expect(update_password)
+    @api.doc(description="endpoint to update user password")
     def put(self, account):
         conn = db.get_conn()
         c = conn.cursor()
         req = request.get_json(force=True)
-        # check if user is a candidate and match password before changing password 
-        c.execute("SELECT EXISTS(SELECT email FROM Candidate WHERE email = ?)", (account,))
-        candidate_check = c.fetchone()[0]
-        if (candidate_check == 1):
-            hashed_password = generate_password_hash(req['new_password'], "sha256")
-            print(8)
+        
+        userType = req['userType']
+
+        new_password = generate_password_hash(req['new_password'])
+        if (userType == "candidate"):
             c.execute("SELECT password FROM Candidate WHERE email = ?", (account,))
-            query = c.fetchone()
-            password = query[0]
-            if check_password_hash(password, req['password']):
+            current_pw = c.fetchone()
 
-                c.execute("UPDATE Candidate SET password = ? WHERE email = ?",(hashed_password, req['email'],))
-                conn.commit()
-                conn.close()
-                return_val = {
-                    'ok' : True,
-                    'email' : account,
-                    'message' : "Password successfully updated"
-                } 
-            else: 
-                api.abort(400, "Candidate password incorrect", ok=False)
-        
-        # if user is not a candidate, check if they are an employer and match passworord before changing password 
-        elif (candidate_check == 0):
-            print(9)
-            c.execute("SELECT EXISTS(SELECT email FROM Employer WHERE email = ?)", (account,))
-            employer_check = c.fetchone()[0]
-            if (employer_check == 1):
-                hashed_password = generate_password_hash(req['new_password'], "sha256")
-                print('f')
-                c.execute("SELECT password FROM Employer WHERE email = ?", (account,))
-                query = c.fetchone()
-                password = query[0]
-                if check_password_hash(password, req['password']):
+            if (current_pw == None):
+                api.abort(400, "User '{}' of type {} does not exist".format(account, userType), ok=False)
 
-                    c.execute("UPDATE Employer SET password = ? WHERE email = ?",(hashed_password, req['email'],))
+            current_pw = current_pw[0]
+
+            if (check_password_hash(current_pw, req['password'])):  # check existing pw matches
+                try:
+                    c.execute("UPDATE Candidate SET password = ? WHERE email = ?", (new_password, account,))    # update new pw in database
                     conn.commit()
-                    conn.close()
-                    return_val = {
-                        'email' : account,
-                        'ok' : True,
-                        'message' : "Password successfully updated"
-                    } 
-                else: 
-                    api.abort(400, "Employer assword incorrect", ok=False)
-        
-        # if user is not a candidate or emplopyer, check if they are a skills backpack admin and match 
-        # password before changing password 
-        elif (employer_check == 0):
-            print(0)
-            c.execute("SELECT EXISTS(SELECT email FROM SkillsBackpackAdmin WHERE email = ?)", (account,))
-            skillsadmin_check = c.fetchone()[0]
-            if (skillsadmin_check == 1):
-                hashed_password = generate_password_hash(req['new_password'], "sha256")
+                except db.sqlite3.Error as e:
+                    api.abort(400, 'invalid query {}'.format(e), ok = False)
+                    print(e)
+            else:
+                api.abort(400, 'Current password does not match', ok=False)
+        elif (userType == "employer"):
+            c.execute("SELECT password FROM Employer WHERE email = ?", (account,))
+            current_pw = c.fetchone()
 
-                c.execute("SELECT password FROM SkillsBackpackAdmin WHERE email = ?", (account,))
-                query = c.fetchone()
-                password = query[0]
-                if check_password_hash(password, req['password']):
+            if (current_pw == None):
+                api.abort(400, "User '{}' of type {} does not exist".format(account, userType), ok=False)
 
-                    c.execute("UPDATE SkillsBackpackAdmin SET password = ? WHERE email = ?",(hashed_password, req['email'],))
+            current_pw = current_pw[0]
+
+            if (check_password_hash(current_pw, req['password'])):  # check existing pw matches
+                try:
+                    c.execute("UPDATE Employer SET password = ? WHERE email = ?", (new_password, account,))    # update new pw in database
                     conn.commit()
-                    conn.close()
-                    return_val = {
-                        'email' : account,
-                        'ok' : True,
-                        'message' : "Password successfully updated"
-                    } 
-                else: 
-                    api.abort(400, "Skills admin Password incorrect", ok=False)
-            
-        
-        # if user is not a candidate or emplopyer or skills backpack admin, check if they are a course admin and 
-        # match passworord before changing password 
-        elif (skillsadmin_check == 0):
-            print(1)
-            c.execute("SELECT EXISTS(SELECT email FROM CourseAdmin WHERE email = ?)", (account,))
-            courseadmin_check = c.fetchone()[0]
-            if (courseadmin_check == 1):
-                hashed_password = generate_password_hash(req['new_password'], "sha256")
-                print(2)
-                c.execute("SELECT password FROM CourseAdmin WHERE email = ?", (account,))
-                query = c.fetchone()
-                password = query[0]
-                if check_password_hash(password, req['password']):
-                    print(3)
-                    c.execute("UPDATE CourseAdmin SET password = ? WHERE email = ?",(hashed_password, req['email'],))
+                except db.sqlite3.Error as e:
+                    api.abort(400, 'invalid query {}'.format(e), ok = False)
+                    print(e)
+            else:
+                api.abort(400, 'Current password does not match', ok=False)
+        elif (userType == "courseAdmin"):
+            c.execute("SELECT password FROM CourseAdmin WHERE email = ?", (account,))
+            current_pw = c.fetchone()
+
+            if (current_pw == None):
+                api.abort(400, "User '{}' of type {} does not exist".format(account, userType), ok=False)
+
+            current_pw = current_pw[0]
+
+            if (check_password_hash(current_pw, req['password'])):  # check existing pw matches
+                try:
+                    c.execute("UPDATE CourseAdmin SET password = ? WHERE email = ?", (new_password, account,))    # update new pw in database
                     conn.commit()
-                    conn.close()
-                    return_val = {
-                        'email' : account,
-                        'ok' : True,
-                        'message' : "Password successfully updated"
-                    } 
-                else: 
-                    api.abort(400, "Course Admin password incorrect", ok=False)
-        
-        # return unable to update password if user does not match any of these users
-        else: 
-            api.abort(400, "Unable to update password, user does not exist")
-            conn.close()
-        
+                except db.sqlite3.Error as e:
+                    api.abort(400, 'invalid query {}'.format(e), ok = False)
+                    print(e)
+            else:
+                api.abort(400, 'Current password does not match', ok=False)
+        elif (userType == "skillsAdmin"):
+            c.execute("SELECT password FROM SkillsBackpackAdmin WHERE email = ?", (account,))
+            current_pw = c.fetchone()
+
+            if (current_pw == None):
+                api.abort(400, "User '{}' of type {} does not exist".format(account, userType), ok=False)
+
+            current_pw = current_pw[0]
+
+            if (check_password_hash(current_pw, req['password'])):  # check existing pw matches
+                try:
+                    c.execute("UPDATE SkillsBackpackAdmin SET password = ? WHERE email = ?", (new_password, account,))    # update new pw in database
+                    conn.commit()
+                except db.sqlite3.Error as e:
+                    api.abort(400, 'invalid query {}'.format(e), ok = False)
+                    print(e)
+            else:
+                api.abort(400, 'Current password does not match', ok=False)
+        else:
+            api.abort(400, "User type '{}' does not exist".format(userType), ok=False)
+        conn.close()
+        return_val = {
+            'ok': True
+        }
         return return_val
-
-
