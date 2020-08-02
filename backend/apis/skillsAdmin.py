@@ -80,7 +80,7 @@ class updateAccountP(Resource):
     @api.expect(update_details)
     @api.doc(description="Update skillsbackpack admin password")
     def put(self, email):
-        req =request.get_json()
+        req =request.get_json(force=True)
 
         conn = db.get_conn()
         c = conn.cursor()

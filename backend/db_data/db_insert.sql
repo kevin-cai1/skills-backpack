@@ -12,7 +12,7 @@ VALUES
 -- Inserting data into Employer table
 INSERT INTO Employer (email, name, password, company)
 VALUES
-	('macquariegroup@gmail.com', 'Macquarie HR Rep', 'password', 'Macquarie Group'),
+	('deloitte@gmail.com', 'Deloitte HR Rep', 'password', 'Deloitte'),
 	('google@gmail.com', 'Google HR Rep', 'password', 'Google');
 
 -- Inserting data into CourseAdmin table
@@ -123,8 +123,8 @@ VALUES
 -- Inserting data into employer_skill table
 INSERT INTO Employer_Skill (employer, skillID)
 VALUES
-	('macquariegroup@gmail.com', 1),
-	('macquariegroup@gmail.com', 2),
+	('deloitte@gmail.com', 1),
+	('deloitte@gmail.com', 2),
 	('google@gmail.com', 2);
 
 INSERT INTO ePortfolio_Skill (candidate, skillID)
@@ -138,8 +138,8 @@ VALUES
 
 INSERT INTO Employer_GradOutcomes (employerEmail, gradOutcomeID)
 VALUES
-	('macquariegroup@gmail.com', 1),
-	('macquariegroup@gmail.com', 2),
+	('deloitte@gmail.com', 1),
+	('deloitte@gmail.com', 2),
 	('google@gmail.com', 3),
 	('google@gmail.com', 4);
 
