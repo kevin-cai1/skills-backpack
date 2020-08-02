@@ -1,7 +1,7 @@
 Week 1
 We established our group and decided on the SkillsBackpack as our project. I worked with Kevin on the problem statement 
-and backgroud for our Proposal. Also as I was designated the Scrum master, once we had decided on the various user stories 
-I orgnised them onto the Confluence and Jira pages. I also started thinking about how we could categorise them and place them 
+and background for our Proposal. Also as I was designated the Scrum master, once we had decided on the various user stories 
+I organised them onto the Confluence and Jira pages. I also started thinking about how we could categorise them and place them 
 into the various sprints.
 
 Week 2
@@ -25,11 +25,11 @@ Week 5
 This week I finished off updating user data so now all users can change their account details such as their name, university,
 graduation year, company, etc. Users are also able to change their password which also requires verification before they are 
 able to do so. Also, following this weeks meeting, we have decided to change up our sprint plan to fit the guideline a bit 
-better so I have been making those chages in our Jira. 
+better so I have been making those changes in our Jira. 
 
 Week 6
 We've close our previous sprint and started the current one which we will be demoing in week 8. I've completely finished the
-updating user details where they no longer need a password verification to edit simple details such as name, univeristy, 
+updating user details where they no longer need a password verification to edit simple details such as name, university, 
 company, etc. since they will already be logged in. I also broke out password into its own api so that it can be easily accessed
 from a frontend perspective. This will still require password verification just for better security. For the next sprint I've
 started working on the candidate EPs and I'll also be finalising the retrospective which is due in next week.
@@ -38,12 +38,18 @@ Week 7
 This week we submitted our retrospective which helped us reflect on our previous demo to identify to areas we did well in as
 well as areas we can improve in. We made sure to also assign each team member a goal to check up on to make sure that the 
 team is achieving them for the next demo. I also completed the email employers task which will send an email to the specific
-employer if a candidate matches all the critera for the job that they posted. I'm also in the process of working on notifying
-the employers within the website if a candidate matches all the critera.
+employer if a candidate matches all the criteria for the job that they posted. I'm also in the process of working on notifying
+the employers within the website if a candidate matches all the criteria.
 
 Week 8
 We had our demo for the previous 2 sprints this week which went really well especially as we were able to complete our sprints
 a couple of days prior to the demo so that we could do a practice one to make sure it all performed correctly. This week I 
 continued to work on the emails and notifications with the help of Gordon. I added a few functions so that there would be a
 check in place for every time a candidate updates their graduate outcomes or skills. This will then automatically email and
-notify any employers who's critera they completely match.
+notify any employers who's criteria they completely match.
+
+
+Week 9
+This week we worked on finalising our code for the final demo. Kevin and Gordon helped me fix some issues with the password
+file. We also did a run through of the final demo to prepare and we were also finalising the major report for next week's 
+submission.
