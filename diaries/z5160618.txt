@@ -91,10 +91,21 @@ Week 8
 - realised we missed a story (adding gradoutcomes to employer skills criteria)
 - added missed story to sprint board
 
+Week 9
 29/07/20 
 - finished backend for adding gradoutcomes to employer skills criteria
 - cleaned up code and added comments
 
 30/07/20
 - finished testing for email notification
-- email seems to work for new emails, but maybe gets blocked after a few attempts
+- Finalised code
+
+31/07/20
+- Finished functionality for final report
+- Had meeting, planned out final demo
+- found more bugs while testing, posted to skills board and had them assigned and dealt with swiftly
+
+1/07/20
+- Finalised final report
+- Went through demo, practice run
+- Finalised all code, FINISHED
