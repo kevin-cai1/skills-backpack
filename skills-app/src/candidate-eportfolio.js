@@ -636,7 +636,7 @@ class Candidate_EPortfolio extends React.Component{
                                         <InputLabel htmlFor="uni-select">University</InputLabel>
                                         <Select name="userUni" labelId="uni-select"
                                                 id="select" onChange={ this.handleChange }
-                                                defaultValue={this.state.profile.university}
+                                                defaultValue={(this.state.profile.university == 'University of New South Wales') ? 'UNSW' : 'USYD'}
                                         >
                                             <MenuItem value="UNSW">University of New South Wales</MenuItem>
                                             <MenuItem value="USYD">University of Sydney</MenuItem>
