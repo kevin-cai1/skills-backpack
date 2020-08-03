@@ -97,7 +97,8 @@ def emailMatches(candidate_email):
                 )
 
                 message.dynamic_template_data = {
-                    'header': "A new candidate has matched your job search critera!",
+                    'header': "A new candidate has matched your job search criteria!",
+                    'text': "Log into your account to review your new matches!"
                 }
                 message.template_id = 'd-d8f283c0c8744469b0b2f417a102a8fa'
                 API_key = "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"
