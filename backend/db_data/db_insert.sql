@@ -1,32 +1,32 @@
 -- sample data for skills system
-
+-- sha256$quLlzjbb$faba05ddee03e73ffe10b64362c705f73ae726f81827dfc22bd70809398aa8a0 = 'password' in plaintext
 -- Inserting data into candidate table
 INSERT INTO Candidate (email, name, university, password, degree, gradYear) 
 VALUES 
-	('charmaineleung@unsw.edu.au', 'Charmaine Leung', 'UNSW', 'password', 'Computer Science', 2021),
-	('mirannakamura@usyd.edu.au', 'Miran Nakamura', 'USYD', 'password', 'Computer Science', 2021),
-	('kevincai@unsw.edu.au', 'Kevin Cai', 'UNSW', 'password', 'Computer Science', 2020),
-	('gordonxie@unsw.edu.au', 'Gordon Xie', 'UNSW', 'password', 'Computer Science', 2020),
-	('alexgu@unsw.edu.au', 'Alex Gu', 'UNSW', 'password', 'Computer Science', 2020);
+	('charmaineleung@unsw.edu.au', 'Charmaine Leung', 'UNSW', 'sha256$quLlzjbb$faba05ddee03e73ffe10b64362c705f73ae726f81827dfc22bd70809398aa8a0', 'Computer Science', 2021),
+	('mirannakamura@usyd.edu.au', 'Miran Nakamura', 'USYD', 'sha256$quLlzjbb$faba05ddee03e73ffe10b64362c705f73ae726f81827dfc22bd70809398aa8a0', 'Computer Science', 2021),
+	('kevincai@unsw.edu.au', 'Kevin Cai', 'UNSW', 'sha256$quLlzjbb$faba05ddee03e73ffe10b64362c705f73ae726f81827dfc22bd70809398aa8a0', 'Computer Science', 2020),
+	('gordonxie@unsw.edu.au', 'Gordon Xie', 'UNSW', 'sha256$quLlzjbb$faba05ddee03e73ffe10b64362c705f73ae726f81827dfc22bd70809398aa8a0', 'Computer Science', 2020),
+	('alexgu@unsw.edu.au', 'Alex Gu', 'UNSW', 'sha256$quLlzjbb$faba05ddee03e73ffe10b64362c705f73ae726f81827dfc22bd70809398aa8a0', 'Computer Science', 2020);
 
 -- Inserting data into Employer table
 INSERT INTO Employer (email, name, password, company)
 VALUES
-	('deloitte@gmail.com', 'Deloitte HR Rep', 'password', 'Deloitte'),
-	('google@gmail.com', 'Google HR Rep', 'password', 'Google');
+	('deloitte@gmail.com', 'Deloitte HR Rep', 'sha256$quLlzjbb$faba05ddee03e73ffe10b64362c705f73ae726f81827dfc22bd70809398aa8a0', 'Deloitte'),
+	('google@gmail.com', 'Google HR Rep', 'sha256$quLlzjbb$faba05ddee03e73ffe10b64362c705f73ae726f81827dfc22bd70809398aa8a0', 'Google');
 
 -- Inserting data into CourseAdmin table
 INSERT INTO CourseAdmin (name, email, university, password)
 VALUES
-	('courseadmin1', 'courseadmin1@unsw.edu.au', 'UNSW', 'password'),
-	('courseadmin2', 'courseadmin2@usyd.edu.au', 'USYD', 'password'),
-	('courseadmin5', 'courseadmin6@unsw.edu.au', 'UNSW', 'password');
+	('courseadmin1', 'courseadmin1@unsw.edu.au', 'UNSW', 'sha256$quLlzjbb$faba05ddee03e73ffe10b64362c705f73ae726f81827dfc22bd70809398aa8a0'),
+	('courseadmin2', 'courseadmin2@usyd.edu.au', 'USYD', 'sha256$quLlzjbb$faba05ddee03e73ffe10b64362c705f73ae726f81827dfc22bd70809398aa8a0'),
+	('courseadmin5', 'courseadmin6@unsw.edu.au', 'UNSW', 'sha256$quLlzjbb$faba05ddee03e73ffe10b64362c705f73ae726f81827dfc22bd70809398aa8a0');
 
 -- Inserting data into SkillsBackpackAdmin table
 INSERT INTO SkillsBackpackAdmin (name, email, password)
 VALUES
-	('sbadmin1', 'sbadmin1@gmail.com', 'sbadmin1'),
-	('sbadmin2', 'sbadmin2@gmail.com', 'sbadmin2');
+	('sbadmin1', 'sbadmin1@gmail.com', 'sha256$quLlzjbb$faba05ddee03e73ffe10b64362c705f73ae726f81827dfc22bd70809398aa8a0'),
+	('sbadmin2', 'sbadmin2@gmail.com', 'sha256$quLlzjbb$faba05ddee03e73ffe10b64362c705f73ae726f81827dfc22bd70809398aa8a0');
 
 -- Inserting data into Course table
 INSERT INTO Course (code, university, faculty, description, name, link, courseAdminEmail)
