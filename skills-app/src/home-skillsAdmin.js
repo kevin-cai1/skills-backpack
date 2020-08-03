@@ -222,11 +222,6 @@ class Home_skillsAdmin extends React.Component {
   handleSkillsAdminLoad() {
     this.sendSkillsAdminLogin().then( (response) => {
         console.log("Login response: " + response.message);
-        if(response.message == "Password needs to be updated") {
-            this.handleChangePassword();
-            console.log("Change password before proceeding");
-            this.setState({ change_password: true });
-        }
     });
   }
 

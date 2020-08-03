@@ -91,7 +91,7 @@ class accountInfo(Resource):
 
             if (check_password_hash(current_pw, req['password'])):  # check existing pw matches
                 try:
-                    c.execute("UPDATE SkillsBackpackAdmin SET password = ? WHERE email = ?", (new_password, account,))    # update new pw in database
+                    c.execute("UPDATE SkillsBackpackAdmin SET password = ?, newAccount = 0 WHERE email = ?", (new_password, account,))    # update new pw in database
                     conn.commit()
                 except db.sqlite3.Error as e:
                     api.abort(400, 'invalid query {}'.format(e), ok = False)
